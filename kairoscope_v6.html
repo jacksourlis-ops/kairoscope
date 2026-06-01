@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kairoscope — See Your Moment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23160f2e'/%3E%3Cpath d='M50,50 Q65,35 68,22 Q72,9 62,11 Q52,13 48,24 Q44,35 50,50' fill='none' stroke='%23f0d870' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M50,50 Q35,65 22,68 Q9,72 11,62 Q13,52 24,48 Q35,44 50,50' fill='none' stroke='%23f0d870' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23f0d870'/%3E%3Ccircle cx='50' cy='50' r='4' fill='%23160f2e'/%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   KAIROSCOPE v2 — Luminous Moon Themes + Environmental Audio
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* BASE — all phases stay dark, just shift luminosity and hue */
+:root{
+  --bg:#060410;--bg2:#0a0818;--bg3:rgba(255,255,255,0.03);
+  --gold:#f0d870;--gold2:#c8a040;--gold3:#a07828;
+  --text:#f0ecff;--text2:rgba(235,225,255,0.75);
+  --muted:rgba(200,175,255,0.45);
+  --border:rgba(200,175,255,0.14);--border2:rgba(200,175,255,0.38);
+  --card:rgba(255,255,255,0.035);--input-bg:rgba(255,255,255,0.045);
+  --glow:rgba(200,175,255,0.06);
+}
+
+/* NEW MOON — deepest black, text must be brightest to compensate */
+[data-phase="new-moon"]{
+  --bg:#020108;--bg2:#050310;--bg3:rgba(255,255,255,0.02);
+  --gold:#e8c860;--gold2:#c8a840;
+  --text:#f0eeff;--text2:rgba(235,225,255,0.85);
+  --muted:rgba(210,190,255,0.70);
+  --border:rgba(210,190,255,0.18);--border2:rgba(210,190,255,0.45);
+  --glow:rgba(160,140,200,0.04);
+}
+
+/* WAXING CRESCENT — very dark, text needs to be bright */
+[data-phase="waxing-crescent"]{
+  --bg:#060412;--bg2:#0a0820;
+  --gold:#e0bc58;--gold2:#c09838;
+  --text:#eeeaff;--text2:rgba(230,220,255,0.82);
+  --muted:rgba(205,183,255,0.65);
+  --border:rgba(200,178,255,0.16);--border2:rgba(200,178,255,0.42);
+  --glow:rgba(180,155,230,0.05);
+}
+
+/* FIRST QUARTER — balanced dark, standard readable */
+[data-phase="first-quarter"]{
+  --bg:#0c0820;--bg2:#120e2e;
+  --gold:#e8c860;--gold2:#c8a840;
+  --text:#e8e2f8;--text2:rgba(225,215,248,0.78);
+  --muted:rgba(195,170,245,0.60);
+  --border:rgba(190,165,240,0.16);--border2:rgba(190,165,240,0.42);
+  --glow:rgba(190,165,240,0.06);
+}
+
+/* WAXING GIBBOUS — getting lighter, slightly dimmer text ok */
+[data-phase="waxing-gibbous"]{
+  --bg:#0a0e28;--bg2:#0e1232;
+  --gold:#e8c858;--gold2:#c8a838;
+  --text:#eae6fc;--text2:rgba(230,222,252,0.78);
+  --muted:rgba(185,188,255,0.60);
+  --border:rgba(175,180,255,0.16);--border2:rgba(175,180,255,0.42);
+  --glow:rgba(170,175,255,0.07);
+}
+
+/* FULL MOON — peak luminosity, rich bright text */
+[data-phase="full-moon"]{
+  --bg:#080e28;--bg2:#0c1235;--bg3:rgba(200,210,255,0.06);
+  --gold:#ffe880;--gold2:#e8cc60;--gold3:#c8a840;
+  --text:#ffffff;--text2:rgba(240,240,255,0.92);
+  --muted:rgba(190,210,255,0.72);
+  --border:rgba(180,200,255,0.22);--border2:rgba(180,200,255,0.58);
+  --card:rgba(180,200,255,0.06);--input-bg:rgba(180,200,255,0.07);
+  --glow:rgba(180,200,255,0.12);
+}
+
+/* WANING GIBBOUS — past peak, keep text solid */
+[data-phase="waning-gibbous"]{
+  --bg:#0e0c22;--bg2:#120e28;
+  --gold:#e0c060;--gold2:#c0a040;
+  --text:#e8e4f8;--text2:rgba(228,218,248,0.80);
+  --muted:rgba(198,175,240,0.62);
+  --border:rgba(190,168,235,0.16);--border2:rgba(190,168,235,0.42);
+  --glow:rgba(185,165,235,0.06);
+}
+
+/* LAST QUARTER — getting dark, brighten text up */
+[data-phase="last-quarter"]{
+  --bg:#08060e;--bg2:#0c0a18;
+  --gold:#ddb84e;--gold2:#bd982e;
+  --text:#eae6ff;--text2:rgba(228,218,255,0.82);
+  --muted:rgba(200,180,240,0.66);
+  --border:rgba(190,170,228,0.16);--border2:rgba(190,170,228,0.44);
+  --glow:rgba(170,150,215,0.04);
+}
+
+/* WANING CRESCENT — nearly black, text must be brightest */
+[data-phase="waning-crescent"]{
+  --bg:#040210;--bg2:#060418;
+  --gold:#e0bc55;--gold2:#c09c35;
+  --text:#f2eeff;--text2:rgba(238,228,255,0.86);
+  --muted:rgba(212,192,255,0.70);
+  --border:rgba(205,185,255,0.18);--border2:rgba(205,185,255,0.46);
+  --glow:rgba(155,135,195,0.03);
+}
+
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Crimson Pro',serif;transition:background 1.2s ease,color .6s ease}
+body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
+
+/* Full moon body glow effect */
+[data-phase="full-moon"] body,body[data-phase="full-moon"]{
+  box-shadow:inset 0 0 120px rgba(180,200,255,0.08);
+}
+
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;width:100%;max-width:520px;padding:0 1.25rem}
+
+/* MOON BANNER */
+.moon-banner{text-align:center;padding:.65rem 1rem;background:var(--glow);border-bottom:.5px solid var(--border);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;width:100%;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);transition:all 1.2s ease}
+.theme-toggle{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+.theme-toggle:hover{border-color:var(--border2);color:var(--gold)}
+
+/* AUDIO LABEL */
+.audio-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--muted);font-style:italic;margin-left:4px}
+
+/* HEADER */
+.site-header{text-align:center;padding:1.75rem 0 1.25rem;border-bottom:.5px solid var(--border);margin-bottom:1.25rem;transition:border-color 1.2s}
+.logo-wrap{display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.logo-name{font-family:'Cinzel',serif;font-size:28px;font-weight:400;letter-spacing:.32em;color:var(--gold);line-height:1;transition:color 1.2s}
+.logo-tag{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.22em;color:var(--muted);transition:color 1.2s}
+
+/* Full moon logo glow */
+[data-phase="full-moon"] .logo-name{text-shadow:0 0 30px rgba(255,232,128,0.4),0 0 60px rgba(255,232,128,0.2)}
+
+/* API SETUP */
+.setup-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:1.1rem;display:flex;flex-direction:column;gap:.65rem;transition:all 1.2s}
+.setup-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--muted)}
+.setup-row{display:flex;gap:8px}
+.api-input{flex:1;background:var(--input-bg);border:.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Crimson Pro',serif;font-size:14px;transition:all .3s}
+.api-input:focus{outline:none;border-color:var(--border2)}
+.api-input::placeholder{color:var(--muted);font-style:italic}
+.api-save{padding:9px 14px;background:var(--card);border:.5px solid var(--border2);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;cursor:pointer;transition:all .2s;white-space:nowrap}
+.api-save:hover{border-color:var(--gold)}
+.api-ok{font-family:'Crimson Pro',serif;font-size:13px;color:#7cb87c;font-style:italic;display:none}
+.api-hint{font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;line-height:1.55}
+.api-hint a{color:var(--gold2);text-decoration:none}
+
+/* CONTROLS */
+.ctrl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;gap:8px;flex-wrap:wrap}
+.sound-btn{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:5px 12px;color:var(--muted);font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.1em;cursor:pointer;transition:all .2s;white-space:nowrap}
+.sound-btn:hover,.sound-btn.on{border-color:var(--border2);color:var(--gold)}
+.sound-pick{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+.sound-pick:hover{border-color:var(--border2);color:var(--gold)}
+.sound-pick.on{background:rgba(210,175,80,0.12);border-color:var(--border2);color:var(--gold)}
+.pill{display:inline-flex;align-items:center;gap:5px;border:.5px solid var(--border);border-radius:20px;padding:5px 14px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--muted);transition:all .3s}
+.pill.low{border-color:rgba(200,80,80,0.4);color:rgba(200,80,80,0.8)}
+.pill.pro{border-color:var(--border2);color:var(--gold)}
+
+/* TIER */
+.tier-bar{display:flex;gap:6px;margin-bottom:.9rem}
+.tier-btn{flex:1;padding:10px;border-radius:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer;transition:all .2s;border:.5px solid var(--border);background:transparent;color:var(--muted)}
+.tier-btn.on{background:var(--card);border-color:var(--border2);color:var(--gold)}
+
+/* TABS */
+.tabs{display:flex;border:.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1rem;transition:border-color 1.2s}
+.tab{flex:1;padding:10px 2px;background:transparent;border:none;color:var(--muted);font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.08em;cursor:pointer;transition:all .2s}
+.tab.on{background:var(--card);color:var(--gold)}
+.tab:hover:not(.on){background:var(--bg3)}
+
+/* PANELS */
+.panel{display:none;flex-direction:column;gap:.85rem}
+.panel.on{display:flex}
+.lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--muted);margin-bottom:5px;display:block}
+
+/* ZODIAC GRID */
+.zodiac-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.zb{background:var(--card);border:.5px solid var(--border);border-radius:8px;padding:10px 5px 8px;cursor:pointer;text-align:center;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.zb:hover{background:var(--bg3);border-color:var(--border2)}
+.zb.on{background:rgba(200,175,255,0.1);border-color:var(--border2)}
+.zs{font-size:20px;line-height:1}
+.zn{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.04em;color:var(--muted)}
+.zb.on .zn{color:var(--gold)}
+
+/* PERIOD */
+.period-row{display:flex;gap:5px}
+.pb{flex:1;padding:9px 4px;background:var(--card);border:.5px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.06em;cursor:pointer;transition:all .18s}
+.pb:hover{background:var(--bg3)}
+.pb.on{background:rgba(200,175,255,0.1);border-color:var(--border2);color:var(--gold)}
+
+/* BIRTH CHART */
+.birth-card{background:rgba(210,175,80,0.05);border:.5px solid rgba(210,175,80,0.2);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.75rem}
+.pro-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(210,175,80,0.1);border:.5px solid rgba(210,175,80,0.3);border-radius:20px;padding:3px 10px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:var(--gold)}
+.birth-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.birth-input{width:100%;background:var(--input-bg);border:.5px solid rgba(210,175,80,0.2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Crimson Pro',serif;font-size:14px;transition:all .3s}
+.birth-input:focus{outline:none;border-color:rgba(210,175,80,0.5)}
+.birth-input::placeholder{color:var(--muted)}
+.chart-cards{display:none;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.chart-cards.on{display:grid}
+.cc{background:var(--card);border:.5px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center}
+.cc-icon{font-size:18px;margin-bottom:3px}
+.cc-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.1em;color:var(--muted);margin-bottom:3px}
+.cc-val{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:.06em}
+.cc-deg{font-family:'Crimson Pro',serif;font-size:11px;color:var(--gold2);margin-top:1px}
+
+/* TEXTAREA */
+.dream-ta{width:100%;background:var(--input-bg);border:.5px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--text);font-family:'Crimson Pro',serif;font-size:15px;line-height:1.65;resize:none;min-height:95px;transition:all .3s}
+.dream-ta::placeholder{color:var(--muted);font-style:italic}
+.dream-ta:focus{outline:none;border-color:var(--border2)}
+
+/* BUTTONS */
+.reveal-btn{width:100%;padding:13px;background:var(--card);border:.5px solid var(--border2);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;cursor:pointer;transition:all .2s}
+.reveal-btn:hover{background:var(--bg3);border-color:var(--gold)}
+.reveal-btn:disabled{opacity:.3;cursor:default}
+
+/* RESULT BOX */
+.result-box{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1.25rem;display:none;flex-direction:column;gap:10px}
+.result-box.on{display:flex;animation:fadeup .55s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.rhead{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:.5px solid var(--border)}
+.ricon{font-size:20px}
+.rtitle{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:var(--gold)}
+.rsub{font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;margin-top:2px}
+.rbody{font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--text);line-height:1.88;min-height:50px}
+.orn{text-align:center;color:var(--border2);font-size:11px;letter-spacing:.35em}
+.divider{width:40px;height:.5px;background:var(--border2);margin:0 auto}
+
+/* SHIMMER */
+.shimmer{display:flex;flex-direction:column;gap:7px}
+.sl{height:13px;background:var(--border);border-radius:3px;animation:sh 1.6s infinite}
+.sl:nth-child(2){width:82%;animation-delay:.25s}
+.sl:nth-child(3){width:91%;animation-delay:.5s}
+.sl:nth-child(4){width:68%;animation-delay:.75s}
+.load-phrase{font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic;text-align:center;margin-top:6px}
+@keyframes sh{0%,100%{opacity:.3}50%{opacity:.8}}
+
+/* JOURNAL */
+.journal-entry{background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:1rem;display:flex;flex-direction:column;gap:6px;transition:all .2s}
+.journal-entry:hover{border-color:var(--border2)}
+.je-header{display:flex;justify-content:space-between;align-items:center}
+.je-date{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--muted)}
+.je-dream{font-family:'Crimson Pro',serif;font-size:14px;color:var(--text2);line-height:1.6;font-style:italic}
+.je-interp{font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);line-height:1.55;border-top:.5px solid var(--border);padding-top:6px;margin-top:2px}
+.je-delete{background:transparent;border:none;color:rgba(200,80,80,0.4);font-size:12px;cursor:pointer;padding:2px 6px;border-radius:4px;transition:all .2s}
+.je-delete:hover{color:rgba(200,80,80,0.8)}
+.journal-empty{text-align:center;padding:2rem 1rem;font-family:'Crimson Pro',serif;font-size:14px;color:var(--muted);font-style:italic;line-height:1.7}
+.journal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stat-card{background:var(--card);border:.5px solid var(--border);border-radius:8px;padding:8px;text-align:center}
+.stat-num{font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:.05em}
+.stat-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.1em;color:var(--muted);margin-top:2px}
+.export-btn{width:100%;padding:10px;background:transparent;border:.5px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;cursor:pointer;transition:all .2s}
+.export-btn:hover{border-color:var(--border2);color:var(--gold)}
+
+/* PAYWALL */
+.paywall{position:fixed;inset:0;background:rgba(4,2,16,0.97);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;gap:.9rem;overflow-y:auto}
+.paywall.on{display:flex;animation:fadeup .4s ease}
+.pw-icon{font-size:44px}
+.pw-title{font-family:'Cinzel',serif;font-size:18px;letter-spacing:.22em;color:var(--gold)}
+.pw-sub{font-family:'Crimson Pro',serif;font-size:15px;color:var(--muted);font-style:italic;line-height:1.65;max-width:300px}
+.pw-price{font-family:'Cinzel',serif;font-size:30px;color:var(--gold);letter-spacing:.08em}
+.pw-price span{font-size:14px;color:var(--muted)}
+.pw-feats{display:flex;flex-direction:column;gap:7px;text-align:left;width:100%;max-width:280px}
+.pw-feat{font-family:'Crimson Pro',serif;font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px}
+.pw-feat::before{content:'◈';color:var(--gold);font-size:9px;flex-shrink:0}
+.pw-cta{width:100%;max-width:280px;padding:14px;background:rgba(210,175,80,0.1);border:.5px solid var(--border2);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;cursor:pointer;transition:all .2s}
+.pw-cta:hover{background:rgba(210,175,80,0.2)}
+.pw-dismiss{background:transparent;border:none;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;opacity:.5}
+.site-footer{text-align:center;margin-top:2rem;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;color:var(--muted)}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<div class="moon-banner" id="moon-banner">
+  <span id="moon-display">🌙 detecting moon phase...</span>
+  <button class="theme-toggle" onclick="cycleTheme()">cycle phases</button>
+</div>
+
+<div class="wrap">
+  <div class="site-header">
+    <div class="logo-wrap">
+      <svg width="72" height="72" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="lg1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f0d870" stop-opacity="0.18"/><stop offset="100%" stop-color="#f0d870" stop-opacity="0"/></radialGradient>
+          <radialGradient id="lgcore" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#f0d870"/><stop offset="60%" stop-color="#c8a040"/><stop offset="100%" stop-color="#8b5e15" stop-opacity="0"/></radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="url(#lg1)"/>
+        <path d="M50,50 Q65,35 68,22 Q72,9 62,11 Q52,13 48,24 Q44,35 50,50" fill="none" stroke="var(--gold)" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <path d="M50,50 Q35,65 22,68 Q9,72 11,62 Q13,52 24,48 Q35,44 50,50" fill="none" stroke="var(--gold)" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <path d="M50,50 Q66,52 76,60 Q86,68 80,76 Q74,84 66,76 Q58,68 50,50" fill="none" stroke="var(--gold2)" stroke-width="2" stroke-linecap="round" opacity="0.72"/>
+        <path d="M50,50 Q48,34 40,24 Q32,14 24,20 Q16,26 24,34 Q32,42 50,50" fill="none" stroke="var(--gold2)" stroke-width="2" stroke-linecap="round" opacity="0.72"/>
+        <path d="M50,50 Q58,68 66,74 Q74,80 78,72 Q82,64 74,60 Q66,56 50,50" fill="none" stroke="var(--gold3)" stroke-width="1.3" stroke-linecap="round" opacity="0.5"/>
+        <path d="M50,50 Q32,48 22,40 Q12,32 16,24 Q20,16 28,20 Q36,24 50,50" fill="none" stroke="var(--gold3)" stroke-width="1.3" stroke-linecap="round" opacity="0.5"/>
+        <circle cx="68" cy="11" r="2.2" fill="var(--gold)" opacity="0.95"/>
+        <circle cx="11" cy="62" r="2.2" fill="var(--gold)" opacity="0.95"/>
+        <circle cx="80" cy="76" r="1.6" fill="var(--gold2)" opacity="0.75"/>
+        <circle cx="16" cy="24" r="1.6" fill="var(--gold2)" opacity="0.75"/>
+        <circle cx="50" cy="50" r="7" fill="url(#lgcore)"/>
+        <circle cx="50" cy="50" r="3.5" fill="#fff8e0"/>
+      </svg>
+      <div><div class="logo-name">KAIROSCOPE</div><div class="logo-tag">see your moment</div></div>
+    </div>
+  </div>
+
+  <!-- API KEY -->
+  <div class="setup-card" id="setup-card">
+    <div class="setup-title">ANTHROPIC API KEY</div>
+    <div class="setup-row">
+      <input type="password" class="api-input" id="api-input" placeholder="sk-ant-..." autocomplete="off">
+      <button class="api-save" onclick="saveKey()">SAVE</button>
+    </div>
+    <div class="api-ok" id="api-ok">✓ Connected — the cosmos awaits</div>
+    <div class="api-hint">Get your free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys → Create Key. Add $5 credit to start.</div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="ctrl-row">
+    <button class="sound-btn" id="sound-btn" onclick="toggleSound()">♫ ambient off</button>
+    <div class="pill" id="main-pill">◈ <span id="free-count">3</span> free readings remaining</div>
+  </div>
+  <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;text-align:center;margin-bottom:.75rem;display:none" id="audio-label"></div>
+
+  <!-- TIER -->
+  <div class="tier-bar">
+    <button class="tier-btn on" id="free-btn" onclick="setTier('free')">◈ FREE</button>
+    <button class="tier-btn" id="pro-btn" onclick="setTier('pro')">✦ PRO — $4.99/mo</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('h',this)">◈ Horoscope</button>
+    <button class="tab" onclick="switchTab('d',this)">◇ Dream</button>
+    <button class="tab" onclick="switchTab('c',this)">⊕ Combined</button>
+    <button class="tab" onclick="switchTab('j',this)">📖 Journal</button>
+  </div>
+
+  <!-- HOROSCOPE -->
+  <div class="panel on" id="panel-h">
+    <div><span class="lbl">YOUR SIGN</span>
+      <div class="zodiac-grid" id="zg-h">
+        <button class="zb" data-s="Aries" onclick="selSign(this,'zg-h','sh')"><span class="zs">♈</span><span class="zn">Aries</span></button>
+        <button class="zb" data-s="Taurus" onclick="selSign(this,'zg-h','sh')"><span class="zs">♉</span><span class="zn">Taurus</span></button>
+        <button class="zb" data-s="Gemini" onclick="selSign(this,'zg-h','sh')"><span class="zs">♊</span><span class="zn">Gemini</span></button>
+        <button class="zb" data-s="Cancer" onclick="selSign(this,'zg-h','sh')"><span class="zs">♋</span><span class="zn">Cancer</span></button>
+        <button class="zb" data-s="Leo" onclick="selSign(this,'zg-h','sh')"><span class="zs">♌</span><span class="zn">Leo</span></button>
+        <button class="zb" data-s="Virgo" onclick="selSign(this,'zg-h','sh')"><span class="zs">♍</span><span class="zn">Virgo</span></button>
+        <button class="zb" data-s="Libra" onclick="selSign(this,'zg-h','sh')"><span class="zs">♎</span><span class="zn">Libra</span></button>
+        <button class="zb" data-s="Scorpio" onclick="selSign(this,'zg-h','sh')"><span class="zs">♏</span><span class="zn">Scorpio</span></button>
+        <button class="zb" data-s="Sagittarius" onclick="selSign(this,'zg-h','sh')"><span class="zs">♐</span><span class="zn">Sagittarius</span></button>
+        <button class="zb" data-s="Capricorn" onclick="selSign(this,'zg-h','sh')"><span class="zs">♑</span><span class="zn">Capricorn</span></button>
+        <button class="zb" data-s="Aquarius" onclick="selSign(this,'zg-h','sh')"><span class="zs">♒</span><span class="zn">Aquarius</span></button>
+        <button class="zb" data-s="Pisces" onclick="selSign(this,'zg-h','sh')"><span class="zs">♓</span><span class="zn">Pisces</span></button>
+      </div>
+    </div>
+    <div id="birth-h" style="display:none">
+      <div class="birth-card">
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl" style="margin:0">FULL BIRTH CHART</span><span class="pro-badge">✦ PRO</span></div>
+        <div class="birth-row">
+          <div><span class="lbl">DATE OF BIRTH</span><input type="date" class="birth-input" id="bdate" onchange="calcChart()"></div>
+          <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="calcChart()"></div>
+        </div>
+        <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
+        <div class="chart-cards" id="chart-cards">
+          <div class="cc"><div class="cc-icon">☀️</div><div class="cc-lbl">SUN</div><div class="cc-val" id="cv-sun">—</div><div class="cc-deg" id="cd-sun"></div></div>
+          <div class="cc"><div class="cc-icon">🌙</div><div class="cc-lbl">MOON</div><div class="cc-val" id="cv-moon">—</div><div class="cc-deg" id="cd-moon"></div></div>
+          <div class="cc"><div class="cc-icon">⬆️</div><div class="cc-lbl">RISING</div><div class="cc-val" id="cv-rise">—</div><div class="cc-deg" id="cd-rise"></div></div>
+        </div>
+      </div>
+    </div>
+    <div><span class="lbl">PERIOD</span>
+      <div class="period-row">
+        <button class="pb on" data-p="today" onclick="selPeriod(this)">Today</button>
+        <button class="pb" data-p="this week" onclick="selPeriod(this)">This Week</button>
+        <button class="pb" data-p="this month" onclick="selPeriod(this)">This Month</button>
+      </div>
+    </div>
+    <button class="reveal-btn" id="btn-h" disabled onclick="doReading('h')">◈ REVEAL MY MOMENT ◈</button>
+    <div class="result-box" id="res-h"></div>
+  </div>
+
+  <!-- DREAM -->
+  <div class="panel" id="panel-d">
+    <div id="birth-d" style="display:none">
+      <div class="birth-card" style="padding:.7rem 1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">Birth chart active — reading references your natal placements</span>
+          <span class="pro-badge">✦ PRO</span>
+        </div>
+      </div>
+    </div>
+    <div><span class="lbl">DESCRIBE YOUR DREAM</span>
+      <textarea class="dream-ta" id="dream-input" placeholder="I stood at the edge of an obsidian sea, when a figure made of starlight spoke my name..." rows="6" oninput="document.getElementById('btn-d').disabled=this.value.trim().length<8"></textarea>
+    </div>
+    <button class="reveal-btn" id="btn-d" disabled onclick="doReading('d')">◈ INTERPRET THIS DREAM ◈</button>
+    <div class="result-box" id="res-d"></div>
+    <div id="save-dream-wrap" style="display:none">
+      <button class="reveal-btn" style="margin-top:-4px;opacity:.7;font-size:9px;letter-spacing:.12em" onclick="saveDreamToJournal()">+ SAVE TO DREAM JOURNAL</button>
+    </div>
+  </div>
+
+  <!-- COMBINED -->
+  <div class="panel" id="panel-c">
+    <div><span class="lbl">YOUR SIGN</span>
+      <div class="zodiac-grid" id="zg-c">
+        <button class="zb" data-s="Aries" onclick="selSign(this,'zg-c','sc')"><span class="zs">♈</span><span class="zn">Aries</span></button>
+        <button class="zb" data-s="Taurus" onclick="selSign(this,'zg-c','sc')"><span class="zs">♉</span><span class="zn">Taurus</span></button>
+        <button class="zb" data-s="Gemini" onclick="selSign(this,'zg-c','sc')"><span class="zs">♊</span><span class="zn">Gemini</span></button>
+        <button class="zb" data-s="Cancer" onclick="selSign(this,'zg-c','sc')"><span class="zs">♋</span><span class="zn">Cancer</span></button>
+        <button class="zb" data-s="Leo" onclick="selSign(this,'zg-c','sc')"><span class="zs">♌</span><span class="zn">Leo</span></button>
+        <button class="zb" data-s="Virgo" onclick="selSign(this,'zg-c','sc')"><span class="zs">♍</span><span class="zn">Virgo</span></button>
+        <button class="zb" data-s="Libra" onclick="selSign(this,'zg-c','sc')"><span class="zs">♎</span><span class="zn">Libra</span></button>
+        <button class="zb" data-s="Scorpio" onclick="selSign(this,'zg-c','sc')"><span class="zs">♏</span><span class="zn">Scorpio</span></button>
+        <button class="zb" data-s="Sagittarius" onclick="selSign(this,'zg-c','sc')"><span class="zs">♐</span><span class="zn">Sagittarius</span></button>
+        <button class="zb" data-s="Capricorn" onclick="selSign(this,'zg-c','sc')"><span class="zs">♑</span><span class="zn">Capricorn</span></button>
+        <button class="zb" data-s="Aquarius" onclick="selSign(this,'zg-c','sc')"><span class="zs">♒</span><span class="zn">Aquarius</span></button>
+        <button class="zb" data-s="Pisces" onclick="selSign(this,'zg-c','sc')"><span class="zs">♓</span><span class="zn">Pisces</span></button>
+      </div>
+    </div>
+    <div><span class="lbl">LAST NIGHT'S DREAM (optional)</span>
+      <textarea class="dream-ta" id="combined-dream" placeholder="Describe what you dreamed, or leave empty for a pure star reading..." rows="4"></textarea>
+    </div>
+    <button class="reveal-btn" id="btn-c" disabled onclick="doReading('c')">◈ SEE MY MOMENT ◈</button>
+    <div class="result-box" id="res-c"></div>
+  </div>
+
+  <!-- JOURNAL -->
+  <div class="panel" id="panel-j">
+    <div id="journal-pro-lock" style="display:none">
+      <div class="birth-card" style="padding:.8rem 1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span class="lbl" style="margin:0">DREAM JOURNAL</span><span class="pro-badge">✦ PRO — UNLIMITED</span>
+        </div>
+        <div style="font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">Unlimited entries, pattern analysis & export</div>
+      </div>
+    </div>
+    <div class="journal-stats" id="journal-stats" style="display:none">
+      <div class="stat-card"><div class="stat-num" id="stat-entries">0</div><div class="stat-lbl">DREAMS</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">DAY STREAK</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-moon">—</div><div class="stat-lbl">MOON NOW</div></div>
+    </div>
+    <div><span class="lbl">LOG A DREAM</span>
+      <textarea class="dream-ta" id="journal-input" placeholder="Record what you dreamed last night..." rows="4" oninput="checkJournalLimit()"></textarea>
+    </div>
+    <div id="journal-limit-warn" style="display:none;font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,80,80,0.8);font-style:italic">Free tier — 5 entries maximum. Upgrade to Pro for unlimited journaling.</div>
+    <button class="reveal-btn" id="btn-j" onclick="addJournalEntry()">+ LOG THIS DREAM</button>
+    <div id="pattern-section" style="display:none">
+      <button class="reveal-btn" style="font-size:9px;letter-spacing:.12em;opacity:.8" onclick="analysePatterns()">✦ ANALYSE MY DREAM PATTERNS</button>
+      <div class="result-box" id="res-patterns"></div>
+    </div>
+    <div id="journal-list"></div>
+    <button class="export-btn" id="export-btn" style="display:none" onclick="exportJournal()">↓ EXPORT JOURNAL AS .TXT</button>
+    <div class="journal-empty" id="journal-empty">Your dream journal is empty.<br><br>Log your first dream above.<br><span style="opacity:.6">Stored only on your device. Private always.</span></div>
+  </div>
+
+  <div class="site-footer">KAIROSCOPE · SEE YOUR MOMENT · PRIVACY FIRST</div>
+</div>
+
+<!-- PAYWALL -->
+<div class="paywall" id="paywall">
+  <div class="pw-icon">✦</div>
+  <div class="pw-title">YOUR MOMENT AWAITS</div>
+  <div class="pw-sub">Unlock unlimited readings, your full birth chart, and dream journal.</div>
+  <div class="pw-price">$4.99<span> / month</span></div>
+  <div class="pw-feats">
+    <div class="pw-feat">Unlimited horoscope readings</div>
+    <div class="pw-feat">Exact birth chart — sun, moon & rising</div>
+    <div class="pw-feat">Personalised natal chart readings</div>
+    <div class="pw-feat">Dream interpretation — unlimited</div>
+    <div class="pw-feat">Dream journal — unlimited entries</div>
+    <div class="pw-feat">Pattern analysis across your dreams</div>
+    <div class="pw-feat">Combined stars & dreams sessions</div>
+    <div class="pw-feat">Export your dream journal</div>
+  </div>
+  <button class="pw-cta" onclick="activatePro()">✦ UNLOCK PRO ✦</button>
+  <button class="pw-dismiss" onclick="document.getElementById('paywall').classList.remove('on')">maybe later</button>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+// ENV_AUDIO must be declared before any function that references it
+const ENV_AUDIO={ctx:null,master:null,nodes:[],currentEnv:null};
+
+const APP={
+  apiKey:localStorage.getItem('k_api')||'',
+  isPro:localStorage.getItem('k_pro')==='true',
+  free:parseInt(localStorage.getItem('k_free')??'3'),
+  sh:'',sc:'',period:'today',
+  sndOn:false,
+  chart:{sun:'',moon:'',rising:'',sunDeg:0,moonDeg:0,riseDeg:0,city:''},
+  lastDreamText:'',lastDreamInterp:'',
+  currentPhase:''
+};
+
+const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const ZI={Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓'};
+const TODAY=new Date().toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// ============================================================
+// MOON PHASE
+// ============================================================
+function julianDay(y,m,d,h){
+  if(m<=2){y--;m+=12;}
+  const A=Math.floor(y/100),B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+h/24+B-1524.5;
+}
+function getMoonPhase(date){
+  const jd=julianDay(date.getFullYear(),date.getMonth()+1,date.getDate(),12);
+  const p=((jd-2451549.5)/29.53058867%1+1)%1;
+  const phases=[
+    {key:'new-moon',emoji:'🌑',name:'New Moon'},
+    {key:'waxing-crescent',emoji:'🌒',name:'Waxing Crescent'},
+    {key:'first-quarter',emoji:'🌓',name:'First Quarter'},
+    {key:'waxing-gibbous',emoji:'🌔',name:'Waxing Gibbous'},
+    {key:'full-moon',emoji:'🌕',name:'Full Moon'},
+    {key:'waning-gibbous',emoji:'🌖',name:'Waning Gibbous'},
+    {key:'last-quarter',emoji:'🌗',name:'Last Quarter'},
+    {key:'waning-crescent',emoji:'🌘',name:'Waning Crescent'}
+  ];
+  return phases[Math.round(p*8)%8];
+}
+
+const moonData=getMoonPhase(new Date());
+APP.currentPhase=localStorage.getItem('k_phase')||moonData.key;
+
+const PHASE_CYCLE=['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'];
+let phaseIdx=PHASE_CYCLE.indexOf(APP.currentPhase);
+
+function applyTheme(key){
+  document.body.setAttribute('data-phase',key);
+  const p=PHASE_CYCLE.find((k,i)=>k===key);
+  const emoji=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][PHASE_CYCLE.indexOf(key)];
+  const name=key.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const isOverride=key!==moonData.key;
+  document.getElementById('moon-display').textContent=`${emoji} ${name}${isOverride?' (preview)':''}`;
+  document.getElementById('stat-moon').textContent=emoji;
+  if(ENV_AUDIO.ctx&&APP.sndOn)updateEnvironment(key);
+}
+
+function cycleTheme(){
+  phaseIdx=(phaseIdx+1)%PHASE_CYCLE.length;
+  APP.currentPhase=PHASE_CYCLE[phaseIdx];
+  localStorage.setItem('k_phase',APP.currentPhase);
+  applyTheme(APP.currentPhase);
+}
+
+applyTheme(APP.currentPhase);
+
+// ============================================================
+// CITIES
+// ============================================================
+const CITIES={
+  'toronto':[43.6532,-79.3832],'montreal':[45.5017,-73.5673],'vancouver':[49.2827,-123.1207],
+  'calgary':[51.0447,-114.0719],'ottawa':[45.4215,-75.6972],'new york':[40.7128,-74.0060],
+  'los angeles':[34.0522,-118.2437],'chicago':[41.8781,-87.6298],'houston':[29.7604,-95.3698],
+  'miami':[25.7617,-80.1918],'san francisco':[37.7749,-122.4194],'seattle':[47.6062,-122.3321],
+  'boston':[42.3601,-71.0589],'dallas':[32.7767,-96.7970],'london':[51.5074,-0.1278],
+  'paris':[48.8566,2.3522],'berlin':[52.5200,13.4050],'madrid':[40.4168,-3.7038],
+  'rome':[41.9028,12.4964],'amsterdam':[52.3676,4.9041],'sydney':[-33.8688,151.2093],
+  'melbourne':[-37.8136,144.9631],'tokyo':[35.6762,139.6503],'beijing':[39.9042,116.4074],
+  'dubai':[25.2048,55.2708],'mumbai':[19.0760,72.8777],'delhi':[28.7041,77.1025],
+  'singapore':[1.3521,103.8198],'hong kong':[22.3193,114.1694],'moscow':[55.7558,37.6173],
+  'istanbul':[41.0082,28.9784],'seoul':[37.5665,126.9780],'bangkok':[13.7563,100.5018],
+  'cairo':[30.0444,31.2357],'cape town':[-33.9249,18.4241],'nairobi':[-1.2921,36.8219],
+  'mexico city':[19.4326,-99.1332],'sao paulo':[-23.5505,-46.6333],'buenos aires':[-34.6037,-58.3816],
+  'lisbon':[38.7169,-9.1399],'athens':[37.9838,23.7275],'warsaw':[52.2297,21.0122],
+  'vienna':[48.2082,16.3738],'zurich':[47.3769,8.5417],'stockholm':[59.3293,18.0686],
+  'oslo':[59.9139,10.7522],'dublin':[53.3498,-6.2603],'brussels':[50.8503,4.3517]
+};
+
+function cityLookup(val){
+  const key=val.toLowerCase().trim(),dl=document.getElementById('city-list');
+  dl.innerHTML='';
+  Object.keys(CITIES).filter(c=>c.startsWith(key)).slice(0,8).forEach(c=>{
+    const o=document.createElement('option');o.value=c.charAt(0).toUpperCase()+c.slice(1);dl.appendChild(o);
+  });
+  calcChart();
+}
+
+// ============================================================
+// ASTRONOMICAL CALCULATIONS
+// ============================================================
+function toRad(d){return d*Math.PI/180}
+function toDeg(r){return r*180/Math.PI}
+function norm360(d){return((d%360)+360)%360}
+
+function sunLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L0=norm360(280.46646+36000.76983*T);
+  const M=norm360(357.52911+35999.05029*T);
+  const Mr=toRad(M);
+  const C=(1.914602-0.004817*T)*Math.sin(Mr)+(0.019993-0.000101*T)*Math.sin(2*Mr)+0.000289*Math.sin(3*Mr);
+  return norm360(L0+C);
+}
+
+function moonLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const Lp=norm360(218.3165+481267.8813*T);
+  const Mp=norm360(134.9634+477198.8676*T);
+  const D=norm360(297.8502+445267.1115*T);
+  const M=norm360(357.5291+35999.0503*T);
+  const F=norm360(93.2720+483202.0175*T);
+  return norm360(Lp+6.2886*Math.sin(toRad(Mp))+1.2740*Math.sin(toRad(2*D-Mp))+0.6583*Math.sin(toRad(2*D))+0.2136*Math.sin(toRad(2*Mp))-0.1851*Math.sin(toRad(M))-0.1143*Math.sin(toRad(2*F)));
+}
+
+function ascendant(jd,lat,lng){
+  const T=(jd-2451545)/36525;
+  const theta=norm360(280.46061837+360.98564736629*(jd-2451545)+0.000387933*T*T)+lng;
+  const eps=23.439291-0.013004*T;
+  const lstR=toRad(norm360(theta)),epsR=toRad(eps),latR=toRad(lat);
+  let asc=toDeg(Math.atan2(-Math.cos(lstR),Math.sin(epsR)*Math.tan(latR)+Math.cos(epsR)*Math.sin(lstR)));
+  if(asc<0)asc+=360;return asc;
+}
+
+function lonToSign(l){return SIGNS[Math.floor(l/30)]}
+function lonToDegMin(l){const d=Math.floor(l%30),m=Math.floor((l%30-d)*60);return`${d}°${m}'`}
+
+function calcChart(){
+  const dob=document.getElementById('bdate').value;
+  const tob=document.getElementById('btime').value||'12:00';
+  const city=document.getElementById('bcity').value.toLowerCase().trim();
+  if(!dob)return;
+  const p=dob.split('-'),t=tob.split(':');
+  const jd=julianDay(+p[0],+p[1],+p[2],+t[0]+(+t[1]||0)/60);
+  const sl=sunLongitude(jd);APP.chart.sunDeg=sl;APP.chart.sun=lonToSign(sl);
+  document.getElementById('cv-sun').textContent=APP.chart.sun;
+  document.getElementById('cd-sun').textContent=lonToDegMin(sl);
+  const ml=moonLongitude(jd);APP.chart.moonDeg=ml;APP.chart.moon=lonToSign(ml);
+  document.getElementById('cv-moon').textContent=APP.chart.moon;
+  document.getElementById('cd-moon').textContent=lonToDegMin(ml);
+  const coords=CITIES[city];
+  if(coords&&tob){
+    const asc=ascendant(jd,coords[0],coords[1]);
+    APP.chart.riseDeg=asc;APP.chart.rising=lonToSign(asc);APP.chart.city=city;
+    document.getElementById('cv-rise').textContent=APP.chart.rising;
+    document.getElementById('cd-rise').textContent=lonToDegMin(asc);
+  }else{
+    document.getElementById('cv-rise').textContent=tob?'Enter city':'Need time';
+    document.getElementById('cd-rise').textContent='';
+  }
+  document.getElementById('chart-cards').classList.add('on');
+}
+
+// ============================================================
+// API KEY
+// ============================================================
+function saveKey(){
+  const v=document.getElementById('api-input').value.trim();
+  if(!v.startsWith('sk-')){alert('Key should start with sk-ant-...');return;}
+  APP.apiKey=v;localStorage.setItem('k_api',v);
+  document.getElementById('api-ok').style.display='block';
+  document.getElementById('setup-card').style.borderColor='rgba(100,200,150,0.3)';
+  document.getElementById('setup-card').style.background='rgba(100,200,150,0.04)';
+}
+if(APP.apiKey){
+  document.getElementById('api-input').value=APP.apiKey;
+  document.getElementById('api-ok').style.display='block';
+  document.getElementById('setup-card').style.borderColor='rgba(100,200,150,0.3)';
+  document.getElementById('setup-card').style.background='rgba(100,200,150,0.04)';
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function setTier(t){
+  APP.isPro=t==='pro';localStorage.setItem('k_pro',APP.isPro);
+  document.getElementById('free-btn').classList.toggle('on',!APP.isPro);
+  document.getElementById('pro-btn').classList.toggle('on',APP.isPro);
+  const pill=document.getElementById('main-pill');
+  if(APP.isPro){
+    pill.className='pill pro';pill.innerHTML='✦ PRO — unlimited readings';
+    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>document.getElementById(id).style.display='block');
+    ['journal-stats','pattern-section','export-btn'].forEach(id=>document.getElementById(id).style.display=id==='journal-stats'?'grid':'block');
+  }else{
+    pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;
+    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>document.getElementById(id).style.display='none');
+    ['journal-stats','pattern-section','export-btn'].forEach(id=>document.getElementById(id).style.display='none');
+  }
+  renderJournal();
+}
+function activatePro(){document.getElementById('paywall').classList.remove('on');alert('Stripe checkout — $4.99/month. Connect Stripe in the full deployment!');setTier('pro');}
+if(APP.isPro)setTier('pro');
+
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');document.getElementById('panel-'+id).classList.add('on');
+  if(id==='j')renderJournal();
+}
+function selSign(el,grid,key){
+  document.querySelectorAll('#'+grid+' .zb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');APP[key]=el.dataset.s;
+  document.getElementById(key==='sh'?'btn-h':'btn-c').disabled=false;
+}
+function selPeriod(el){
+  document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');APP.period=el.dataset.p;
+}
+function updateFree(){
+  localStorage.setItem('k_free',APP.free);
+  if(!APP.isPro){
+    document.getElementById('main-pill').innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;
+    if(APP.free<=1)document.getElementById('main-pill').classList.add('low');
+  }
+}
+
+const PHRASES=['consulting the cosmos...','the veil is thinning...','your moment is forming...','reading the kairos...','the stars are aligning...','channelling the night sky...'];
+
+function showLoading(box){
+  box.classList.add('on');
+  box.innerHTML=`<div class="shimmer"><div class="sl"></div><div class="sl"></div><div class="sl"></div><div class="sl"></div></div><div class="load-phrase">${PHRASES[Math.floor(Math.random()*PHRASES.length)]}</div>`;
+}
+function revealWords(el,text){
+  const words=text.split(' ');let i=0;el.textContent='';
+  const iv=setInterval(()=>{if(i>=words.length){clearInterval(iv);return;}el.textContent+=(i>0?' ':'')+words[i++];},38);
+}
+function showResult(box,icon,title,sub,text){
+  box.classList.add('on');
+  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div><div class="rbody"></div><div class="divider"></div>`;
+  chimeSound();revealWords(box.querySelector('.rbody'),text);
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function buildChartCtx(){
+  if(!APP.isPro||!APP.chart.sun)return'';
+  const c=APP.chart;
+  return`\n\nPRO NATAL CHART:\n- Sun: ${c.sun} at ${lonToDegMin(c.sunDeg)}\n- Moon: ${c.moon} at ${lonToDegMin(c.moonDeg)}\n- Rising: ${c.rising||'unknown'}${c.rising?' at '+lonToDegMin(c.riseDeg):''}\n- Birth city: ${c.city||'not provided'}\nWeave these natal placements naturally. Show how current transits aspect their natal chart.`;
+}
+
+const SYSTEMS={
+  h:`You are Kairoscope — a profound, poetic cosmic guide. Write horoscopes that feel deeply personal and intelligent, never generic. Each reading should feel like the exact right message for this exact moment — the kairos. Reference specific planetary energies, weave love, purpose, and inner wisdom naturally. 3-4 paragraphs. Intelligent, mysterious, gender-neutral. No bullet points. No clichés. When natal chart data is provided make the reading unmistakably specific to that person.`,
+  d:`You are Kairoscope — a depth psychologist of dreams. Interpret dreams weaving Jungian symbolism, mythological resonance, and intuitive wisdom. Explore symbols with layered meaning, the emotional undercurrent, what threshold the dreamer stands at. End with one quiet question for reflection. 3-4 paragraphs. Poetic, intelligent, gender-neutral.`,
+  c:`You are Kairoscope — weave stars and dreams into one unified vision of someone's perfect moment. Find the resonance between the cosmos and the unconscious — show how they deliver the same message from different directions. End with one sentence of guidance — the kairos distilled. 4-5 paragraphs. Deeply personal, poetic, gender-neutral.`,
+  patterns:`You are Kairoscope — a dream pattern analyst. The user has provided their dream journal. Find recurring symbols, themes, emotional undercurrents, and patterns across their dreams. Show how these connect to their astrological nature if available. Offer profound insight into what their subconscious is processing over time. End with one guiding insight. 3-4 paragraphs. Deeply personal, poetic.`
+};
+
+async function callAI(prompt,system){
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':APP.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:[{role:'user',content:prompt}]})
+  });
+  const data=await res.json();
+  if(data.error)throw new Error(data.error.message);
+  return data.content?.find(b=>b.type==='text')?.text||'The moment is silent. Please try again.';
+}
+
+async function doReading(type){
+  if(!APP.apiKey){alert('Please enter your Anthropic API key first.');document.getElementById('api-input').focus();return;}
+  if(!APP.isPro&&APP.free<=0){document.getElementById('paywall').classList.add('on');return;}
+  if(!APP.isPro){APP.free--;updateFree();}
+  const btn=document.getElementById('btn-'+type),box=document.getElementById('res-'+type);
+  btn.disabled=true;showLoading(box);
+  const chartCtx=buildChartCtx();const c=APP.chart;
+  const PROMPTS={
+    h:`Sign: ${APP.sh}. Period: ${APP.period}. Today: ${TODAY}. Moon: ${moonData.emoji} ${moonData.name}.${chartCtx}`,
+    d:`Dream: "${document.getElementById('dream-input').value.trim()}"${chartCtx}`,
+    c:`Sign: ${APP.sc}. Today: ${TODAY}. Moon: ${moonData.emoji} ${moonData.name}. Dream: "${document.getElementById('combined-dream').value.trim()||'none given'}".${chartCtx}`
+  };
+  const HEADS={
+    h:[ZI[APP.sh]||'◈',`${APP.sh}${APP.isPro&&c.moon?' · '+c.moon+' Moon':''} — ${APP.period.toUpperCase()}`,TODAY],
+    d:['◇','DREAM INTERPRETATION',`${moonData.emoji} ${moonData.name}`],
+    c:[(ZI[APP.sc]||'◈')+' ◈',`${APP.sc} — STARS & DREAMS`,TODAY]
+  };
+  try{
+    const text=await callAI(PROMPTS[type],SYSTEMS[type]);
+    const[icon,title,sub]=HEADS[type];
+    showResult(box,icon,title,sub,text);
+    if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=text;document.getElementById('save-dream-wrap').style.display='block';}
+  }catch(e){
+    box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
+  }
+  btn.disabled=false;
+  if(!APP.isPro&&APP.free===0)setTimeout(()=>document.getElementById('paywall').classList.add('on'),3000);
+}
+
+// ============================================================
+// DREAM JOURNAL
+// ============================================================
+function getJournal(){try{return JSON.parse(localStorage.getItem('k_journal')||'[]');}catch{return[];}}
+function saveJournal(e){localStorage.setItem('k_journal',JSON.stringify(e));}
+
+function checkJournalLimit(){
+  if(APP.isPro)return;
+  const e=getJournal();
+  document.getElementById('journal-limit-warn').style.display=e.length>=5?'block':'none';
+  document.getElementById('btn-j').disabled=e.length>=5;
+}
+
+function addJournalEntry(){
+  const text=document.getElementById('journal-input').value.trim();
+  if(!text)return;
+  if(!APP.isPro&&getJournal().length>=5){document.getElementById('paywall').classList.add('on');return;}
+  const entries=getJournal();
+  entries.unshift({id:Date.now(),date:new Date().toLocaleDateString('en-CA',{weekday:'short',year:'numeric',month:'short',day:'numeric'}),moon:moonData.emoji+' '+moonData.name,dream:text,interpretation:''});
+  saveJournal(entries);
+  document.getElementById('journal-input').value='';
+  renderJournal();checkJournalLimit();
+}
+
+function saveDreamToJournal(){
+  if(!APP.lastDreamText)return;
+  if(!APP.isPro&&getJournal().length>=5){document.getElementById('paywall').classList.add('on');return;}
+  const entries=getJournal();
+  entries.unshift({id:Date.now(),date:new Date().toLocaleDateString('en-CA',{weekday:'short',year:'numeric',month:'short',day:'numeric'}),moon:moonData.emoji+' '+moonData.name,dream:APP.lastDreamText,interpretation:APP.lastDreamInterp});
+  saveJournal(entries);
+  document.getElementById('save-dream-wrap').style.display='none';
+  alert('Dream saved to your journal ✦');
+}
+
+function deleteEntry(id){const e=getJournal().filter(e=>e.id!==id);saveJournal(e);renderJournal();checkJournalLimit();}
+
+function renderJournal(){
+  const entries=getJournal();
+  document.getElementById('stat-entries').textContent=entries.length;
+  const list=document.getElementById('journal-list'),empty=document.getElementById('journal-empty');
+  if(!entries.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=entries.map(e=>`<div class="journal-entry"><div class="je-header"><span class="je-date">${e.date} · ${e.moon}</span><button class="je-delete" onclick="deleteEntry(${e.id})">✕</button></div><div class="je-dream">"${e.dream.length>200?e.dream.slice(0,200)+'...':e.dream}"</div>${e.interpretation?`<div class="je-interp">${e.interpretation.slice(0,300)}${e.interpretation.length>300?'...':''}</div>`:''}</div>`).join('');
+}
+
+async function analysePatterns(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
+  if(!APP.apiKey){alert('Please enter your API key first.');return;}
+  const entries=getJournal();
+  if(entries.length<3){alert('Log at least 3 dreams before running pattern analysis.');return;}
+  const box=document.getElementById('res-patterns');showLoading(box);
+  const dreamList=entries.slice(0,20).map((e,i)=>`Dream ${i+1} (${e.date}, ${e.moon}): ${e.dream}`).join('\n');
+  try{
+    const text=await callAI(`Analyse these dream journal entries:\n\n${dreamList}${buildChartCtx()}`,SYSTEMS.patterns);
+    showResult(box,'◈','DREAM PATTERN ANALYSIS',`${entries.length} dreams analysed`,text);
+  }catch(e){box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">Analysis failed. Check your API key.</div>`;}
+}
+
+function exportJournal(){
+  const entries=getJournal();if(!entries.length)return;
+  let content=`KAIROSCOPE — Dream Journal\nExported: ${new Date().toLocaleDateString()}\nEntries: ${entries.length}\n\n${'═'.repeat(50)}\n\n`;
+  entries.forEach((e,i)=>{content+=`DREAM ${i+1}\nDate: ${e.date}\nMoon: ${e.moon}\n\n${e.dream}\n`;if(e.interpretation)content+=`\nInterpretation:\n${e.interpretation}\n`;content+=`\n${'─'.repeat(40)}\n\n`;});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=`kairoscope-journal-${new Date().toLocaleDateString('en-CA')}.txt`;a.click();
+}
+
+renderJournal();checkJournalLimit();
+
+// ============================================================
+// STARFIELD
+// ============================================================
+(function(){
+  const canvas=document.getElementById('starfield'),ctx=canvas.getContext('2d');
+  let stars=[],W,H;
+  function resize(){
+    W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;
+    stars=Array.from({length:180},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+0.2,a:Math.random()*.5,da:(Math.random()-.5)*.007,maxA:Math.random()*.7+.1}));
+  }
+  function getStarColor(){
+    const phase=APP.currentPhase;
+    if(phase==='full-moon')return[210,225,255];
+    if(phase==='new-moon')return[140,120,180];
+    if(phase.includes('waxing'))return[185,175,230];
+    return[196,184,232];
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const[r,g,b]=getStarColor();
+    stars.forEach(s=>{
+      s.a+=s.da;if(s.a<=0||s.a>=s.maxA)s.da*=-1;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${r},${g},${b},${Math.max(0,s.a)})`;ctx.fill();
+    });
+    if(APP.currentPhase==='full-moon'){
+      ctx.beginPath();ctx.arc(W*.75,H*.12,60,0,Math.PI*2);
+      const grd=ctx.createRadialGradient(W*.75,H*.12,0,W*.75,H*.12,60);
+      grd.addColorStop(0,'rgba(220,230,255,0.08)');grd.addColorStop(1,'rgba(220,230,255,0)');
+      ctx.fillStyle=grd;ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  function shoot(){
+    const x=Math.random()*W*.75,y=Math.random()*H*.4,len=80+Math.random()*60;
+    let t=0;const[r,g,b]=getStarColor();
+    const go=()=>{if(t>1)return;t+=.04;ctx.strokeStyle=`rgba(${r},${g},${b},${(1-t)*.5})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+len*t,y+len*.38*t);ctx.stroke();requestAnimationFrame(go);};go();
+  }
+  window.addEventListener('resize',resize);resize();draw();
+  setInterval(()=>{if(Math.random()>.45)shoot();},3500);
+})();
+
+// ============================================================
+// ============================================================
+// ENVIRONMENTAL AUDIO ENGINE v2
+// Four clean time-based soundscapes + moon phase specials
+// Morning: birds | Afternoon: cicadas | Evening: ocean | Night: crickets
+// ============================================================
+
+let manualScene = 'auto'; // 'auto' = time-based, else specific scene
+
+function getSceneName(){
+  const scene = manualScene !== 'auto' ? manualScene : getAutoScene();
+  const descs = {
+    morning:   'birdsong · soft breeze',
+    afternoon: 'cicadas · warm air',
+    evening:   'ocean waves · tide',
+    night:     'crickets · night breeze',
+    'full-moon': 'wind chimes · moonlit air',
+    'new-moon':  'cosmic hum · deep silence'
+  };
+  return {scene, desc: descs[scene] || 'ambient'};
+}
+
+function getAutoScene(){
+  const h=new Date().getHours();
+  if(APP.currentPhase==='new-moon')return 'new-moon';
+  if(APP.currentPhase==='full-moon')return 'full-moon';
+  if(h>=5&&h<12)return 'morning';
+  if(h>=12&&h<17)return 'afternoon';
+  if(h>=17&&h<21)return 'evening';
+  return 'night';
+}
+
+function pickSound(el){
+  document.querySelectorAll('.sound-pick').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  manualScene = el.dataset.scene;
+  if(APP.sndOn){
+    stopAllNodes();
+    setTimeout(()=>{
+      buildEnvironment();
+      document.getElementById('audio-label').textContent = getSceneName().desc;
+    },300);
+  }
+}
+
+function initAudioCtx(){
+  if(ENV_AUDIO.ctx)return true;
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return false;
+  ENV_AUDIO.ctx=new AC();
+  ENV_AUDIO.master=ENV_AUDIO.ctx.createGain();
+  ENV_AUDIO.master.gain.value=0;
+  ENV_AUDIO.master.connect(ENV_AUDIO.ctx.destination);
+  return true;
+}
+
+function stopAllNodes(){
+  ENV_AUDIO.nodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});
+  ENV_AUDIO.nodes=[];
+}
+
+// PINK NOISE — much warmer and softer than white noise
+function makePinkNoiseBuf(ac,seconds){
+  const buf=ac.createBuffer(1,ac.sampleRate*seconds,ac.sampleRate);
+  const data=buf.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for(let i=0;i<data.length;i++){
+    const white=(Math.random()*2-1);
+    b0=0.99886*b0+white*0.0555179;b1=0.99332*b1+white*0.0750759;
+    b2=0.96900*b2+white*0.1538520;b3=0.86650*b3+white*0.3104856;
+    b4=0.55000*b4+white*0.5329522;b5=-0.7616*b5-white*0.0168980;
+    data[i]=(b0+b1+b2+b3+b4+b5+b6+white*0.5362)*0.11;
+    b6=white*0.115926;
+  }
+  return buf;
+}
+
+// SOFT BREEZE — pink noise, very low, gentle gusts
+function createBreeze(ac,dest,vol=0.04){
+  const src=ac.createBufferSource();
+  src.buffer=makePinkNoiseBuf(ac,4);src.loop=true;
+  const lpf=ac.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=300;lpf.Q.value=0.5;
+  const lpf2=ac.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=200;
+  const g=ac.createGain();g.gain.value=vol;
+  // Very slow gust LFO — 0.04hz = one gust every 25 seconds
+  const lfo=ac.createOscillator();lfo.frequency.value=0.04;lfo.type='sine';
+  const lg=ac.createGain();lg.gain.value=vol*0.6;
+  lfo.connect(lg);lg.connect(g.gain);
+  src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(dest);
+  lfo.start();src.start();
+  ENV_AUDIO.nodes.push(src,lfo);
+}
+
+// BIRDS — melodic, varied, natural feeling
+function createBirdsong(ac,dest){
+  let alive=true;
+  // Bird species: each has a characteristic pattern
+  const birds=[
+    {baseFreq:2200,pattern:[0,100,200],freqMod:1.15,gap:[600,1800]},  // robin-like
+    {baseFreq:3100,pattern:[0,80,160,240],freqMod:1.08,gap:[800,2400]}, // wren-like
+    {baseFreq:1800,pattern:[0,120],freqMod:1.25,gap:[1200,3000]},       // thrush-like
+    {baseFreq:2600,pattern:[0,60,120,60,0],freqMod:0.95,gap:[400,1200]},// warbler-like
+  ];
+
+  function singBird(bird){
+    if(!alive||!APP.sndOn)return;
+    const base=bird.baseFreq*(0.9+Math.random()*0.2);
+    bird.pattern.forEach((delay,i)=>{
+      const o=ac.createOscillator(),g=ac.createGain();
+      const vibrato=ac.createOscillator(),vg=ac.createGain();
+      o.type='sine';vibrato.type='sine';vibrato.frequency.value=6+Math.random()*4;
+      vg.gain.value=base*0.04;
+      vibrato.connect(vg);vg.connect(o.frequency);
+      const t=ac.currentTime+delay/1000;
+      const freq=base*(i%2===0?1:bird.freqMod);
+      o.frequency.setValueAtTime(freq,t);
+      o.frequency.linearRampToValueAtTime(freq*(1+0.1*Math.random()),t+0.04);
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.055,t+0.015);
+      g.gain.setValueAtTime(0.055,t+0.06);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+      o.connect(g);g.connect(dest);vibrato.start(t);o.start(t);o.stop(t+0.2);vibrato.stop(t+0.2);
+    });
+    const nextDelay=bird.gap[0]+Math.random()*(bird.gap[1]-bird.gap[0]);
+    setTimeout(()=>singBird(bird),nextDelay);
+  }
+
+  // Start birds at staggered times so they don't all sing at once
+  birds.forEach((bird,i)=>{
+    setTimeout(()=>singBird(bird),i*600+Math.random()*1000);
+  });
+
+  // Add soft morning breeze underneath
+  createBreeze(ac,dest,0.025);
+  ENV_AUDIO.nodes.push({stop:()=>{alive=false;}});
+}
+
+// CICADAS — rhythmic pulsing buzz, very characteristic
+function createCicadas(ac,dest){
+  let alive=true;
+  // Main cicada layer — amplitude modulated noise burst
+  function cicadaLayer(freqCenter,pulseRate,vol,startDelay){
+    setTimeout(()=>{
+      if(!alive)return;
+      const src=ac.createBufferSource();
+      src.buffer=makePinkNoiseBuf(ac,3);src.loop=true;
+      const bpf=ac.createBiquadFilter();bpf.type='bandpass';
+      bpf.frequency.value=freqCenter;bpf.Q.value=8;
+      const bpf2=ac.createBiquadFilter();bpf2.type='bandpass';
+      bpf2.frequency.value=freqCenter*1.5;bpf2.Q.value=6;
+      const g=ac.createGain();g.gain.value=0;
+      // Pulse LFO — the characteristic cicada rhythm
+      const lfo=ac.createOscillator();lfo.type='sine';lfo.frequency.value=pulseRate;
+      const lg=ac.createGain();lg.gain.value=vol;
+      lfo.connect(lg);lg.connect(g.gain);
+      // Slow swell envelope
+      const swell=ac.createOscillator();swell.type='sine';swell.frequency.value=0.08;
+      const sg=ac.createGain();sg.gain.value=vol*0.3;
+      swell.connect(sg);sg.connect(g.gain);
+      src.connect(bpf);src.connect(bpf2);bpf.connect(g);bpf2.connect(g);g.connect(dest);
+      lfo.start();swell.start();src.start();
+      ENV_AUDIO.nodes.push(src,lfo,swell);
+    },startDelay);
+  }
+
+  cicadaLayer(3800,22,0.06,0);       // main high buzz
+  cicadaLayer(2800,18,0.04,400);     // secondary layer
+  cicadaLayer(4500,28,0.025,800);    // overtone shimmer
+  createBreeze(ac,dest,0.018);       // very subtle warm air underneath
+  ENV_AUDIO.nodes.push({stop:()=>{alive=false;}});
+}
+
+// OCEAN WAVES — the most relaxing, gentle rolling waves
+function createOcean(ac,dest){
+  // Generate long pink noise buffer for waves
+  const waveLen=ac.sampleRate*8;
+  const buf=ac.createBuffer(2,waveLen,ac.sampleRate);
+  for(let c=0;c<2;c++){
+    const data=buf.getChannelData(c);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for(let i=0;i<data.length;i++){
+      const w=(Math.random()*2-1);
+      b0=0.99886*b0+w*0.0555179;b1=0.99332*b1+w*0.0750759;
+      b2=0.96900*b2+w*0.1538520;b3=0.86650*b3+w*0.3104856;
+      b4=0.55000*b4+w*0.5329522;b5=-0.7616*b5-w*0.0168980;
+      data[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+      b6=w*0.115926;
+    }
+  }
+  const src=ac.createBufferSource();src.buffer=buf;src.loop=true;
+
+  // Low pass to make it oceanic
+  const lpf=ac.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;lpf.Q.value=0.8;
+  const lpf2=ac.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=350;
+
+  // Master gain
+  const g=ac.createGain();g.gain.value=0.18;
+
+  // Wave rhythm — 0.08hz = wave every ~12 seconds, very natural
+  const waveLfo=ac.createOscillator();waveLfo.type='sine';waveLfo.frequency.value=0.08;
+  const wlg=ac.createGain();wlg.gain.value=0.12;
+  waveLfo.connect(wlg);wlg.connect(g.gain);
+
+  // Second wave LFO slightly offset — creates irregular natural feel
+  const waveLfo2=ac.createOscillator();waveLfo2.type='sine';waveLfo2.frequency.value=0.065;
+  const wlg2=ac.createGain();wlg2.gain.value=0.06;
+  waveLfo2.connect(wlg2);wlg2.connect(g.gain);
+
+  // Gentle high frequency surf on top
+  const surfSrc=ac.createBufferSource();
+  const surfBuf=makePinkNoiseBuf(ac,3);surfSrc.buffer=surfBuf;surfSrc.loop=true;
+  const hpf=ac.createBiquadFilter();hpf.type='highpass';hpf.frequency.value=1200;
+  const surfG=ac.createGain();surfG.gain.value=0.035;
+  const surfLfo=ac.createOscillator();surfLfo.type='sine';surfLfo.frequency.value=0.1;
+  const slg=ac.createGain();slg.gain.value=0.025;
+  surfLfo.connect(slg);slg.connect(surfG.gain);
+  surfSrc.connect(hpf);hpf.connect(surfG);surfG.connect(dest);
+
+  src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(dest);
+  waveLfo.start();waveLfo2.start();surfLfo.start();src.start();surfSrc.start();
+  ENV_AUDIO.nodes.push(src,waveLfo,waveLfo2,surfSrc,surfLfo);
+}
+
+// NIGHT CRICKETS — classic summer night, layered
+function createCrickets(ac,dest){
+  let alive=true;
+  // Cricket chirp engine — each cricket chirps independently
+  function cricket(freq,rate,vol,panVal){
+    const pan=ac.createStereoPanner?ac.createStereoPanner():null;
+    if(pan){pan.pan.value=panVal;pan.connect(dest);}
+    const target=pan||dest;
+
+    function chirp(){
+      if(!alive||!APP.sndOn)return;
+      // Each chirp = 2-3 rapid pulses
+      const pulses=2+Math.floor(Math.random()*2);
+      for(let i=0;i<pulses;i++){
+        const o=ac.createOscillator(),g=ac.createGain();
+        o.type='sine';
+        o.frequency.value=freq*(0.97+Math.random()*0.06);
+        const t=ac.currentTime+i*0.025;
+        g.gain.setValueAtTime(0,t);
+        g.gain.linearRampToValueAtTime(vol,t+0.004);
+        g.gain.setValueAtTime(vol,t+0.016);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+0.022);
+        o.connect(g);g.connect(target);o.start(t);o.stop(t+0.025);
+      }
+      // Next chirp — natural irregular timing
+      const next=rate+(Math.random()-0.5)*rate*0.3;
+      setTimeout(chirp,next);
+    }
+    setTimeout(chirp,Math.random()*rate);
+  }
+
+  // Multiple crickets at slightly different frequencies and positions
+  cricket(4800,380,0.022,-0.6);   // left field cricket
+  cricket(4950,420,0.018,0.4);    // right field cricket
+  cricket(4700,360,0.015,-0.2);   // nearby cricket
+  cricket(5100,480,0.012,0.7);    // distant cricket
+  cricket(4650,340,0.020,0.0);    // close cricket
+
+  // Very soft night breeze
+  createBreeze(ac,dest,0.02);
+
+  // Occasional distant frog
+  let frogAlive=true;
+  function frog(){
+    if(!frogAlive||!APP.sndOn)return;
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.type='sine';o.frequency.setValueAtTime(180,ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(120,ac.currentTime+0.15);
+    g.gain.setValueAtTime(0,ac.currentTime);
+    g.gain.linearRampToValueAtTime(0.04,ac.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.18);
+    o.connect(g);g.connect(dest);o.start();o.stop(ac.currentTime+0.2);
+    setTimeout(frog,4000+Math.random()*12000);
+  }
+  setTimeout(frog,3000+Math.random()*5000);
+
+  ENV_AUDIO.nodes.push({stop:()=>{alive=false;frogAlive=false;}});
+}
+
+// WIND CHIMES — for full moon
+function createWindChimes(ac,dest){
+  let alive=true;
+  // Pentatonic scale — always sounds harmonious
+  const notes=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,783.99,880.00];
+
+  // Simple reverb
+  function makeReverb(ac){
+    const conv=ac.createConvolver();
+    const len=ac.sampleRate*2.5;
+    const rb=ac.createBuffer(2,len,ac.sampleRate);
+    for(let c=0;c<2;c++){
+      const d=rb.getChannelData(c);
+      for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.8);
+    }
+    conv.buffer=rb;return conv;
+  }
+
+  const rev=makeReverb(ac);rev.connect(dest);
+  const revGain=ac.createGain();revGain.gain.value=0.4;revGain.connect(dest);
+
+  function chime(){
+    if(!alive||!APP.sndOn)return;
+    // Sometimes a single note, sometimes two close together
+    const count=Math.random()>0.7?2:1;
+    for(let i=0;i<count;i++){
+      const freq=notes[Math.floor(Math.random()*notes.length)];
+      const o=ac.createOscillator(),g=ac.createGain();
+      o.type='sine';o.frequency.value=freq;
+      const t=ac.currentTime+i*0.08;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.1,t+0.008);
+      g.gain.exponentialRampToValueAtTime(0.001,t+3.5);
+      o.connect(g);
+      g.connect(rev);g.connect(revGain);
+      o.start(t);o.stop(t+3.8);
+    }
+    setTimeout(chime,2000+Math.random()*5000);
+  }
+  chime();
+  createBreeze(ac,dest,0.022);
+  ENV_AUDIO.nodes.push({stop:()=>{alive=false;}});
+}
+
+// COSMIC HUM — for new moon
+function createCosmicHum(ac,dest){
+  // Very deep, very quiet, almost subliminal
+  const freqs=[[40,0.05],[40.3,0.04],[80,0.025],[120,0.015],[160,0.008]];
+  freqs.forEach(([f,g])=>{
+    const o=ac.createOscillator(),og=ac.createGain();
+    o.type='sine';o.frequency.value=f;og.gain.value=0;
+    // Slowly fade in
+    og.gain.setTargetAtTime(g,ac.currentTime,4);
+    o.connect(og);og.connect(dest);o.start();
+    ENV_AUDIO.nodes.push(o);
+  });
+  // Occasional subtle shimmer
+  let alive=true;
+  function shimmer(){
+    if(!alive||!APP.sndOn)return;
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.type='sine';o.frequency.value=600+Math.random()*400;
+    const t=ac.currentTime;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.012,t+0.5);
+    g.gain.exponentialRampToValueAtTime(0.001,t+4);
+    o.connect(g);g.connect(dest);o.start(t);o.stop(t+4.5);
+    setTimeout(shimmer,6000+Math.random()*10000);
+  }
+  setTimeout(shimmer,3000);
+  ENV_AUDIO.nodes.push({stop:()=>{alive=false;}});
+}
+
+function buildEnvironment(){
+  if(!ENV_AUDIO.ctx)return;
+  stopAllNodes();
+  const ac=ENV_AUDIO.ctx,dest=ENV_AUDIO.master;
+  // Kairoscope signature sound — wind chimes only, always cosmic
+  createWindChimes(ac,dest);
+  // Very subtle cosmic hum underneath
+  createCosmicHum(ac,dest);
+}
+
+function updateEnvironment(){
+  if(!ENV_AUDIO.ctx||!APP.sndOn)return;
+  stopAllNodes();
+  setTimeout(()=>buildEnvironment(),300);
+}
+
+function toggleSound(){
+  const btn=document.getElementById('sound-btn');
+  const lbl=document.getElementById('audio-label');
+  if(!initAudioCtx()){alert('Audio not supported in this browser.');return;}
+  const{ctx,master}=ENV_AUDIO;
+  if(ctx.state==='suspended')ctx.resume();
+  APP.sndOn=!APP.sndOn;
+  if(APP.sndOn){
+    master.gain.setTargetAtTime(0.7,ctx.currentTime,1.5);
+    buildEnvironment();
+    btn.textContent='♫ ambient on';
+    btn.classList.add('on');
+    lbl.textContent='wind chimes · cosmic hum';
+    lbl.style.display='block';
+  }else{
+    master.gain.setTargetAtTime(0,ctx.currentTime,1.2);
+    btn.textContent='♫ ambient off';
+    btn.classList.remove('on');
+    lbl.textContent='';
+    lbl.style.display='none';
+    setTimeout(stopAllNodes,2000);
+  }
+}
+
+// Reading arrival chime — soft bell tones
+function chimeSound(){
+  if(!APP.sndOn||!ENV_AUDIO.ctx)return;
+  const ac=ENV_AUDIO.ctx,dest=ENV_AUDIO.master;
+  [[528,0.12,2.5],[792,0.07,1.8],[1056,0.035,1.2]].forEach(([f,g,dur],i)=>{
+    const o=ac.createOscillator(),og=ac.createGain();
+    o.type='sine';o.frequency.value=f;
+    og.gain.setValueAtTime(0,ac.currentTime+i*.14);
+    og.gain.linearRampToValueAtTime(g,ac.currentTime+i*.14+.03);
+    og.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dur);
+    o.connect(og);og.connect(dest);
+    o.start(ac.currentTime+i*.14);o.stop(ac.currentTime+dur+.1);
+  });
+}
+
+document.getElementById('audio-label').textContent='';
+</script>
+</body>
+</html>
