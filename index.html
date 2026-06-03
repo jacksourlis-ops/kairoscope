@@ -665,7 +665,28 @@ function setTier(t){
   }
   renderJournal();
 }
-function activatePro(){document.getElementById('paywall').classList.remove('on');alert('Stripe checkout — $4.99/month. Connect Stripe in the full deployment!');setTier('pro');}
+async function activatePro(){
+  const btn=document.querySelector('.pw-cta');
+  btn.textContent='✦ PREPARING YOUR MOMENT ✦';
+  btn.disabled=true;
+  try{
+    const res=await fetch('/api/checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({origin:window.location.origin})
+    });
+    const data=await res.json();
+    if(data.url){
+      window.location.href=data.url;
+    }else{
+      throw new Error(data.error||'Could not create checkout session');
+    }
+  }catch(e){
+    btn.textContent='✦ UNLOCK PRO ✦';
+    btn.disabled=false;
+    alert('Something went wrong: '+e.message);
+  }
+}
 if(APP.isPro)setTier('pro');
 
 function switchTab(id,el){
@@ -917,8 +938,25 @@ function exportJournal(){
 
 renderJournal();checkJournalLimit();
 
-// ============================================================
-// STARFIELD
+// Check for Stripe redirect on page load
+(function(){
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('success')==='true'){
+    setTier('pro');
+    document.getElementById('paywall').classList.remove('on');
+    window.history.replaceState({},'',window.location.pathname);
+    setTimeout(()=>{
+      const msg=document.createElement('div');
+      msg.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(4,2,16,0.97);border:.5px solid rgba(200,175,255,0.4);border-radius:12px;padding:2rem 2.5rem;text-align:center;z-index:300;font-family:Cinzel,serif;color:var(--gold);letter-spacing:.15em;font-size:13px;line-height:2.2';
+      msg.innerHTML='✦ WELCOME TO PRO ✦<br><span style="font-size:11px;color:var(--muted);font-family:Crimson Pro,serif;font-style:italic;letter-spacing:.05em">The cosmos is now fully yours</span>';
+      document.body.appendChild(msg);
+      setTimeout(()=>msg.remove(),4000);
+    },600);
+  }
+  if(params.get('cancelled')==='true'){
+    window.history.replaceState({},'',window.location.pathname);
+  }
+})();
 // ============================================================
 (function(){
   const canvas=document.getElementById('starfield'),ctx=canvas.getContext('2d');
