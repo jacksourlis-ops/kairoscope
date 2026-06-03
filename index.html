@@ -320,7 +320,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <!-- TIER -->
   <div class="tier-bar">
     <button class="tier-btn on" id="free-btn" onclick="setTier('free')">◈ FREE</button>
-    <button class="tier-btn" id="pro-btn" onclick="setTier('pro')">✦ PRO — $4.99/mo</button>
+    <button class="tier-btn" id="pro-btn" onclick="document.getElementById('paywall').classList.add('on')">✦ PRO — $4.99/mo</button>
   </div>
 
   <!-- TABS -->
