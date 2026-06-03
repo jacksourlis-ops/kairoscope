@@ -30,8 +30,7 @@ export default async function handler(req, res) {
         'success_url': `${baseUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
         'cancel_url': `${baseUrl}?cancelled=true`,
         'allow_promotion_codes': 'true',
-        'billing_address_collection': 'auto',
-        'customer_creation': 'always'
+        'billing_address_collection': 'auto'
       })
     });
 
