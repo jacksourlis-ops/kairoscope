@@ -257,6 +257,22 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .pw-cta:hover{background:rgba(210,175,80,0.2)}
 .pw-dismiss{background:transparent;border:none;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;opacity:.5}
 .site-footer{text-align:center;margin-top:2rem;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;color:var(--muted)}
+.site-footer a{color:var(--muted);text-decoration:none;cursor:pointer;transition:color .2s}
+.site-footer a:hover{color:var(--gold)}
+.modal-overlay{position:fixed;inset:0;background:rgba(4,2,16,0.96);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem 1.25rem;overflow-y:auto}
+.modal-overlay.on{display:flex;animation:fadeup .3s ease}
+.modal-inner{width:100%;max-width:520px;display:flex;flex-direction:column;gap:1.25rem;padding-bottom:3rem}
+.modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:.5px solid var(--border);padding-bottom:1rem}
+.modal-title{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.2em;color:var(--gold)}
+.modal-close{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:5px 14px;color:var(--muted);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+.modal-close:hover{border-color:var(--border2);color:var(--gold)}
+.modal-section{display:flex;flex-direction:column;gap:.5rem}
+.modal-section h3{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--gold);margin-bottom:2px}
+.modal-section p,.modal-section li{font-family:'Crimson Pro',serif;font-size:15px;color:var(--text2);line-height:1.75}
+.modal-section ul{padding-left:1.25rem;display:flex;flex-direction:column;gap:.35rem}
+.modal-divider{height:.5px;background:var(--border)}
+.faq-q{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
+.faq-a{font-family:'Crimson Pro',serif;font-size:15px;color:var(--text2);line-height:1.75}
 </style>
 </head>
 <body>
@@ -433,7 +449,13 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div class="journal-empty" id="journal-empty">Your dream journal is empty.<br><br>Log your first dream above.<br><span style="opacity:.6">Stored only on your device. Private always.</span></div>
   </div>
 
-  <div class="site-footer">KAIROSCOPE · SEE YOUR MOMENT · PRIVACY FIRST</div>
+  <div class="site-footer">
+    KAIROSCOPE · SEE YOUR MOMENT &nbsp;·&nbsp;
+    <a onclick="openModal('privacy')">Privacy Policy</a> &nbsp;·&nbsp;
+    <a onclick="openModal('terms')">Terms of Service</a> &nbsp;·&nbsp;
+    <a onclick="openModal('faq')">FAQ</a> &nbsp;·&nbsp;
+    <a href="mailto:hello@kairoscope.app">hello@kairoscope.app</a>
+  </div>
 </div>
 
 <!-- PAYWALL -->
@@ -1348,6 +1370,68 @@ function chimeSound(){
 
 document.getElementById('audio-label').textContent='';
 </script>
+<!-- PRIVACY POLICY MODAL -->
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal-inner">
+    <div class="modal-header"><div class="modal-title">PRIVACY POLICY</div><button class="modal-close" onclick="closeModal('privacy')">✕ CLOSE</button></div>
+    <div class="modal-section"><p>Last updated: June 2026. Kairoscope is operated by an independent developer based in Canada and is subject to PIPEDA (Personal Information Protection and Electronic Documents Act).</p></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>WHAT WE COLLECT</h3><ul><li>Your zodiac sign and birth details (Pro users) — stored locally on your device only</li><li>Dream journal entries — stored locally on your device, never transmitted to our servers</li><li>Payment information — handled entirely by Stripe. We never see or store your card details</li><li>Basic anonymous usage data — used only to improve the app</li></ul></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>WHAT WE DON'T DO</h3><ul><li>We do not sell your data to third parties</li><li>We do not store your audio, voice, or recordings of any kind</li><li>We do not use your personal data to train AI models</li><li>We do not share your dream journal or birth chart with anyone</li><li>We do not display advertising</li></ul></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>AI READINGS</h3><p>Readings are processed by Anthropic's Claude AI via our secure server. Please review Anthropic's privacy policy at anthropic.com for details on how they handle data.</p></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>YOUR RIGHTS</h3><p>Under PIPEDA you have the right to access, correct, and request deletion of any personal information we hold. Contact us at hello@kairoscope.app.</p></div>
+  </div>
+</div>
+
+<!-- TERMS OF SERVICE MODAL -->
+<div class="modal-overlay" id="modal-terms">
+  <div class="modal-inner">
+    <div class="modal-header"><div class="modal-title">TERMS OF SERVICE</div><button class="modal-close" onclick="closeModal('terms')">✕ CLOSE</button></div>
+    <div class="modal-section"><p>Last updated: June 2026. By using Kairoscope you agree to these terms.</p></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>THE SERVICE</h3><p>Kairoscope provides AI-generated horoscope readings and dream interpretations for entertainment and personal reflection purposes only. Readings are not a substitute for professional medical, psychological, financial, or legal advice.</p></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>SUBSCRIPTIONS</h3><ul><li>Pro subscriptions are billed at $4.99/month</li><li>Cancel anytime — access continues until end of billing period</li><li>Refunds provided at our discretion within 7 days of purchase</li><li>Prices may change with 30 days notice</li></ul></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>ACCEPTABLE USE</h3><ul><li>You must be 13 years or older to use Kairoscope</li><li>You may not attempt to circumvent usage limits or abuse the free tier</li><li>You may not use the service for any unlawful purpose</li></ul></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>DISCLAIMER</h3><p>Readings are generated by artificial intelligence and provided for entertainment and personal reflection only. We make no claims about accuracy or fitness for any particular purpose. Use your own judgment in all life decisions.</p></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><h3>CONTACT</h3><p>hello@kairoscope.app</p></div>
+  </div>
+</div>
+
+<!-- FAQ MODAL -->
+<div class="modal-overlay" id="modal-faq">
+  <div class="modal-inner">
+    <div class="modal-header"><div class="modal-title">FREQUENTLY ASKED QUESTIONS</div><button class="modal-close" onclick="closeModal('faq')">✕ CLOSE</button></div>
+    <div class="modal-section"><div class="faq-q">WHAT IS KAIROSCOPE?</div><div class="faq-a">Kairoscope is an AI-powered horoscope and dream interpretation app. "Kairos" is the ancient Greek concept of the perfect, sacred moment in time. We help you see yours.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">HOW ARE READINGS GENERATED?</div><div class="faq-a">Every reading is uniquely written by Claude AI for your sign, the current moon phase, and today's date. No pre-written horoscopes — every reading is one of a kind.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">WHY CAN'T I GET A NEW READING TODAY?</div><div class="faq-a">Your moment is set by the cosmos — not chosen by you. Once your reading is revealed it stays fixed for that period. This prevents cherry-picking and keeps your reading authentic. Return tomorrow for a fresh daily reading.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">IS MY DATA PRIVATE?</div><div class="faq-a">Yes. Your dream journal and birth chart are stored only on your device — never on our servers. We are a Canadian company under PIPEDA. We do not sell your data, show ads, or use your information to train AI.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">WHAT IS PRO?</div><div class="faq-a">Pro unlocks unlimited readings, your full birth chart (sun, moon and rising calculated with professional astronomical precision), personalised natal chart readings, unlimited dream journal, pattern analysis, and weekly cosmic forecasts. $4.99/month, cancel anytime.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">HOW ACCURATE IS THE BIRTH CHART?</div><div class="faq-a">Very accurate. We use Jean Meeus astronomical algorithms — the same foundation used by professional astrology software — to calculate your exact sun, moon and rising signs.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">WHAT DO THE MOON PHASE THEMES MEAN?</div><div class="faq-a">Kairoscope's visual theme shifts automatically with the real moon phase — darker near the New Moon, most luminous at the Full Moon — keeping you connected to the actual cosmic moment.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">HOW DO I CANCEL MY SUBSCRIPTION?</div><div class="faq-a">Cancel anytime from your account settings or by emailing hello@kairoscope.app. Access continues until the end of your billing period.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">STILL HAVE QUESTIONS?</div><div class="faq-a">Reach us at hello@kairoscope.app — we read every message.</div></div>
+  </div>
+</div>
+
+<script>
+function openModal(id){document.getElementById('modal-'+id).classList.add('on');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('on');document.body.style.overflow='';}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('on');document.body.style.overflow='';}});});
+</script>
 </body>
 </html>
-
