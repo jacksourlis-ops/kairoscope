@@ -214,6 +214,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .rbody{font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--text);line-height:1.88;min-height:50px}
 .orn{text-align:center;color:var(--border2);font-size:11px;letter-spacing:.35em}
 .divider{width:40px;height:.5px;background:var(--border2);margin:0 auto}
+.reading-lock{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.12em;color:var(--muted);text-align:center;padding:.5rem 0;opacity:.7}
 
 /* SHIMMER */
 .shimmer{display:flex;flex-direction:column;gap:7px}
@@ -678,11 +679,76 @@ function revealWords(el,text){
   const words=text.split(' ');let i=0;el.textContent='';
   const iv=setInterval(()=>{if(i>=words.length){clearInterval(iv);return;}el.textContent+=(i>0?' ':'')+words[i++];},38);
 }
-function showResult(box,icon,title,sub,text){
+function showResult(box,icon,title,sub,text,lockMsg){
   box.classList.add('on');
-  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div><div class="rbody"></div><div class="divider"></div>`;
+  const lockHtml=lockMsg?`<div class="reading-lock">${lockMsg}</div>`:'';
+  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div><div class="rbody"></div><div class="divider"></div>${lockHtml}`;
   chimeSound();revealWords(box.querySelector('.rbody'),text);
   box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showCachedResult(box,icon,title,sub,text,lockMsg){
+  box.classList.add('on');
+  const lockHtml=lockMsg?`<div class="reading-lock">${lockMsg}</div>`:'';
+  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div><div class="rbody">${text}</div><div class="divider"></div>${lockHtml}`;
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ============================================================
+// READING CACHE — one reading per sign per period per window
+// ============================================================
+function getDateKey(period){
+  const now=new Date();
+  if(period==='today'){
+    return now.toISOString().slice(0,10); // YYYY-MM-DD
+  }
+  if(period==='this week'){
+    const d=new Date(now);
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate()-d.getDay()); // Sunday of this week
+    return'week-'+d.toISOString().slice(0,10);
+  }
+  if(period==='this month'){
+    return'month-'+now.getFullYear()+'-'+(now.getMonth()+1);
+  }
+  return now.toISOString().slice(0,10);
+}
+
+function getCacheKey(type,sign,period){
+  const dateKey=getDateKey(period||'today');
+  const chartSuffix=APP.isPro&&APP.chart.sun?`_${APP.chart.sun}_${APP.chart.moon}`:'' ;
+  if(type==='h')return`k_reading_h_${sign}_${period}_${dateKey}${chartSuffix}`;
+  if(type==='c')return`k_reading_c_${sign}_${dateKey}${chartSuffix}`;
+  return null; // dreams never cached
+}
+
+function getNextRefreshMsg(period){
+  const now=new Date();
+  if(period==='today'){
+    const tomorrow=new Date(now);
+    tomorrow.setDate(tomorrow.getDate()+1);
+    tomorrow.setHours(0,0,0,0);
+    const hrs=Math.ceil((tomorrow-now)/3600000);
+    return`✦ Your moment for today is set · refreshes in ${hrs} hour${hrs===1?'':'s'}`;
+  }
+  if(period==='this week'){
+    const daysLeft=7-now.getDay();
+    return`✦ Your reading for this week is set · refreshes ${daysLeft===1?'tomorrow':'in '+daysLeft+' days'}`;
+  }
+  if(period==='this month'){
+    const nextMonth=new Date(now.getFullYear(),now.getMonth()+1,1);
+    const daysLeft=Math.ceil((nextMonth-now)/86400000);
+    return`✦ Your reading for this month is set · refreshes in ${daysLeft} day${daysLeft===1?'':'s'}`;
+  }
+  return'✦ Your moment is set by the cosmos';
+}
+
+function saveReading(key,data){
+  try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
+}
+
+function loadReading(key){
+  try{const d=localStorage.getItem(key);return d?JSON.parse(d):null;}catch(e){return null;}
 }
 
 function buildChartCtx(){
@@ -711,10 +777,27 @@ async function callAI(prompt,system){
 
 async function doReading(type){
   if(!APP.isPro&&APP.free<=0){document.getElementById('paywall').classList.add('on');return;}
-  if(!APP.isPro){APP.free--;updateFree();}
   const btn=document.getElementById('btn-'+type),box=document.getElementById('res-'+type);
+  const c=APP.chart;
+
+  // CHECK CACHE — horoscope and combined only, never dreams
+  if(type!=='d'){
+    const sign=type==='h'?APP.sh:APP.sc;
+    const cacheKey=getCacheKey(type,sign,APP.period);
+    const cached=cacheKey?loadReading(cacheKey):null;
+    if(cached){
+      const[icon,title,sub]=cached.heads;
+      const lockMsg=getNextRefreshMsg(APP.period);
+      showCachedResult(box,icon,title,sub,cached.text,lockMsg);
+      btn.disabled=false;
+      return; // no API call, no credit used
+    }
+  }
+
+  // NOT CACHED — generate fresh reading
+  if(!APP.isPro){APP.free--;updateFree();}
   btn.disabled=true;showLoading(box);
-  const chartCtx=buildChartCtx();const c=APP.chart;
+  const chartCtx=buildChartCtx();
   const PROMPTS={
     h:`Sign: ${APP.sh}. Period: ${APP.period}. Today: ${TODAY}. Moon: ${moonData.emoji} ${moonData.name}.${chartCtx}`,
     d:`Dream: "${document.getElementById('dream-input').value.trim()}"${chartCtx}`,
@@ -728,7 +811,16 @@ async function doReading(type){
   try{
     const text=await callAI(PROMPTS[type],SYSTEMS[type]);
     const[icon,title,sub]=HEADS[type];
-    showResult(box,icon,title,sub,text);
+    const lockMsg=type!=='d'?getNextRefreshMsg(APP.period):null;
+    showResult(box,icon,title,sub,text,lockMsg);
+
+    // SAVE TO CACHE — horoscope and combined only
+    if(type!=='d'){
+      const sign=type==='h'?APP.sh:APP.sc;
+      const cacheKey=getCacheKey(type,sign,APP.period);
+      if(cacheKey)saveReading(cacheKey,{text,heads:HEADS[type],period:APP.period});
+    }
+
     if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=text;document.getElementById('save-dream-wrap').style.display='block';}
   }catch(e){
     box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
