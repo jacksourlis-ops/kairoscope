@@ -120,6 +120,9 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .moon-banner{text-align:center;padding:.65rem 1rem;background:var(--glow);border-bottom:.5px solid var(--border);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;width:100%;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);transition:all 1.2s ease}
 .theme-toggle{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
 .theme-toggle:hover{border-color:var(--border2);color:var(--gold)}
+.lang-select{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s;-webkit-appearance:none;appearance:none}
+.lang-select:hover,.lang-select:focus{outline:none;border-color:var(--border2);color:var(--gold)}
+.lang-select option{background:#0a0814;color:#f0ecff}
 
 /* AUDIO LABEL */
 .audio-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--muted);font-style:italic;margin-left:4px}
@@ -281,6 +284,24 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 <div class="moon-banner" id="moon-banner">
   <span id="moon-display">🌙 detecting moon phase...</span>
   <button class="theme-toggle" onclick="cycleTheme()">cycle phases</button>
+  <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)" title="Choose language">
+  <option value="English">🇬🇧 English</option>
+  <option value="French">🇫🇷 Français</option>
+  <option value="Spanish">🇪🇸 Español</option>
+  <option value="Portuguese">🇧🇷 Português</option>
+  <option value="German">🇩🇪 Deutsch</option>
+  <option value="Italian">🇮🇹 Italiano</option>
+  <option value="Greek">🇬🇷 Ελληνικά</option>
+  <option value="Japanese">🇯🇵 日本語</option>
+  <option value="Korean">🇰🇷 한국어</option>
+  <option value="Chinese">🇨🇳 中文</option>
+  <option value="Hindi">🇮🇳 हिन्दी</option>
+  <option value="Arabic">🇸🇦 العربية</option>
+  <option value="Dutch">🇳🇱 Nederlands</option>
+  <option value="Polish">🇵🇱 Polski</option>
+  <option value="Turkish">🇹🇷 Türkçe</option>
+  <option value="Swedish">🇸🇪 Svenska</option>
+</select>
 </div>
 
 <div class="wrap">
@@ -492,8 +513,33 @@ const APP={
   sndOn:false,
   chart:{sun:'',moon:'',rising:'',sunDeg:0,moonDeg:0,riseDeg:0,city:''},
   lastDreamText:'',lastDreamInterp:'',
-  currentPhase:''
+  currentPhase:'',
+  language:localStorage.getItem('k_lang')||'English'
 };
+
+
+// ============================================================
+// LANGUAGE SELECTION
+// ============================================================
+function setLanguage(lang){
+  APP.language = lang;
+  localStorage.setItem('k_lang', lang);
+  // Clear cached readings so they regenerate in new language
+  Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')).forEach(k=>localStorage.removeItem(k));
+  // Show confirmation
+  const sel = document.getElementById('lang-select');
+  if(sel){ sel.style.borderColor='var(--gold)'; setTimeout(()=>sel.style.borderColor='',1000); }
+}
+// Restore language preference on load
+(function(){
+  const saved = localStorage.getItem('k_lang') || 'English';
+  APP.language = saved;
+  // Set dropdown after DOM is ready
+  setTimeout(()=>{
+    const sel = document.getElementById('lang-select');
+    if(sel) sel.value = saved;
+  }, 0);
+})();
 
 const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ZI={Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓'};
@@ -811,7 +857,7 @@ async function callAI(prompt,system){
   const res=await fetch('/api/chat',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:[{role:'user',content:prompt}]})
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:system+(APP.language&&APP.language!=='English'?`\n\nCRITICAL INSTRUCTION: You MUST write your entire response in ${APP.language}. Do not use any English. Every single word must be in ${APP.language}.`:''),messages:[{role:'user',content:prompt}]})
   });
   const data=await res.json();
   if(data.error)throw new Error(data.error.message);
