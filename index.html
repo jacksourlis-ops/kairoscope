@@ -640,7 +640,7 @@ function clearSavedDream(){APP.savedDreamToday='';localStorage.removeItem('k_dre
 function updateDreamPersistBar(){
   const bar=document.getElementById('dream-persist-bar'),txt=document.getElementById('dream-persist-text');
   if(!bar)return;
-  if(APP.savedDreamToday){bar.classList.add('on');txt.textContent='"'+APP.savedDreamToday.slice(0,60)+(APP.savedDreamToday.length>60?'...':"');const cd=document.getElementById('combined-dream');if(cd&&!cd.value)cd.value=APP.savedDreamToday;}
+  if(APP.savedDreamToday){bar.classList.add('on');txt.textContent='"'+APP.savedDreamToday.slice(0,60)+(APP.savedDreamToday.length>60?'...':'"');const cd=document.getElementById('combined-dream');if(cd&&!cd.value)cd.value=APP.savedDreamToday;}
   else{bar.classList.remove('on');}
 }
 function useDreamExample(text){const ta=document.getElementById('dream-input');if(ta){ta.value=text;ta.focus();document.getElementById('btn-d').disabled=false;}}
