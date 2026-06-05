@@ -120,18 +120,13 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .moon-banner{text-align:center;padding:.65rem 1rem;background:var(--glow);border-bottom:.5px solid var(--border);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;width:100%;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);transition:all 1.2s ease}
 .theme-toggle{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
 .theme-toggle:hover{border-color:var(--border2);color:var(--gold)}
-.lang-select{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s;-webkit-appearance:none;appearance:none;max-width:110px}
-.lang-select:hover,.lang-select:focus{outline:none;border-color:var(--border2);color:var(--gold)}
-.lang-select option{background:#0a0814;color:#f0ecff}
-/* WHY KAIROSCOPE CARDS */
+
 .why-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:1rem 0 1.25rem}
 .why-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem .75rem;text-align:center;transition:all .3s}
 .why-card:hover{border-color:var(--border2);background:rgba(200,175,255,0.06)}
 .why-icon{font-size:20px;margin-bottom:6px}
 .why-title{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:5px}
 .why-desc{font-family:'Crimson Pro',serif;font-size:11.5px;color:var(--text2);line-height:1.55}
-
-/* COMBINED EXPLAINER */
 .combined-explainer{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.85rem;text-align:center}
 .combined-flow{display:flex;align-items:center;justify-content:center;gap:8px;margin:.6rem 0;flex-wrap:wrap}
 .cf-item{display:flex;flex-direction:column;align-items:center;gap:3px}
@@ -139,15 +134,11 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .cf-lbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.12em;color:var(--muted)}
 .cf-arrow{font-size:14px;color:var(--border2);margin-top:8px}
 .combined-desc{font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;margin-top:.4rem}
-
-/* MOON ENERGY BANNER */
-.moon-energy{background:var(--glow);border:.5px solid var(--border);border-radius:10px;padding:.65rem 1rem;margin-bottom:.85rem;display:flex;align-items:center;gap:10px}
+.moon-energy{background:var(--glow);border:.5px solid var(--border);border-radius:10px;padding:.65rem 1rem;margin-bottom:.75rem;display:flex;align-items:center;gap:10px}
 .me-phase{font-size:22px}
 .me-text{flex:1}
 .me-name{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--gold)}
 .me-desc{font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2);font-style:italic;margin-top:2px}
-
-/* STRUCTURED READING */
 .reading-sections{display:flex;flex-direction:column;gap:8px}
 .rs-section{background:rgba(200,175,255,0.04);border:.5px solid var(--border);border-radius:8px;padding:.7rem .85rem}
 .rs-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px}
@@ -156,48 +147,25 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .rs-expand:hover{border-color:var(--border2);color:var(--gold)}
 .rs-full{display:none;margin-top:8px;font-family:'Crimson Pro',serif;font-size:15px;color:var(--text);line-height:1.88}
 .rs-full.on{display:block;animation:fadeup .3s ease}
-
-/* EXAMPLE DREAMS */
 .example-dreams{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.5rem}
 .dream-example{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;font-style:italic}
 .dream-example:hover{border-color:var(--border2);color:var(--gold)}
-
-/* DREAM PERSISTENCE */
-.dream-saved-bar{background:rgba(200,175,255,0.06);border:.5px solid var(--border);border-radius:8px;padding:.5rem .85rem;display:none;align-items:center;justify-content:space-between;gap:8px}
+.dream-saved-bar{background:rgba(200,175,255,0.06);border:.5px solid var(--border);border-radius:8px;padding:.5rem .85rem;display:none;align-items:center;justify-content:space-between;gap:8px;margin-bottom:.5rem}
 .dream-saved-bar.on{display:flex}
 .dsb-text{font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%}
 .dsb-clear{background:transparent;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:.08em;white-space:nowrap}
 .dsb-clear:hover{color:rgba(200,80,80,0.8)}
-
-/* PRIVACY STATEMENT */
 .privacy-statement{text-align:center;padding:1.25rem 1rem;margin-top:1rem;border-top:.5px solid var(--border)}
 .ps-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--gold);margin-bottom:.5rem}
 .ps-items{display:flex;flex-direction:column;gap:4px}
 .ps-item{font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
-
-/* TESTIMONIALS */
-
-
-/* JOURNEY TIMELINE */
-.journey{display:flex;flex-direction:column;gap:0;margin:1rem 0}
-.journey-step{display:flex;align-items:flex-start;gap:12px;padding:.6rem 0}
-.journey-step:not(:last-child){border-left:.5px solid var(--border);margin-left:16px;padding-left:20px}
-.js-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;margin-left:-20px}
-.js-day{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:var(--gold);margin-bottom:2px}
-.js-text{font-family:'Crimson Pro',serif;font-size:13px;color:var(--text2)}
-
-/* EMOTIONAL PAYWALL */
 .pw-stats{display:flex;gap:8px;justify-content:center;margin:.5rem 0}
 .pw-stat{background:rgba(200,175,255,0.06);border:.5px solid var(--border);border-radius:8px;padding:.5rem .75rem;text-align:center;min-width:80px}
 .pw-stat-num{font-family:'Cinzel',serif;font-size:18px;color:var(--gold)}
 .pw-stat-lbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;color:var(--muted);margin-top:2px}
-
-/* DAY DREAM LIST */
-.dream-list-today{display:flex;flex-direction:column;gap:6px;margin-bottom:.5rem}
-.dtd-item{background:var(--card);border:.5px solid var(--border);border-radius:8px;padding:.5rem .75rem;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all .2s}
-.dtd-item:hover{border-color:var(--border2)}
-.dtd-text{font-family:'Crimson Pro',serif;font-size:13px;color:var(--text2);font-style:italic;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dtd-use{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.08em;color:var(--gold);flex-shrink:0}
+.lang-select{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s;-webkit-appearance:none;appearance:none;max-width:110px}
+.lang-select:hover,.lang-select:focus{outline:none;border-color:var(--border2);color:var(--gold)}
+.lang-select option{background:#0a0814;color:#f0ecff}
 
 
 /* AUDIO LABEL */
@@ -389,60 +357,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     </div>
   </div>
 
-
-  <!-- WHY KAIROSCOPE CARDS -->
-  <div class="why-cards">
-    <div class="why-card">
-      <div class="why-icon">🔒</div>
-      <div class="why-title">PRIVATE BY DESIGN</div>
-      <div class="why-desc">Your dreams and journal stay on your device. No ads. No tracking. No data brokers.</div>
-    </div>
-    <div class="why-card">
-      <div class="why-icon">🌙</div>
-      <div class="why-title">GUIDED BY THE SKY</div>
-      <div class="why-desc">Live moon phases and real astronomical calculations. Not recycled templates.</div>
-    </div>
-    <div class="why-card">
-      <div class="why-icon">✨</div>
-      <div class="why-title">PATTERNS OVER PREDICTIONS</div>
-      <div class="why-desc">Discover recurring themes across dreams, journal entries, and cosmic cycles.</div>
-    </div>
-  </div>
-
-  <!-- JOURNEY TIMELINE -->
-  <div style="margin-bottom:1.25rem">
-    <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:var(--muted);text-align:center;margin-bottom:.75rem">NOT ANOTHER HOROSCOPE APP</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;text-align:center">
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 1</div>
-        <div style="width:1px;height:20px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Read your horoscope</div>
-      </div>
-      <div style="color:var(--border2);font-size:10px;margin-top:8px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 7</div>
-        <div style="width:1px;height:20px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Interpret dreams</div>
-      </div>
-      <div style="color:var(--border2);font-size:10px;margin-top:8px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 30</div>
-        <div style="width:1px;height:20px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Build your journal</div>
-      </div>
-      <div style="color:var(--border2);font-size:10px;margin-top:8px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 90</div>
-        <div style="width:1px;height:20px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Discover your patterns</div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:.75rem;font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">A personal archive of your inner life.</div>
-  </div>
-  </div>
-  </div>
-  </div>
-
   <!-- API KEY -->
   <!-- CONTROLS -->
   <div class="ctrl-row">
@@ -457,24 +371,25 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <button class="tier-btn" id="pro-btn" onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')">✦ PRO — $4.99/mo</button>
   </div>
 
+  <!-- MOON ENERGY -->
+  <div class="moon-energy" id="moon-energy-h">
+    <div class="me-phase" id="me-phase-h">🌙</div>
+    <div class="me-text">
+      <div class="me-name" id="me-name-h">MOON PHASE</div>
+      <div class="me-desc" id="me-desc-h">Loading lunar energy...</div>
+    </div>
+  </div>
+
   <!-- TABS -->
   <div class="tabs">
     <button class="tab on" onclick="switchTab('h',this)">◈ Horoscope</button>
     <button class="tab" onclick="switchTab('d',this)">◇ Dream</button>
-    <button class="tab" onclick="switchTab('c',this)">◉ Combined</button>
-    <button class="tab" onclick="switchTab('j',this)">◎ Journal</button>
+    <button class="tab" onclick="switchTab('c',this)">⊕ Combined</button>
+    <button class="tab" onclick="switchTab('j',this)">📖 Journal</button>
   </div>
 
   <!-- HOROSCOPE -->
   <div class="panel on" id="panel-h">
-    <!-- MOON ENERGY -->
-    <div class="moon-energy" id="moon-energy-h">
-      <div class="me-phase" id="me-phase-h">🌙</div>
-      <div class="me-text">
-        <div class="me-name" id="me-name-h">MOON PHASE</div>
-        <div class="me-desc" id="me-desc-h">Loading lunar energy...</div>
-      </div>
-    </div>
     <div><span class="lbl">YOUR SIGN</span>
       <div class="zodiac-grid" id="zg-h">
         <button class="zb" data-s="Aries" onclick="selSign(this,'zg-h','sh')"><span class="zs">♈</span><span class="zn">Aries</span></button>
@@ -519,9 +434,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   <!-- DREAM -->
   <div class="panel" id="panel-d">
-    <!-- DREAM PERSISTENCE -->
     <div class="dream-saved-bar" id="dream-persist-bar">
-      <div class="dsb-text" id="dream-persist-text">No dream saved today</div>
+      <div class="dsb-text" id="dream-persist-text"></div>
       <button class="dsb-clear" onclick="clearSavedDream()">✕ clear</button>
     </div>
 
@@ -533,16 +447,15 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
         </div>
       </div>
     </div>
-    <!-- EXAMPLE DREAMS -->
     <div style="margin-bottom:.25rem">
-      <span class="lbl">QUICK START — TAP TO USE</span>
+      <span class="lbl">QUICK START — TAP A DREAM</span>
       <div class="example-dreams">
         <button class="dream-example" onclick="useDreamExample('I was being chased through dark corridors and couldn\'t escape')">Being chased</button>
         <button class="dream-example" onclick="useDreamExample('I was flying high above the clouds, completely free and weightless')">Flying</button>
         <button class="dream-example" onclick="useDreamExample('My teeth were falling out one by one and I couldn\'t stop it')">Teeth falling out</button>
         <button class="dream-example" onclick="useDreamExample('I was lost inside a vast house with endless rooms I\'d never seen')">Lost in a house</button>
         <button class="dream-example" onclick="useDreamExample('A stranger appeared who felt deeply familiar, like someone I\'ve always known')">Meeting a stranger</button>
-        <button class="dream-example" onclick="useDreamExample('Someone who has passed came to visit me and we spoke as if nothing had changed')">Deceased relative visiting</button>
+        <button class="dream-example" onclick="useDreamExample('Someone who has passed came to visit me and we spoke as if nothing had changed')">Deceased relative</button>
         <button class="dream-example" onclick="useDreamExample('I was falling from a great height and woke just before I hit the ground')">Falling</button>
         <button class="dream-example" onclick="useDreamExample('I was back at school completely unprepared for an exam I didn\'t know about')">Unprepared exam</button>
       </div>
@@ -628,46 +541,18 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <div style="margin-top:1.5rem;border-top:.5px solid var(--border);padding-top:1.25rem">
     <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:var(--muted);text-align:center;margin-bottom:.85rem">WHY KAIROSCOPE</div>
     <div class="why-cards">
-      <div class="why-card">
-        <div class="why-icon">🔒</div>
-        <div class="why-title">PRIVATE BY DESIGN</div>
-        <div class="why-desc">Your dreams and journal stay on your device. No ads. No tracking. No data brokers.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-icon">🌙</div>
-        <div class="why-title">GUIDED BY THE SKY</div>
-        <div class="why-desc">Live moon phases and real astronomical calculations. Not recycled templates.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-icon">✨</div>
-        <div class="why-title">PATTERNS OVER PREDICTIONS</div>
-        <div class="why-desc">Discover recurring themes across dreams, journal entries, and cosmic cycles.</div>
-      </div>
+      <div class="why-card"><div class="why-icon">🔒</div><div class="why-title">PRIVATE BY DESIGN</div><div class="why-desc">Your dreams and journal stay on your device. No ads. No tracking. No data brokers.</div></div>
+      <div class="why-card"><div class="why-icon">🌙</div><div class="why-title">GUIDED BY THE SKY</div><div class="why-desc">Live moon phases and real astronomical calculations. Not recycled templates.</div></div>
+      <div class="why-card"><div class="why-icon">✨</div><div class="why-title">PATTERNS OVER PREDICTIONS</div><div class="why-desc">Discover recurring themes across dreams, journal entries, and cosmic cycles.</div></div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;text-align:center;margin-top:.85rem">
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 1</div>
-        <div style="width:1px;height:16px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Read your horoscope</div>
-      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 1</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Read your horoscope</div></div>
       <div style="color:var(--border2);font-size:10px;margin-top:6px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 7</div>
-        <div style="width:1px;height:16px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Interpret dreams</div>
-      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 7</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Interpret dreams</div></div>
       <div style="color:var(--border2);font-size:10px;margin-top:6px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 30</div>
-        <div style="width:1px;height:16px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Build your journal</div>
-      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 30</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Build your journal</div></div>
       <div style="color:var(--border2);font-size:10px;margin-top:6px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 90</div>
-        <div style="width:1px;height:16px;background:var(--border)"></div>
-        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Discover your patterns</div>
-      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 90</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Discover your patterns</div></div>
     </div>
     <div style="text-align:center;margin-top:.75rem;font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">A personal archive of your inner life.</div>
   </div>
@@ -696,7 +581,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <div class="pw-icon">✨</div>
   <div class="pw-title">YOUR STORY IS UNFOLDING</div>
   <div class="pw-sub">You've begun something. Continue discovering the patterns beneath the surface.</div>
-  <div class="pw-stats" id="pw-stats">
+  <div class="pw-stats">
     <div class="pw-stat"><div class="pw-stat-num" id="pw-stat-readings">0</div><div class="pw-stat-lbl">READINGS</div></div>
     <div class="pw-stat"><div class="pw-stat-num" id="pw-stat-dreams">0</div><div class="pw-stat-lbl">DREAMS</div></div>
     <div class="pw-stat"><div class="pw-stat-num" id="pw-stat-days">0</div><div class="pw-stat-lbl">DAYS</div></div>
@@ -735,177 +620,73 @@ const APP={
 };
 
 
-// ============================================================
-// MOON PHASE ENERGY DESCRIPTIONS
-// ============================================================
-const MOON_ENERGY = {
-  'new-moon': 'New beginnings. Plant seeds of intention. What are you calling in?',
-  'waxing-crescent': 'Momentum builds. Take the first steps toward what you want.',
-  'first-quarter': 'Decision point. Push through resistance. Take action.',
-  'waxing-gibbous': 'Refinement. Almost there. Fine-tune your path.',
-  'full-moon': 'Peak clarity. Completion and revelation. What is being illuminated?',
-  'waning-gibbous': 'Integration. Share what you have learned. Gratitude.',
-  'last-quarter': 'Release what no longer serves. Let go with intention.',
-  'waning-crescent': 'Rest and reflection. Surrender. Prepare to begin again.'
-};
+const MOON_ENERGY={'new-moon':'New beginnings. Plant seeds of intention. What are you calling in?','waxing-crescent':'Momentum builds. Take the first steps toward what you want.','first-quarter':'Decision point. Push through resistance. Take action.','waxing-gibbous':'Refinement. Almost there. Fine-tune your path.','full-moon':'Peak clarity. Completion and revelation. What is being illuminated?','waning-gibbous':'Integration. Share what you have learned. Gratitude.','last-quarter':'Release what no longer serves. Let go with intention.','waning-crescent':'Rest and reflection. Surrender. Prepare to begin again.'};
 
 function updateMoonEnergy(){
-  const phase = APP.currentPhase;
-  const emoji = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'].indexOf(phase)];
-  const name = phase.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  const desc = MOON_ENERGY[phase] || '';
-  const phEl = document.getElementById('me-phase-h');
-  const nameEl = document.getElementById('me-name-h');
-  const descEl = document.getElementById('me-desc-h');
-  if(phEl) phEl.textContent = emoji;
-  if(nameEl) nameEl.textContent = name.toUpperCase() + ' ENERGY';
-  if(descEl) descEl.textContent = desc;
+  const phase=APP.currentPhase;
+  const idx=['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'].indexOf(phase);
+  const emoji=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][idx]||'🌙';
+  const name=phase.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const phEl=document.getElementById('me-phase-h');
+  const nameEl=document.getElementById('me-name-h');
+  const descEl=document.getElementById('me-desc-h');
+  if(phEl)phEl.textContent=emoji;
+  if(nameEl)nameEl.textContent=name.toUpperCase()+' ENERGY';
+  if(descEl)descEl.textContent=MOON_ENERGY[phase]||'';
 }
 
-// ============================================================
-// DREAM PERSISTENCE
-// ============================================================
-function saveDreamToday(text){
-  APP.savedDreamToday = text;
-  localStorage.setItem('k_dream_today', text);
-  updateDreamPersistBar();
-}
-
-function clearSavedDream(){
-  APP.savedDreamToday = '';
-  localStorage.removeItem('k_dream_today');
-  updateDreamPersistBar();
-}
-
+function saveDreamToday(text){APP.savedDreamToday=text;localStorage.setItem('k_dream_today',text);updateDreamPersistBar();}
+function clearSavedDream(){APP.savedDreamToday='';localStorage.removeItem('k_dream_today');updateDreamPersistBar();const cd=document.getElementById('combined-dream');if(cd)cd.value='';}
 function updateDreamPersistBar(){
-  const bar = document.getElementById('dream-persist-bar');
-  const txt = document.getElementById('dream-persist-text');
-  if(!bar) return;
-  if(APP.savedDreamToday){
-    bar.classList.add('on');
-    txt.textContent = '"' + APP.savedDreamToday.slice(0,60) + (APP.savedDreamToday.length>60?'...':'"');
-    // Also populate combined dream field
-    const cd = document.getElementById('combined-dream');
-    if(cd && !cd.value) cd.value = APP.savedDreamToday;
-  } else {
-    bar.classList.remove('on');
-  }
+  const bar=document.getElementById('dream-persist-bar'),txt=document.getElementById('dream-persist-text');
+  if(!bar)return;
+  if(APP.savedDreamToday){bar.classList.add('on');txt.textContent='"'+APP.savedDreamToday.slice(0,60)+(APP.savedDreamToday.length>60?'...':"');const cd=document.getElementById('combined-dream');if(cd&&!cd.value)cd.value=APP.savedDreamToday;}
+  else{bar.classList.remove('on');}
 }
-
-// ============================================================
-// EXAMPLE DREAMS
-// ============================================================
-function useDreamExample(text){
-  const ta = document.getElementById('dream-input');
-  if(ta){
-    ta.value = text;
-    ta.focus();
-    document.getElementById('btn-d').disabled = false;
-  }
-}
-
-// ============================================================
-// STRUCTURED READING PARSER
-// ============================================================
+function useDreamExample(text){const ta=document.getElementById('dream-input');if(ta){ta.value=text;ta.focus();document.getElementById('btn-d').disabled=false;}}
 function parseStructuredReading(text){
-  // Try to break AI response into sections
-  // Look for natural paragraph breaks
-  const paragraphs = text.split(/\n\n+/).filter(p=>p.trim().length>20);
-  if(paragraphs.length < 2) return null; // too short to structure
-  
-  const sections = [];
-  const labels = ['COSMIC THEME','FOCUS','WATCH FOR','DEEPER CURRENT'];
-  
-  // Take first sentence of first paragraph as theme
-  const firstSentenceMatch = paragraphs[0].match(/^([^.!?]+[.!?])/);
-  if(firstSentenceMatch){
-    sections.push({label:'COSMIC THEME', text: firstSentenceMatch[1].trim()});
-    // Rest goes to full reading
-  }
-  
-  if(paragraphs.length > 1){
-    sections.push({label:'FOCUS', text: paragraphs[1].trim().slice(0,150) + (paragraphs[1].length>150?'...':'')});
-  }
-  if(paragraphs.length > 2){
-    sections.push({label:'GUIDANCE', text: paragraphs[2].trim().slice(0,150) + (paragraphs[2].length>150?'...':'')});
-  }
-  
-  return {sections, full: text};
+  const paragraphs=text.split(/\n\n+/).filter(p=>p.trim().length>20);
+  if(paragraphs.length<2)return null;
+  const sections=[];
+  const m=paragraphs[0].match(/^([^.!?]+[.!?])/);
+  if(m)sections.push({label:'COSMIC THEME',text:m[1].trim()});
+  if(paragraphs.length>1)sections.push({label:'FOCUS',text:paragraphs[1].trim().slice(0,180)+(paragraphs[1].length>180?'...':'')});
+  if(paragraphs.length>2)sections.push({label:'GUIDANCE',text:paragraphs[2].trim().slice(0,180)+(paragraphs[2].length>180?'...':'')});
+  return{sections,full:text};
 }
-
-function showStructuredResult(box, icon, title, sub, text, lockMsg){
+function showStructuredResult(box,icon,title,sub,text,lockMsg){
   box.classList.add('on');
-  const lockHtml = lockMsg ? `<div class="reading-lock">${lockMsg}</div>` : '';
-  const structured = parseStructuredReading(text);
-  
+  const lockHtml=lockMsg?`<div class="reading-lock">${lockMsg}</div>`:'';
+  const s=parseStructuredReading(text);
   let bodyHtml;
-  if(structured && structured.sections.length >= 2){
-    const sectionsHtml = structured.sections.map(s=>
-      `<div class="rs-section"><div class="rs-label">${s.label}</div><div class="rs-text">${s.text}</div></div>`
-    ).join('');
-    bodyHtml = `<div class="reading-sections">${sectionsHtml}</div>
-    <button class="rs-expand" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'↑ COLLAPSE FULL READING':'↓ READ FULL READING'">↓ READ FULL READING</button>
-    <div class="rs-full"></div>`;
-  } else {
-    bodyHtml = `<div class="rbody"></div>`;
-  }
-  
-  box.innerHTML = `<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div>${bodyHtml}<div class="divider"></div>${lockHtml}`;
-  
+  if(s&&s.sections.length>=2){
+    const sh=s.sections.map(sec=>`<div class="rs-section"><div class="rs-label">${sec.label}</div><div class="rs-text">${sec.text}</div></div>`).join('');
+    bodyHtml=`<div class="reading-sections">${sh}</div><button class="rs-expand" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'↑ COLLAPSE':'↓ READ FULL READING'">↓ READ FULL READING</button><div class="rs-full"></div>`;
+  }else{bodyHtml=`<div class="rbody"></div>`;}
+  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div>${bodyHtml}<div class="divider"></div>${lockHtml}`;
   chimeSound();
-  
-  // Animate the text
-  if(structured && structured.sections.length >= 2){
-    // Reveal section texts word by word
-    const rsFull = box.querySelector('.rs-full');
-    if(rsFull) revealWords(rsFull, text);
-    // Also fill sections
-    box.querySelectorAll('.rs-text').forEach((el,i)=>{
-      if(structured.sections[i]) el.textContent = structured.sections[i].text;
-    });
-  } else {
-    revealWords(box.querySelector('.rbody'), text);
-  }
-  
+  if(s&&s.sections.length>=2){const rf=box.querySelector('.rs-full');if(rf)revealWords(rf,text);box.querySelectorAll('.rs-text').forEach((el,i)=>{if(s.sections[i])el.textContent=s.sections[i].text;});}
+  else{revealWords(box.querySelector('.rbody'),text);}
   box.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-
-// ============================================================
-// PAYWALL STATS
-// ============================================================
 function updatePaywallStats(){
-  const readings = parseInt(localStorage.getItem('k_readings_count')||'0');
-  const dreams = getJournal().length;
-  const firstVisit = localStorage.getItem('k_first_visit');
-  if(!firstVisit) localStorage.setItem('k_first_visit', Date.now());
-  const days = firstVisit ? Math.max(1, Math.ceil((Date.now()-parseInt(firstVisit))/(86400000))) : 1;
-  
-  const rEl = document.getElementById('pw-stat-readings');
-  const dEl = document.getElementById('pw-stat-dreams');
-  const dyEl = document.getElementById('pw-stat-days');
-  if(rEl) rEl.textContent = readings;
-  if(dEl) dEl.textContent = dreams;
-  if(dyEl) dyEl.textContent = days;
+  const r=parseInt(localStorage.getItem('k_readings_count')||'0');
+  const d=getJournal().length;
+  const f=localStorage.getItem('k_first_visit')||Date.now();
+  const dy=Math.max(1,Math.ceil((Date.now()-parseInt(f))/86400000));
+  const rEl=document.getElementById('pw-stat-readings'),dEl=document.getElementById('pw-stat-dreams'),dyEl=document.getElementById('pw-stat-days');
+  if(rEl)rEl.textContent=r;if(dEl)dEl.textContent=d;if(dyEl)dyEl.textContent=dy;
 }
-
-// ============================================================
-// LANGUAGE SELECTION
-// ============================================================
 function setLanguage(lang){
-  APP.language = lang;
-  localStorage.setItem('k_lang', lang);
+  APP.language=lang;localStorage.setItem('k_lang',lang);
   Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')).forEach(k=>localStorage.removeItem(k));
-  const sel = document.getElementById('lang-select');
-  if(sel){ sel.style.borderColor='var(--gold)'; setTimeout(()=>sel.style.borderColor='',800); }
+  const sel=document.getElementById('lang-select');
+  if(sel){sel.style.borderColor='var(--gold)';setTimeout(()=>sel.style.borderColor='',800);}
 }
-
 (function(){
-  const saved = localStorage.getItem('k_lang') || 'English';
-  APP.language = saved;
-  setTimeout(()=>{
-    const sel = document.getElementById('lang-select');
-    if(sel) sel.value = saved;
-  }, 0);
+  const saved=localStorage.getItem('k_lang')||'English';
+  APP.language=saved;
+  setTimeout(()=>{const sel=document.getElementById('lang-select');if(sel)sel.value=saved;},0);
 })();
 
 const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -1253,9 +1034,7 @@ async function doReading(type){
 
   // NOT CACHED — generate fresh reading
   if(!APP.isPro){APP.free--;updateFree();}
-  // Track total readings for paywall stats
-  const rc = parseInt(localStorage.getItem('k_readings_count')||'0');
-  localStorage.setItem('k_readings_count', rc+1);
+  const rc=parseInt(localStorage.getItem('k_readings_count')||'0');localStorage.setItem('k_readings_count',rc+1);
   btn.disabled=true;showLoading(box);
   const chartCtx=buildChartCtx();
   const PROMPTS={
@@ -1272,11 +1051,7 @@ async function doReading(type){
     const text=await callAI(PROMPTS[type],SYSTEMS[type]);
     const[icon,title,sub]=HEADS[type];
     const lockMsg=type!=='d'?getNextRefreshMsg(APP.period):null;
-    if(type==='h'||type==='c'){
-      showStructuredResult(box,icon,title,sub,text,lockMsg);
-    } else {
-      showResult(box,icon,title,sub,text,lockMsg);
-    }
+    if(type==='h'||type==='c'){showStructuredResult(box,icon,title,sub,text,lockMsg);}else{showResult(box,icon,title,sub,text,lockMsg);}
 
     // SAVE TO CACHE — horoscope and combined only
     if(type!=='d'){
@@ -1285,12 +1060,7 @@ async function doReading(type){
       if(cacheKey)saveReading(cacheKey,{text,heads:HEADS[type],period:APP.period});
     }
 
-    if(type==='d'){
-      APP.lastDreamText=document.getElementById('dream-input').value.trim();
-      APP.lastDreamInterp=text;
-      document.getElementById('save-dream-wrap').style.display='block';
-      saveDreamToday(APP.lastDreamText);
-    }
+    if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=text;document.getElementById('save-dream-wrap').style.display='block';saveDreamToday(APP.lastDreamText);}
   }catch(e){
     box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
   }
@@ -1835,7 +1605,7 @@ function chimeSound(){
 document.getElementById('audio-label').textContent='';
 updateMoonEnergy();
 updateDreamPersistBar();
-if(!localStorage.getItem('k_first_visit')) localStorage.setItem('k_first_visit', Date.now());
+if(!localStorage.getItem('k_first_visit'))localStorage.setItem('k_first_visit',Date.now());
 </script>
 <!-- PRIVACY POLICY MODAL -->
 <div class="modal-overlay" id="modal-privacy">
