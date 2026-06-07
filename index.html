@@ -1841,10 +1841,10 @@ function applyLanguageToSleep(){
   set('sleep-sound-lbl',T.soundLbl);
   set('sleep-timer-lbl',T.timerLbl+' ');
   set('sleep-wake-lbl',T.wakeLbl+' ');
-  set('sleep-cta','✦ '+T.cta.replace(/✦\s*/g,'').trim()+' ✦');
-  set('sleep-start-day','✦ '+T.startDay.replace(/✦\s*/g,'').trim()+' ✦');
+  const ctaEl=document.getElementById('sleep-cta');if(ctaEl&&!SLEEP_STATE.sleeping)ctaEl.textContent=T.cta;
+  const sdEl=document.getElementById('sleep-start-day');if(sdEl)sdEl.textContent=T.startDay;
   set('sleep-pro-note',T.proNote);
-  document.getElementById('sleep-mode-btn').textContent='☽ '+(lang==='English'?'SLEEP MODE':T.timerLbl.split(' ')[0]+' MODE');
+  document.getElementById('sleep-mode-btn').textContent='☽ SLEEP MODE';
   // Sound pill labels
   const sPills=document.querySelectorAll('#sleep-sound-pills .sleep-pill');
   const sLabels=[T.holy,T.pink,T.brown,T.ocean];
