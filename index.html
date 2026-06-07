@@ -135,6 +135,12 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .conn-person{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.12);border-radius:12px;padding:.85rem 1rem;cursor:pointer;transition:all .2s}
 .conn-person:hover{border-color:rgba(200,175,255,0.3);background:rgba(200,175,255,0.07)}
 .conn-person-top{display:flex;align-items:center;justify-content:space-between}
+
+.conn-read-btns{display:flex;gap:5px;margin-top:.6rem;flex-wrap:wrap}
+.conn-read-btn{flex:1;min-width:80px;padding:5px 8px;border-radius:8px;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.08em;color:rgba(200,175,255,0.45);border:.5px solid rgba(200,175,255,0.12);background:transparent;cursor:pointer;transition:all .2s;text-align:center}
+.conn-read-btn:hover{border-color:rgba(200,175,255,0.35);color:rgba(200,175,255,0.8);background:rgba(200,175,255,0.06)}
+.conn-read-btn.pro-lock{opacity:.4}
+
 .conn-person-name{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:rgba(200,175,255,0.8)}
 .conn-person-rel{font-size:14px}
 .conn-person-signs{font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.45);margin-top:3px;font-style:italic}
@@ -2099,6 +2105,7 @@ function renderPeople(){
     if(p.chart.sun) signs+=`☀ ${p.chart.sun}`;
     if(p.chart.moon) signs+=`  ☽ ${p.chart.moon}`;
     if(p.chart.rising) signs+=`  ↑ ${p.chart.rising}`;
+    const isCrush = p.rel.includes('Crush');
     d.innerHTML=`
       <div class="conn-person-top">
         <div>
@@ -2109,8 +2116,15 @@ function renderPeople(){
           <div class="conn-person-signs">${signs||'Chart calculating...'}</div>
         </div>
         <button class="conn-person-delete" onclick="event.stopPropagation();deletePerson(${p.id})">✕</button>
+      </div>
+      <div class="conn-read-btns">
+        <button class="conn-read-btn" onclick="event.stopPropagation();getCompatibility(p_${p.id})">◈ Compatibility</button>
+        <button class="conn-read-btn" onclick="event.stopPropagation();getJointReading(p_${p.id},'weekly')">◇ This Week</button>
+        <button class="conn-read-btn" onclick="event.stopPropagation();getJointReading(p_${p.id},'monthly')">◉ This Month</button>
+        <button class="conn-read-btn ${APP.isPro?'':'pro-lock'}" onclick="event.stopPropagation();${APP.isPro?'getTheirReading(p_'+p.id+')':'document.getElementById(\'paywall\').classList.add(\'on\')'}">✦ Their Day${APP.isPro?'':' · PRO'}</button>
       </div>`;
-    d.onclick=()=>getCompatibility(p);
+    window['p_'+p.id]=p;
+    d.style.cursor='default';
     el.appendChild(d);
   });
 }
@@ -2247,6 +2261,131 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
       localStorage.setItem('k_last_compat',Date.now());
       freeNote.textContent='Free compatibility reading used. Upgrade to Pro for unlimited readings.';
     }
+  } catch(e){
+    txt.textContent='The connection slipped away. Try again.';
+  }
+}
+
+
+// ============================================================
+// JOINT READING — how are our combined energies this period?
+// ============================================================
+async function getJointReading(person, period){
+  if(!APP.isPro){
+    const lastComp=localStorage.getItem('k_last_compat');
+    if(lastComp&&(Date.now()-parseInt(lastComp))<(30*24*60*60*1000)){
+      document.getElementById('paywall').classList.add('on');
+      return;
+    }
+  }
+  const reading=document.getElementById('conn-reading');
+  const txt=document.getElementById('conn-reading-text');
+  const title=document.getElementById('conn-reading-title');
+  const scoreEl=document.getElementById('conn-score');
+  const freeNote=document.getElementById('conn-free-note');
+
+  reading.classList.add('on');
+  reading.scrollIntoView({behavior:'smooth',block:'nearest'});
+  scoreEl.style.display='none';
+  title.textContent=`YOU & ${person.name.toUpperCase()} · ${period.toUpperCase()}`;
+  txt.textContent='Reading your combined energies...';
+  freeNote.textContent='';
+
+  const mySign=APP.chart.sun||'unknown';
+  const theirSign=person.chart.sun||'unknown';
+  const isCrush=person.rel.includes('Crush');
+  const planets=getCurrentPlanets();
+  const moonPhase=APP.currentPhase.replace(/-/g,' ');
+
+  // Key transits affecting both
+  const transitNotes=[];
+  Object.entries(planets).forEach(([name,p])=>{
+    if(name==='jd')return;
+    const aspMine=getAspect(p.lon, (APP.chart.sunDeg||0));
+    const aspTheirs=getAspect(p.lon, (person.chart.sunDeg||0));
+    if(aspMine&&aspTheirs) transitNotes.push(`${name} ${aspMine} your chart and ${aspTheirs} ${person.name}'s chart simultaneously`);
+    else if(aspMine) transitNotes.push(`${name} in ${lonToSign(p.lon)} — ${aspMine} your chart`);
+    else if(aspTheirs) transitNotes.push(`${name} in ${lonToSign(p.lon)} — ${aspTheirs} ${person.name}'s chart`);
+  });
+
+  const crushGuardrail = isCrush ? `
+IMPORTANT: This is about a crush/unrequited or uncertain connection. Frame the reading around self-reflection and what this connection reveals about the user — NOT about how to pursue, win over, or read signals from the other person. Never suggest "now is the time to make a move" or create false hope. Focus on what feelings this person activates in the user and what that reveals about their own growth.` : '';
+
+  const prompt=`JOINT ${period.toUpperCase()} READING:
+
+YOUR CHART: Sun in ${mySign}${APP.chart.moon?', Moon in '+APP.chart.moon:''}${APP.chart.rising?', Rising in '+APP.chart.rising:''}
+${person.name.toUpperCase()}'S CHART: Sun in ${theirSign}${person.chart.moon?', Moon in '+person.chart.moon:''}${person.chart.rising?', Rising in '+person.chart.rising:''}
+RELATIONSHIP: ${person.rel}
+MOON PHASE: ${moonPhase}
+
+CURRENT TRANSITS AFFECTING THIS CONNECTION:
+${transitNotes.slice(0,5).join('\n')||'General planetary influences active'}
+${crushGuardrail}
+
+Write a ${period} joint reading for this connection. How do the current planetary transits affect their dynamic this ${period==='weekly'?'week':'month'}? What themes are alive between them? What does this period call them each to bring? 3-4 paragraphs. Poetic, insightful, grounded in the actual transits. Gender-neutral.`;
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:700,
+        system:`You are Kairoscope — a master astrologer specialising in relationship astrology and synastry. Write joint readings that illuminate what a period means for two people's connection — grounded in real transits, poetically expressed. Never predict outcomes or encourage pursuit. Focus on growth, reflection, and what each person is called to bring.${isCrush?' For crush connections: focus entirely on self-reflection and personal growth, never on how to win someone over.':''}`,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    txt.textContent=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
+    if(!APP.isPro) localStorage.setItem('k_last_compat',Date.now());
+  } catch(e){
+    txt.textContent='The connection slipped away. Try again.';
+  }
+}
+
+// ============================================================
+// THEIR READING — daily horoscope for the other person (Pro)
+// ============================================================
+async function getTheirReading(person){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
+  const reading=document.getElementById('conn-reading');
+  const txt=document.getElementById('conn-reading-text');
+  const title=document.getElementById('conn-reading-title');
+  const scoreEl=document.getElementById('conn-score');
+  const freeNote=document.getElementById('conn-free-note');
+
+  reading.classList.add('on');
+  reading.scrollIntoView({behavior:'smooth',block:'nearest'});
+  scoreEl.style.display='none';
+  freeNote.textContent='';
+  title.textContent=`${person.name.toUpperCase()}'S DAY`;
+  txt.textContent='Reading their cosmic moment...';
+
+  const theirSign=person.chart.sun||'unknown';
+  const isCrush=person.rel.includes('Crush');
+  const astroCtx=buildAstroContext(theirSign,'today');
+  const fullAstro=astroContextToPrompt(astroCtx);
+
+  const crushGuardrail=isCrush?`
+IMPORTANT: Frame this reading purely as insight into who this person is and what they may be experiencing — not as intelligence to be used to pursue or approach them. This is about understanding, empathy, and reflection — not strategy.`:'';
+
+  const prompt=`${fullAstro}
+
+Write a daily horoscope for ${person.name} (${theirSign}). This is being read by someone who cares about them — ${person.rel}. Help the reader understand what ${person.name} may be experiencing today, what energies are moving through them, and what they may need. 3 paragraphs. Poetic, empathetic, insightful.${crushGuardrail}`;
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:600,
+        system:`You are Kairoscope — writing a daily reading for someone else, seen through the eyes of a person who cares about them. Help the reader understand what their person may be experiencing astrologically. Poetic, empathetic, technically grounded. Never encourage pursuit or manipulation.`,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    txt.textContent=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
   } catch(e){
     txt.textContent='The connection slipped away. Try again.';
   }
