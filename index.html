@@ -2449,7 +2449,7 @@ function playWakeSound(sound){
     rev.buffer=rb;const rg=sleepGain(.5);rev.connect(rg);rg.connect(master);
     [[110,.09],[220,.06],[165,.05],[330,.03],[440,.02]].forEach(([f,peak],i)=>{
       const o=sleepOsc(f);const o2=sleepOsc(f*1.0025);const g=sleepGain(0);
-      swellG(g,peak,swell*(0.3+i*.12));
+      swellG(g,peak,20*(0.3+i*.12));
       o.connect(g);o2.connect(g);g.connect(master);g.connect(rev);
       o.start();o2.start();ns.push(o,o2);
     });
@@ -2457,7 +2457,7 @@ function playWakeSound(sound){
     const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,8);src.loop=true;
     const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
     const lpf2=ctx.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=350;
-    const g=sleepGain(0);swellG(g,.2,swell);
+    const g=sleepGain(0);swellG(g,.2,20);
     const wl1=sleepOsc(.08);const wg1=sleepGain(.12);wl1.connect(wg1);wg1.connect(g.gain);
     const wl2=sleepOsc(.055);const wg2=sleepGain(.06);wl2.connect(wg2);wg2.connect(g.gain);
     src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(master);
@@ -2466,7 +2466,7 @@ function playWakeSound(sound){
     // Breeze first then crystal pings increase
     const bsrc=ctx.createBufferSource();bsrc.buffer=pinkBuf(ctx,6);bsrc.loop=true;
     const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
-    const bg=sleepGain(0);swellG(bg,.055,swell*.45);
+    const bg=sleepGain(0);swellG(bg,.055,8);
     const glfo=sleepOsc(.04);const gg=sleepGain(.025);glfo.connect(gg);gg.connect(bg.gain);
     bsrc.connect(lpf);lpf.connect(bg);bg.connect(master);bsrc.start();glfo.start();ns.push(bsrc,glfo);
     const pingFreqs=[1047,1175,1319,1568,1760,2093];
@@ -3988,19 +3988,19 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
   <div class="sleep-pills" id="sleep-wake-pills">
     <div style="display:flex;align-items:center;gap:5px;width:100%">
       <button class="sleep-pill on" data-wake="bowl" onclick="selectWakeSound(this,'bowl')" style="flex:1">Sunrise bowl</button>
-      <button onclick="toggleWakePreview('bowl')" id="prev-bowl" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+      <button onclick="toggleWakePreview('bowl')" id="prev-bowl" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer;letter-spacing:.05em">▶</button>
     </div>
     <div style="display:flex;align-items:center;gap:5px;width:100%">
       <button class="sleep-pill" data-wake="ocean" onclick="selectWakeSound(this,'ocean')" style="flex:1">Ocean tide</button>
-      <button onclick="toggleWakePreview('ocean')" id="prev-ocean" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+      <button onclick="toggleWakePreview('ocean')" id="prev-ocean" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer;letter-spacing:.05em">▶</button>
     </div>
     <div style="display:flex;align-items:center;gap:5px;width:100%">
       <button class="sleep-pill" data-wake="holy" onclick="selectWakeSound(this,'holy')" style="flex:1">Holy Light</button>
-      <button onclick="toggleWakePreview('holy')" id="prev-holy" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+      <button onclick="toggleWakePreview('holy')" id="prev-holy" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer;letter-spacing:.05em">▶</button>
     </div>
     <div style="display:flex;align-items:center;gap:5px;width:100%">
       <button class="sleep-pill" data-wake="cosmic" onclick="selectWakeSound(this,'cosmic')" style="flex:1">Cosmic dawn</button>
-      <button onclick="toggleWakePreview('cosmic')" id="prev-cosmic" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+      <button onclick="toggleWakePreview('cosmic')" id="prev-cosmic" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer;letter-spacing:.05em">▶</button>
     </div>
   </div>
   <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.4);text-align:center;margin-top:.25rem;margin-bottom:.5rem">▶ tap to preview each sound</div>
