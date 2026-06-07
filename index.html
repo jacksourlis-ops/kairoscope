@@ -2126,6 +2126,225 @@ function calcChart(){
 
 
 
+
+// ============================================================
+// FULL PLANETARY CALCULATION ENGINE
+// ============================================================
+
+// Mean orbital elements (simplified VSOP87)
+function mercuryLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L=norm360(252.2509+149472.6746*T);
+  const M=norm360(168.6562+479264.2855*T);
+  const Mr=toRad(M);
+  return norm360(L+6.7452*Math.sin(Mr)+0.4628*Math.sin(2*Mr));
+}
+function venusLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L=norm360(181.9798+58517.8157*T);
+  const M=norm360(50.1327+115519.4700*T);
+  const Mr=toRad(M);
+  return norm360(L+0.7758*Math.sin(Mr)+0.0033*Math.sin(2*Mr));
+}
+function marsLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L=norm360(355.4330+19140.2939*T);
+  const M=norm360(319.5294+19139.8585*T);
+  const Mr=toRad(M);
+  return norm360(L+10.6912*Math.sin(Mr)+0.6228*Math.sin(2*Mr)+0.0503*Math.sin(3*Mr));
+}
+function jupiterLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L=norm360(34.3515+3034.9057*T);
+  const M=norm360(20.9274+3034.6960*T);
+  const Mr=toRad(M);
+  return norm360(L+5.5549*Math.sin(Mr)+0.1683*Math.sin(2*Mr));
+}
+function saturnLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L=norm360(50.0774+1222.1138*T);
+  const M=norm360(317.3599+1222.1140*T);
+  const Mr=toRad(M);
+  return norm360(L+6.3585*Math.sin(Mr)+0.2204*Math.sin(2*Mr));
+}
+function uranusLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L=norm360(314.0550+428.4612*T);
+  const M=norm360(141.3736+428.4748*T);
+  const Mr=toRad(M);
+  return norm360(L+5.3042*Math.sin(Mr)+0.1534*Math.sin(2*Mr));
+}
+function neptuneLongitude(jd){
+  const T=(jd-2451545)/36525;
+  const L=norm360(304.3486+218.4581*T);
+  const M=norm360(256.2233+218.4699*T);
+  const Mr=toRad(M);
+  return norm360(L+1.0261*Math.sin(Mr));
+}
+
+// Sign data
+const SIGN_DATA={
+  Aries:{el:'Fire',mod:'Cardinal',ruler:'Mars',house:1},
+  Taurus:{el:'Earth',mod:'Fixed',ruler:'Venus',house:2},
+  Gemini:{el:'Air',mod:'Mutable',ruler:'Mercury',house:3},
+  Cancer:{el:'Water',mod:'Cardinal',ruler:'Moon',house:4},
+  Leo:{el:'Fire',mod:'Fixed',ruler:'Sun',house:5},
+  Virgo:{el:'Earth',mod:'Mutable',ruler:'Mercury',house:6},
+  Libra:{el:'Air',mod:'Cardinal',ruler:'Venus',house:7},
+  Scorpio:{el:'Water',mod:'Fixed',ruler:'Pluto',house:8},
+  Sagittarius:{el:'Fire',mod:'Mutable',ruler:'Jupiter',house:9},
+  Capricorn:{el:'Earth',mod:'Cardinal',ruler:'Saturn',house:10},
+  Aquarius:{el:'Air',mod:'Fixed',ruler:'Uranus',house:11},
+  Pisces:{el:'Water',mod:'Mutable',ruler:'Neptune',house:12}
+};
+
+const HOUSE_MEANINGS={
+  1:'identity & self-expression',2:'finances & self-worth',3:'communication & mind',
+  4:'home & emotional roots',5:'creativity & romance',6:'health & daily work',
+  7:'partnerships & relationships',8:'transformation & shared resources',
+  9:'philosophy & higher learning',10:'career & public reputation',
+  11:'friendships & future visions',12:'subconscious & spiritual secrets'
+};
+
+const PLANET_MEANINGS={
+  Sun:'core identity and vitality',Moon:'emotions and instincts',
+  Mercury:'communication and thought',Venus:'love and values',
+  Mars:'drive and action',Jupiter:'expansion and luck',
+  Saturn:'discipline and structure',Uranus:'innovation and disruption',
+  Neptune:'dreams and spirituality'
+};
+
+function getAspect(a, b){
+  const diff = Math.abs(((a-b)%360+360)%360);
+  const d = diff>180?360-diff:diff;
+  if(Math.abs(d-0)<8) return 'conjunct';
+  if(Math.abs(d-60)<6) return 'sextile';
+  if(Math.abs(d-90)<6) return 'square';
+  if(Math.abs(d-120)<8) return 'trine';
+  if(Math.abs(d-180)<8) return 'opposite';
+  return null;
+}
+
+// House that a transiting planet falls in relative to natal ascendant
+function transitHouse(planetLon, ascLon){
+  const diff = norm360(planetLon - ascLon);
+  return Math.floor(diff/30)+1;
+}
+
+// Calculate ALL current planetary positions
+function getCurrentPlanets(){
+  const now = new Date();
+  const jd = julianDay(now.getFullYear(), now.getMonth()+1, now.getDate(), now.getHours()+now.getMinutes()/60);
+  return {
+    jd,
+    Sun:   {lon:sunLongitude(jd),    name:'Sun'},
+    Moon:  {lon:moonLongitude(jd),   name:'Moon'},
+    Mercury:{lon:mercuryLongitude(jd),name:'Mercury'},
+    Venus: {lon:venusLongitude(jd),  name:'Venus'},
+    Mars:  {lon:marsLongitude(jd),   name:'Mars'},
+    Jupiter:{lon:jupiterLongitude(jd),name:'Jupiter'},
+    Saturn:{lon:saturnLongitude(jd), name:'Saturn'},
+    Uranus:{lon:uranusLongitude(jd), name:'Uranus'},
+    Neptune:{lon:neptuneLongitude(jd),name:'Neptune'},
+  };
+}
+
+// Build full astrological context for reading
+function buildAstroContext(userSign, period){
+  const planets = getCurrentPlanets();
+  const signIdx = SIGNS.indexOf(userSign);
+  const signLon = signIdx * 30 + 15; // midpoint of sign
+  const sd = SIGN_DATA[userSign]||{};
+
+  // Sign of each planet right now
+  const planetSigns = {};
+  Object.entries(planets).forEach(([name,p])=>{
+    if(name==='jd') return;
+    planetSigns[name] = lonToSign(p.lon);
+  });
+
+  // Key transits — find planets in same sign as user or aspecting user's sign
+  const keyTransits = [];
+  Object.entries(planets).forEach(([name,p])=>{
+    if(name==='jd') return;
+    const asp = getAspect(p.lon, signLon);
+    if(asp) keyTransits.push({planet:name, sign:lonToSign(p.lon), aspect:asp, lon:p.lon});
+  });
+
+  // Find most significant transit (conjunct > trine > sextile > square > opposite)
+  const aspRank = {conjunct:0,trine:1,sextile:2,square:3,opposite:4};
+  keyTransits.sort((a,b)=>(aspRank[a.aspect]??5)-(aspRank[b.aspect]??5));
+
+  // Moon phase
+  const moonSunAngle = norm360(planets.Moon.lon - planets.Sun.lon);
+  const moonPhaseAngle = Math.round(moonSunAngle);
+
+  // Current retrograde planets (simplified — based on known 2025/2026 retrogrades)
+  const now = new Date();
+  const month = now.getMonth()+1;
+  const retrograde = [];
+  // Mercury retrograde periods 2026: roughly Mar-Apr, Jul-Aug, Nov-Dec
+  if((month>=3&&month<=4)||(month>=7&&month<=8)||(month>=11&&month<=12)) retrograde.push('Mercury');
+
+  // Natal chart aspects if available
+  const natal = APP.chart;
+  const natalAspects = [];
+  if(natal.sunDeg!==undefined){
+    Object.entries(planets).forEach(([name,p])=>{
+      if(name==='jd') return;
+      const asp = getAspect(p.lon, natal.sunDeg);
+      if(asp) natalAspects.push(`${name} ${asp} natal Sun`);
+      if(natal.moonDeg!==undefined){
+        const aspM = getAspect(p.lon, natal.moonDeg);
+        if(aspM) natalAspects.push(`${name} ${aspM} natal Moon`);
+      }
+    });
+  }
+
+  return {
+    userSign, period,
+    element: sd.el||'',
+    modality: sd.mod||'',
+    ruler: sd.ruler||'',
+    planetSigns,
+    keyTransits: keyTransits.slice(0,4),
+    moonPhase: APP.currentPhase,
+    moonPhaseAngle,
+    retrograde,
+    natalAspects: natalAspects.slice(0,4),
+    natal,
+    planets
+  };
+}
+
+function astroContextToPrompt(ctx){
+  const lines = [];
+  lines.push(`SIGN: ${ctx.userSign} (${ctx.element} · ${ctx.modality} · ruled by ${ctx.ruler})`);
+  lines.push(`PERIOD: ${ctx.period}`);
+  lines.push(`\nCURRENT PLANETARY POSITIONS:`);
+  Object.entries(ctx.planetSigns).forEach(([p,s])=>lines.push(`  ${p} in ${s}`));
+  if(ctx.retrograde.length) lines.push(`  RETROGRADE: ${ctx.retrograde.join(', ')}`);
+  lines.push(`\nMOON: ${ctx.moonPhase.replace(/-/g,' ')} (${ctx.moonPhaseAngle}° from Sun)`);
+  if(ctx.keyTransits.length){
+    lines.push(`\nKEY TRANSITS TO ${ctx.userSign.toUpperCase()}:`);
+    ctx.keyTransits.forEach(t=>lines.push(`  ${t.planet} in ${t.sign} — ${t.aspect} ${ctx.userSign}`));
+  }
+  if(ctx.retrograde.length){
+    lines.push(`\nRETROGRADE INFLUENCE: ${ctx.retrograde.join(', ')} retrograde — delays and revision in those domains`);
+  }
+  if(ctx.natalAspects.length){
+    lines.push(`\nCURRENT TRANSITS TO NATAL CHART:`);
+    ctx.natalAspects.forEach(a=>lines.push(`  ${a}`));
+  }
+  if(ctx.natal.sun){
+    lines.push(`\nNATAL PLACEMENTS:`);
+    lines.push(`  Sun: ${ctx.natal.sun} ${lonToDegMin(ctx.natal.sunDeg)}`);
+    if(ctx.natal.moon) lines.push(`  Moon: ${ctx.natal.moon} ${lonToDegMin(ctx.natal.moonDeg)}`);
+    if(ctx.natal.rising) lines.push(`  Rising: ${ctx.natal.rising} ${lonToDegMin(ctx.natal.riseDeg)}`);
+  }
+  return lines.join('\n');
+}
+
 // ============================================================
 // UI HELPERS
 // ============================================================
@@ -2281,10 +2500,30 @@ function buildChartCtx(){
 }
 
 const SYSTEMS={
-  h:`You are Kairoscope — a profound, poetic cosmic guide. Write horoscopes that feel deeply personal and intelligent, never generic. Each reading should feel like the exact right message for this exact moment — the kairos. Reference specific planetary energies, weave love, purpose, and inner wisdom naturally. 3-4 paragraphs. Intelligent, mysterious, gender-neutral. No bullet points. No clichés. When natal chart data is provided make the reading unmistakably specific to that person.`,
-  d:`You are Kairoscope — a depth psychologist of dreams. Interpret dreams weaving Jungian symbolism, mythological resonance, and intuitive wisdom. Explore symbols with layered meaning, the emotional undercurrent, what threshold the dreamer stands at. End with one quiet question for reflection. 3-4 paragraphs. Poetic, intelligent, gender-neutral.`,
-  c:`You are Kairoscope — weave stars and dreams into one unified vision of someone's perfect moment. Find the resonance between the cosmos and the unconscious — show how they deliver the same message from different directions. End with one sentence of guidance — the kairos distilled. 4-5 paragraphs. Deeply personal, poetic, gender-neutral.`,
-  patterns:`You are Kairoscope — a dream pattern analyst. The user has provided their dream journal. Find recurring symbols, themes, emotional undercurrents, and patterns across their dreams. Show how these connect to their astrological nature if available. Offer profound insight into what their subconscious is processing over time. End with one guiding insight. 3-4 paragraphs. Deeply personal, poetic.`
+  h:`You are Kairoscope — a master astrologer and poetic cosmic guide with deep knowledge of traditional and modern astrology. You will be given the user's zodiac sign, current planetary positions, active transits, moon phase, and natal chart if available.
+
+Write a horoscope reading that a serious astrology devotee would find genuinely insightful. Use REAL astrological technique:
+- Reference specific planets by name and their current signs
+- Mention actual aspects (conjunctions, trines, squares, oppositions, sextiles) and what they mean
+- Speak to the element (Fire/Earth/Air/Water) and modality (Cardinal/Fixed/Mutable) of the sign
+- Reference the ruling planet and how it is behaving right now
+- Mention the moon phase and its emotional tone
+- If retrograde planets are present, address their influence
+- If natal chart is provided, speak to how current transits are activating their personal planets
+
+Your voice is lyrical, intimate, and profound — never generic. Gender-neutral. No bullet points. No clichés like "the universe is sending you a message." 4-5 rich paragraphs.
+
+Structure EXACTLY:
+COSMIC THEME: [One powerful sentence — the single astrological truth of this moment]
+FOCUS: [2-3 sentences — the primary planetary influence and what it activates]
+GUIDANCE: [2-3 sentences — specific wisdom drawn from the aspects and houses]
+FULL READING: [4-5 rich paragraphs weaving all planetary influences into a full narrative — deeply personal, technically grounded, poetically expressed]`,
+
+  d:`You are Kairoscope — a depth psychologist and dream analyst with knowledge of Jungian archetypes, mythological symbolism, and the unconscious. Interpret the dream weaving symbol analysis, emotional undercurrents, and what psychological threshold the dreamer stands at. Reference the archetypal energy of each symbol — water, houses, strangers, flight, teeth, death, animals each carry specific meanings. Connect to their astrological nature if provided. End with one quiet question for reflection. 4-5 paragraphs. Poetic, intelligent, gender-neutral.`,
+
+  c:`You are Kairoscope — weave current planetary transits and the user's dream into one unified vision. Find the resonance: how does the sky mirror what the unconscious is processing? Show how the same message arrives from two different directions — the cosmos above and the psyche below. Name the specific planets involved. End with one sentence of distilled guidance — the kairos. 4-5 paragraphs. Deeply personal, technically grounded, poetically expressed.`,
+
+  patterns:`You are Kairoscope — a dream pattern analyst and astrologer. The user has provided their dream journal. Find recurring symbols, emotional undercurrents, and archetypal patterns across their dreams. Connect to their astrological nature — how does their natal chart explain these recurring themes? What is their subconscious processing over time? End with one guiding insight. 4-5 paragraphs. Deeply personal, poetic.`
 };
 
 async function callAI(prompt,system){
@@ -2321,11 +2560,16 @@ async function doReading(type){
   if(!APP.isPro){APP.free--;updateFree();}
   const rc=parseInt(localStorage.getItem('k_readings_count')||'0');localStorage.setItem('k_readings_count',rc+1);
   btn.disabled=true;showLoading(box);
+  // Build full astrological context for horoscope and combined
+  const astroCtx=buildAstroContext(APP.sh||'Aries',APP.period||'today');
+  const fullAstroPrompt=astroContextToPrompt(astroCtx);
   const chartCtx=buildChartCtx();
+  const dreamText=document.getElementById('dream-input').value.trim();
+  const combinedDream=document.getElementById('combined-dream').value.trim()||'none given';
   const PROMPTS={
-    h:`Sign: ${APP.sh}. Period: ${APP.period}. Today: ${TODAY}. Moon: ${moonData.emoji} ${moonData.name}.${chartCtx}`,
-    d:`Dream: "${document.getElementById('dream-input').value.trim()}"${chartCtx}`,
-    c:`Sign: ${APP.sc}. Today: ${TODAY}. Moon: ${moonData.emoji} ${moonData.name}. Dream: "${document.getElementById('combined-dream').value.trim()||'none given'}".${chartCtx}`
+    h:`${fullAstroPrompt}\n\nWrite a ${APP.period} horoscope reading for ${APP.sh}. Today is ${TODAY}. Make it genuinely insightful for a serious astrology devotee — technically grounded and poetically expressed.`,
+    d:`SIGN: ${APP.sh||'unknown'}. Today: ${TODAY}. Moon: ${moonData.emoji} ${moonData.name}.${chartCtx}\n\nDREAM TO INTERPRET: "${dreamText}"\n\nInterpret this dream with depth and astrological awareness.`,
+    c:`${fullAstroPrompt}\n\nDREAM: "${combinedDream}"\n\nToday is ${TODAY}. Weave the current planetary transits and this dream into one unified insight. Show how the cosmos and the unconscious are delivering the same message.`
   };
   const HEADS={
     h:[ZI[APP.sh]||'◈',`${APP.sh}${APP.isPro&&c.moon?' · '+c.moon+' Moon':''} — ${APP.period.toUpperCase()}`,TODAY],
