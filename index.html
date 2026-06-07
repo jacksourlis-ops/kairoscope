@@ -121,6 +121,45 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .theme-toggle{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
 .theme-toggle:hover{border-color:var(--border2);color:var(--gold)}
 
+/* CONNECTIONS SCREEN */
+.conn-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9999;flex-direction:column;align-items:center;overflow-y:auto;padding:1.5rem 1.25rem 2rem}
+.conn-screen.on{display:flex}
+.conn-top{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.conn-back{background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.3);cursor:pointer;padding:0}
+.conn-back:hover{color:rgba(200,175,255,0.7)}
+.conn-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(200,175,255,0.4);text-align:center}
+.conn-your-chart{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.12);border-radius:10px;padding:.75rem 1rem;width:100%;margin-bottom:1rem;text-align:center}
+.conn-your-name{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.35);margin-bottom:4px}
+.conn-your-signs{font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.7)}
+.conn-people{display:flex;flex-direction:column;gap:8px;width:100%;margin-bottom:1rem}
+.conn-person{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.12);border-radius:12px;padding:.85rem 1rem;cursor:pointer;transition:all .2s}
+.conn-person:hover{border-color:rgba(200,175,255,0.3);background:rgba(200,175,255,0.07)}
+.conn-person-top{display:flex;align-items:center;justify-content:space-between}
+.conn-person-name{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:rgba(200,175,255,0.8)}
+.conn-person-rel{font-size:14px}
+.conn-person-signs{font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.45);margin-top:3px;font-style:italic}
+.conn-person-delete{background:none;border:none;color:rgba(200,175,255,0.2);cursor:pointer;font-size:14px;padding:0 0 0 8px}
+.conn-add{width:100%;padding:12px;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);border-radius:12px;color:rgba(200,175,255,0.6);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;cursor:pointer;transition:all .2s;margin-bottom:.75rem}
+.conn-add:hover{background:rgba(200,175,255,0.1);border-color:rgba(200,175,255,0.35)}
+.conn-form{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;width:100%;margin-bottom:.75rem;display:none}
+.conn-form.on{display:block}
+.conn-input{width:100%;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.15);border-radius:8px;padding:8px 12px;color:rgba(200,175,255,0.8);font-family:'Crimson Pro',serif;font-size:14px;margin-bottom:8px;outline:none}
+.conn-input:focus{border-color:rgba(200,175,255,0.4)}
+.conn-input::placeholder{color:rgba(200,175,255,0.25)}
+.conn-rel-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.conn-rel-pill{padding:5px 12px;border-radius:20px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;color:rgba(200,175,255,0.4);border:.5px solid rgba(200,175,255,0.1);background:transparent;cursor:pointer;transition:all .2s}
+.conn-rel-pill.on{color:rgba(200,175,255,0.9);border-color:rgba(200,175,255,0.4);background:rgba(200,175,255,0.08)}
+.conn-save-btn{width:100%;padding:10px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.25);border-radius:8px;color:rgba(200,175,255,0.8);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;cursor:pointer}
+.conn-reading{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;width:100%;margin-bottom:.75rem;display:none}
+.conn-reading.on{display:block}
+.conn-reading-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(200,175,255,0.5);margin-bottom:.75rem;text-align:center}
+.conn-reading-text{font-family:'Crimson Pro',serif;font-size:15px;color:rgba(220,210,255,0.78);line-height:1.85;font-style:italic}
+.conn-score{display:flex;align-items:center;justify-content:center;gap:10px;margin:.75rem 0}
+.conn-score-num{font-family:'Cinzel',serif;font-size:32px;color:rgba(200,175,255,0.85)}
+.conn-score-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:rgba(200,175,255,0.35)}
+.conn-free-note{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.1em;color:rgba(200,175,255,0.25);text-align:center;margin-top:.5rem}
+
+
 /* SLEEP MODE */
 .sleep-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9999;flex-direction:column;align-items:center;overflow-y:auto;padding:1.5rem 1.25rem 2rem}
 .sleep-screen.on{display:flex}
@@ -566,9 +605,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
 
-  <!-- SLEEP MODE BUTTON -->
-  <div style="text-align:center;margin:1rem 0 .5rem">
+  <!-- SLEEP MODE + CONNECTIONS BUTTONS -->
+  <div style="text-align:center;margin:1rem 0 .5rem;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
     <button onclick="openSleep()" style="background:transparent;border:.5px solid var(--border);border-radius:20px;padding:7px 18px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--muted);cursor:pointer;transition:all .2s" id="sleep-mode-btn">☽ SLEEP MODE</button>
+    <button onclick="openConnections()" style="background:transparent;border:.5px solid var(--border);border-radius:20px;padding:7px 18px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--muted);cursor:pointer;transition:all .2s" id="connections-btn">◎ PEOPLE IN MY SKY</button>
   </div>
 
   <!-- WHY KAIROSCOPE -->
@@ -1927,6 +1967,289 @@ function loadBirthData(){
   if(c&&cEl){cEl.value=c;}
   // Recalculate chart if we have data
   if(d) calcChart();
+}
+
+
+// ============================================================
+// PEOPLE IN MY SKY — CONNECTIONS
+// ============================================================
+let selectedRel = '💜 Crush';
+
+function openConnections(){
+  document.getElementById('conn-screen').classList.add('on');
+  document.body.style.overflow='hidden';
+  updateConnYourChart();
+  renderPeople();
+}
+
+function closeConnections(){
+  document.getElementById('conn-screen').classList.remove('on');
+  document.body.style.overflow='';
+  document.getElementById('conn-reading').classList.remove('on');
+  document.getElementById('conn-form').classList.remove('on');
+}
+
+function updateConnYourChart(){
+  const c=APP.chart;
+  const el=document.getElementById('conn-your-signs');
+  if(!el)return;
+  if(c.sun){
+    let txt=`☀ ${c.sun}`;
+    if(c.moon) txt+=`  ☽ ${c.moon}`;
+    if(c.rising) txt+=`  ↑ ${c.rising}`;
+    el.textContent=txt;
+  }
+}
+
+function toggleConnForm(){
+  const f=document.getElementById('conn-form');
+  f.classList.toggle('on');
+}
+
+function selectRel(btn){
+  selectedRel=btn.dataset.rel;
+  document.querySelectorAll('.conn-rel-pill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function connCityLookup(val){
+  const dl=document.getElementById('conn-city-list');
+  dl.innerHTML='';
+  if(val.trim().length<2)return;
+  const key=val.toLowerCase().trim();
+  Object.keys(CITIES).filter(c=>c.includes(key)).slice(0,8).forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+    dl.appendChild(o);
+  });
+  // Also query Nominatim
+  clearTimeout(window._connCityTimer);
+  window._connCityTimer=setTimeout(()=>{
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&featuretype=city&limit=6&format=json`,{headers:{'Accept-Language':'en'}})
+    .then(r=>r.json()).then(results=>{
+      results.forEach(r=>{
+        const name=r.display_name.split(',')[0].trim();
+        const country=r.display_name.split(',').slice(-1)[0].trim();
+        CITIES[name.toLowerCase()]=[parseFloat(r.lat),parseFloat(r.lon)];
+        const o=document.createElement('option');o.value=name+', '+country;dl.appendChild(o);
+      });
+    }).catch(()=>{});
+  },400);
+}
+
+function getPeople(){
+  try{return JSON.parse(localStorage.getItem('k_people')||'[]');}catch{return[];}
+}
+function savePeople(p){localStorage.setItem('k_people',JSON.stringify(p));}
+
+function calcPersonChart(dob,tob,city){
+  if(!dob)return{};
+  const p=dob.split('-'),t=(tob||'12:00').split(':');
+  const jd=julianDay(+p[0],+p[1],+p[2],+t[0]+(+t[1]||0)/60);
+  const sl=sunLongitude(jd);
+  const ml=moonLongitude(jd);
+  const result={sun:lonToSign(sl),sunDeg:sl,moon:lonToSign(ml),moonDeg:ml};
+  const coords=city?CITIES[city.split(',')[0].toLowerCase().trim()]:null;
+  if(coords&&tob){
+    const asc=ascendant(jd,coords[0],coords[1]);
+    result.rising=lonToSign(asc);result.riseDeg=asc;
+  }
+  return result;
+}
+
+function savePerson(){
+  const name=document.getElementById('conn-name').value.trim();
+  const dob=document.getElementById('conn-bdate').value;
+  const tob=document.getElementById('conn-btime').value;
+  const city=document.getElementById('conn-bcity').value.trim();
+  if(!name||!dob){alert('Please enter a name and birth date.');return;}
+  const chart=calcPersonChart(dob,tob,city);
+  const people=getPeople();
+  people.push({id:Date.now(),name,rel:selectedRel,dob,tob,city,chart});
+  savePeople(people);
+  // Clear form
+  document.getElementById('conn-name').value='';
+  document.getElementById('conn-bdate').value='';
+  document.getElementById('conn-btime').value='';
+  document.getElementById('conn-bcity').value='';
+  document.getElementById('conn-form').classList.remove('on');
+  renderPeople();
+}
+
+function deletePerson(id){
+  const people=getPeople().filter(p=>p.id!==id);
+  savePeople(people);
+  renderPeople();
+  document.getElementById('conn-reading').classList.remove('on');
+}
+
+function renderPeople(){
+  const el=document.getElementById('conn-people');
+  if(!el)return;
+  const people=getPeople();
+  el.innerHTML='';
+  if(people.length===0){
+    el.innerHTML='<div style="font-family:Georgia,serif;font-size:13px;color:rgba(200,175,255,0.25);text-align:center;padding:.5rem 0;font-style:italic">No one in your sky yet</div>';
+    return;
+  }
+  people.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='conn-person';
+    let signs='';
+    if(p.chart.sun) signs+=`☀ ${p.chart.sun}`;
+    if(p.chart.moon) signs+=`  ☽ ${p.chart.moon}`;
+    if(p.chart.rising) signs+=`  ↑ ${p.chart.rising}`;
+    d.innerHTML=`
+      <div class="conn-person-top">
+        <div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="conn-person-rel">${p.rel.split(' ')[0]}</span>
+            <span class="conn-person-name">${p.name}</span>
+          </div>
+          <div class="conn-person-signs">${signs||'Chart calculating...'}</div>
+        </div>
+        <button class="conn-person-delete" onclick="event.stopPropagation();deletePerson(${p.id})">✕</button>
+      </div>`;
+    d.onclick=()=>getCompatibility(p);
+    el.appendChild(d);
+  });
+}
+
+// Compatibility score — based on actual synastry aspects
+function calcCompatibilityScore(chartA, chartB){
+  if(!chartA.sunDeg||!chartB.sunDeg) return null;
+  let score=50; // base
+  const pairs=[
+    [chartA.sunDeg,chartB.sunDeg,15],
+    [chartA.sunDeg,chartB.moonDeg,12],
+    [chartA.moonDeg,chartB.sunDeg,12],
+    [chartA.moonDeg,chartB.moonDeg,10],
+    [chartA.riseDeg,chartB.sunDeg,8],
+    [chartA.sunDeg,chartB.riseDeg,8],
+  ];
+  pairs.forEach(([a,b,weight])=>{
+    if(a===undefined||b===undefined)return;
+    const asp=getAspect(a,b);
+    if(asp==='conjunct'||asp==='trine') score+=weight;
+    else if(asp==='sextile') score+=Math.round(weight*.6);
+    else if(asp==='square') score-=Math.round(weight*.3);
+    else if(asp==='opposite') score+=Math.round(weight*.4); // opposites attract
+  });
+  // Element compatibility bonus
+  const elA=SIGN_DATA[chartA.sun]?.el;
+  const elB=SIGN_DATA[chartB.sun]?.el;
+  if(elA&&elB){
+    const compatible={Fire:['Fire','Air'],Earth:['Earth','Water'],Air:['Air','Fire'],Water:['Water','Earth']};
+    if(compatible[elA]?.includes(elB)) score+=8;
+    if(elA===elB) score+=5;
+  }
+  return Math.min(99,Math.max(35,score));
+}
+
+function canDoCompatibility(){
+  if(APP.isPro) return true;
+  const lastComp=localStorage.getItem('k_last_compat');
+  if(!lastComp) return true;
+  const daysSince=(Date.now()-parseInt(lastComp))/(1000*60*60*24);
+  return daysSince>=30;
+}
+
+async function getCompatibility(person){
+  const reading=document.getElementById('conn-reading');
+  const txt=document.getElementById('conn-reading-text');
+  const title=document.getElementById('conn-reading-title');
+  const scoreEl=document.getElementById('conn-score');
+  const scoreNum=document.getElementById('conn-score-num');
+  const freeNote=document.getElementById('conn-free-note');
+
+  reading.classList.add('on');
+  reading.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  if(!APP.chart.sun){
+    txt.textContent='Enter your birth chart in the Horoscope tab to unlock compatibility readings.';
+    scoreEl.style.display='none';
+    return;
+  }
+
+  if(!canDoCompatibility()){
+    const lastComp=localStorage.getItem('k_last_compat');
+    const daysLeft=30-Math.floor((Date.now()-parseInt(lastComp))/(1000*60*60*24));
+    txt.textContent=`You have used your free compatibility reading this month. Upgrade to Pro for unlimited readings, or return in ${daysLeft} day${daysLeft!==1?'s':''}.`;
+    scoreEl.style.display='none';
+    freeNote.textContent='';
+    return;
+  }
+
+  title.textContent=`YOU & ${person.name.toUpperCase()}`;
+  txt.textContent='Reading your cosmic connection...';
+  scoreEl.style.display='none';
+  freeNote.textContent='';
+
+  // Calculate score
+  const score=calcCompatibilityScore(APP.chart,person.chart);
+  if(score!==null){
+    scoreEl.style.display='flex';
+    scoreNum.textContent=score+'%';
+  }
+
+  // Build synastry context
+  const mySign=APP.chart.sun||'unknown';
+  const theirSign=person.chart.sun||'unknown';
+  const myEl=SIGN_DATA[mySign]?.el||'';
+  const theirEl=SIGN_DATA[theirSign]?.el||'';
+  const myMod=SIGN_DATA[mySign]?.mod||'';
+  const theirMod=SIGN_DATA[theirSign]?.mod||'';
+
+  const synastryAspects=[];
+  const pairs=[
+    ['Your Sun',APP.chart.sunDeg,'their Sun',person.chart.sunDeg],
+    ['Your Sun',APP.chart.sunDeg,'their Moon',person.chart.moonDeg],
+    ['Your Moon',APP.chart.moonDeg,'their Sun',person.chart.sunDeg],
+    ['Your Moon',APP.chart.moonDeg,'their Moon',person.chart.moonDeg],
+    ['Your Rising',APP.chart.riseDeg,'their Sun',person.chart.sunDeg],
+    ['Your Sun',APP.chart.sunDeg,'their Rising',person.chart.riseDeg],
+  ];
+  pairs.forEach(([nameA,degA,nameB,degB])=>{
+    if(degA===undefined||degB===undefined)return;
+    const asp=getAspect(degA,degB);
+    if(asp) synastryAspects.push(`${nameA} ${asp} ${nameB}`);
+  });
+
+  const prompt=`SYNASTRY READING REQUEST:
+
+YOUR CHART: Sun in ${mySign} (${myEl}, ${myMod})${APP.chart.moon?', Moon in '+APP.chart.moon:''}${APP.chart.rising?', Rising in '+APP.chart.rising:''}
+${person.name.toUpperCase()}'S CHART: Sun in ${theirSign} (${theirEl}, ${theirMod})${person.chart.moon?', Moon in '+person.chart.moon:''}${person.chart.rising?', Rising in '+person.chart.rising:''}
+RELATIONSHIP: ${person.rel}
+COMPATIBILITY SCORE: ${score}%
+
+KEY SYNASTRY ASPECTS:
+${synastryAspects.length?synastryAspects.join('\n'):'Limited data — reading based on Sun signs'}
+
+Write a profound synastry compatibility reading. Be specific about the aspects. Explain what draws them together, what challenges they may face, and the deeper cosmic purpose of this connection. Reference elements and modalities. 3-4 paragraphs. Poetic, intelligent, gender-neutral.`;
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        system:'You are Kairoscope — a master astrologer specialising in synastry and relationship astrology. Write compatibility readings that are technically grounded, deeply insightful, and poetically expressed. Never generic. Reference specific aspects and what they mean for this connection.',
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
+    txt.textContent=text;
+
+    // Mark free reading used
+    if(!APP.isPro){
+      localStorage.setItem('k_last_compat',Date.now());
+      freeNote.textContent='Free compatibility reading used. Upgrade to Pro for unlimited readings.';
+    }
+  } catch(e){
+    txt.textContent='The connection slipped away. Try again.';
+  }
 }
 
 const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -3299,6 +3622,63 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
   <button class="sleep-start-day" id="sleep-start-day" onclick="startYourDay()" style="display:block;margin-top:.6rem">✦ START YOUR DAY ✦</button>
 
   <div class="sleep-pro-note" id="sleep-pro-note">SLEEP TIMER · WAKE-UP ALARM · DREAM PROMPT — PRO</div>
+
+</div>
+
+
+<!-- CONNECTIONS SCREEN -->
+<div class="conn-screen" id="conn-screen">
+
+  <div class="conn-top">
+    <button class="conn-back" onclick="closeConnections()">← back</button>
+    <div class="conn-title">PEOPLE IN MY SKY</div>
+    <div style="width:40px"></div>
+  </div>
+
+  <!-- YOUR CHART SUMMARY -->
+  <div class="conn-your-chart">
+    <div class="conn-your-name">YOUR CHART</div>
+    <div class="conn-your-signs" id="conn-your-signs">Enter your birth chart in the Horoscope tab first</div>
+  </div>
+
+  <!-- SAVED PEOPLE -->
+  <div class="conn-people" id="conn-people"></div>
+
+  <!-- ADD PERSON BUTTON -->
+  <button class="conn-add" onclick="toggleConnForm()">+ ADD SOMEONE TO YOUR SKY</button>
+
+  <!-- ADD PERSON FORM -->
+  <div class="conn-form" id="conn-form">
+    <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.4);margin-bottom:.75rem">WHO ARE THEY?</div>
+    <input class="conn-input" id="conn-name" placeholder="Their name..." type="text" maxlength="30"/>
+    <div class="conn-rel-row">
+      <button class="conn-rel-pill" data-rel="💜 Crush" onclick="selectRel(this)">💜 Crush</button>
+      <button class="conn-rel-pill" data-rel="♡ Partner" onclick="selectRel(this)">♡ Partner</button>
+      <button class="conn-rel-pill" data-rel="✦ Best Friend" onclick="selectRel(this)">✦ Best Friend</button>
+      <button class="conn-rel-pill" data-rel="◎ Family" onclick="selectRel(this)">◎ Family</button>
+      <button class="conn-rel-pill" data-rel="· Other" onclick="selectRel(this)">· Other</button>
+    </div>
+    <input class="conn-input" id="conn-bdate" placeholder="Birth date (YYYY-MM-DD)" type="date"/>
+    <input class="conn-input" id="conn-btime" placeholder="Birth time (optional)" type="time"/>
+    <input class="conn-input" id="conn-bcity" placeholder="Birth city (optional)" type="text" oninput="connCityLookup(this.value)" list="conn-city-list"/>
+    <datalist id="conn-city-list"></datalist>
+    <button class="conn-save-btn" onclick="savePerson()">✦ ADD TO MY SKY</button>
+  </div>
+
+  <!-- COMPATIBILITY READING -->
+  <div class="conn-reading" id="conn-reading">
+    <div class="conn-reading-title" id="conn-reading-title">COSMIC COMPATIBILITY</div>
+    <div class="conn-score" id="conn-score" style="display:none">
+      <div>
+        <div class="conn-score-num" id="conn-score-num">—</div>
+        <div class="conn-score-lbl">COMPATIBILITY</div>
+      </div>
+    </div>
+    <div class="conn-reading-text" id="conn-reading-text">Loading your cosmic connection...</div>
+    <div class="conn-free-note" id="conn-free-note"></div>
+  </div>
+
+  <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;color:rgba(200,175,255,0.18);text-align:center;margin-top:.75rem">1 FREE COMPATIBILITY READING PER MONTH · UNLIMITED WITH PRO</div>
 
 </div>
 
