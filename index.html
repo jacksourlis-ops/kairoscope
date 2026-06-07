@@ -439,8 +439,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <div class="birth-card">
         <div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl" style="margin:0">FULL BIRTH CHART</span><span class="pro-badge">✦ PRO</span></div>
         <div class="birth-row">
-          <div><span class="lbl">DATE OF BIRTH</span><input type="date" class="birth-input" id="bdate" onchange="calcChart()"></div>
-          <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="calcChart()"></div>
+          <div><span class="lbl">DATE OF BIRTH</span><input type="date" class="birth-input" id="bdate" onchange="saveBirthData()" onchange="calcChart()"></div>
+          <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="saveBirthData()" onchange="calcChart()"></div>
         </div>
         <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
         <div class="chart-cards" id="chart-cards">
@@ -1902,6 +1902,33 @@ function logoTap(){
   logoTimer = setTimeout(()=>logoTaps=0, 2000);
 }
 
+
+// ============================================================
+// BIRTH DATA PERSISTENCE
+// ============================================================
+function saveBirthData(){
+  const d=document.getElementById('bdate');
+  const t=document.getElementById('btime');
+  const c=document.getElementById('bcity');
+  if(d&&d.value) localStorage.setItem('k_bdate',d.value);
+  if(t&&t.value) localStorage.setItem('k_btime',t.value);
+  if(c&&c.value) localStorage.setItem('k_bcity',c.value);
+}
+
+function loadBirthData(){
+  const d=localStorage.getItem('k_bdate');
+  const t=localStorage.getItem('k_btime');
+  const c=localStorage.getItem('k_bcity');
+  const dEl=document.getElementById('bdate');
+  const tEl=document.getElementById('btime');
+  const cEl=document.getElementById('bcity');
+  if(d&&dEl){dEl.value=d;}
+  if(t&&tEl){tEl.value=t;}
+  if(c&&cEl){cEl.value=c;}
+  // Recalculate chart if we have data
+  if(d) calcChart();
+}
+
 const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ZI={Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓'};
 const TODAY=new Date().toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
@@ -2023,6 +2050,7 @@ function cityLookup(val){
   const dl=document.getElementById('city-list');
   dl.innerHTML='';
   calcChart();
+  saveBirthData();
   if(val.trim().length<2)return;
   // First check local list for instant results
   const key=val.toLowerCase().trim();
@@ -3136,6 +3164,7 @@ updateMoonEnergy();
 updateDreamPersistBar();
 if(!localStorage.getItem('k_first_visit'))localStorage.setItem('k_first_visit',Date.now());
 setTimeout(applyLanguage,50);
+setTimeout(loadBirthData,100);
 </script>
 <!-- PRIVACY POLICY MODAL -->
 <div class="modal-overlay" id="modal-privacy">
