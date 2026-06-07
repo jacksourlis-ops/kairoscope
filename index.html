@@ -121,6 +121,36 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .theme-toggle{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
 .theme-toggle:hover{border-color:var(--border2);color:var(--gold)}
 
+/* SLEEP MODE */
+.sleep-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9999;flex-direction:column;align-items:center;overflow-y:auto;padding:1.5rem 1.25rem 2rem}
+.sleep-screen.on{display:flex}
+.sleep-top{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.sleep-back{background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.3);cursor:pointer;padding:0}
+.sleep-back:hover{color:rgba(200,175,255,0.7)}
+.sleep-phase-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;color:rgba(200,175,255,0.3);text-align:center}
+.sleep-moon-wrap{width:min(220px,60vw);height:min(220px,60vw);margin:.5rem auto .75rem;flex-shrink:0}
+.sleep-moon-wrap svg{width:100%;height:100%}
+.sleep-prompt{text-align:center;margin:0 0 1rem;padding:0 .5rem}
+.sleep-prompt-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.18em;color:rgba(200,175,255,0.28);margin-bottom:6px}
+.sleep-prompt-text{font-family:'Crimson Pro',serif;font-size:14px;color:rgba(235,225,255,0.55);font-style:italic;line-height:1.65}
+.sleep-divider{width:100%;height:.5px;background:rgba(200,175,255,0.07);margin:.5rem 0 .9rem}
+.sleep-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.16em;color:rgba(200,175,255,0.28);width:100%;margin-bottom:6px}
+.sleep-pills{display:flex;flex-wrap:wrap;gap:5px;width:100%;margin-bottom:1rem}
+.sleep-pill{padding:5px 11px;border-radius:20px;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.08em;color:rgba(200,175,255,0.4);border:.5px solid rgba(200,175,255,0.1);background:transparent;cursor:pointer;transition:all .2s}
+.sleep-pill.on{color:rgba(200,175,255,0.9);border-color:rgba(200,175,255,0.4);background:rgba(200,175,255,0.08)}
+.sleep-timer-row{display:flex;gap:5px;width:100%;margin-bottom:1rem}
+.sleep-timer-pill{flex:1;padding:7px 3px;border-radius:8px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.05em;color:rgba(200,175,255,0.38);border:.5px solid rgba(200,175,255,0.08);background:transparent;text-align:center;cursor:pointer;transition:all .2s}
+.sleep-timer-pill.on{color:rgba(200,175,255,0.9);border-color:rgba(200,175,255,0.35);background:rgba(200,175,255,0.07)}
+.sleep-cta{width:100%;padding:14px;border-radius:12px;background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.22);color:rgba(200,175,255,0.82);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;cursor:pointer;transition:all .25s;margin-top:.5rem}
+.sleep-cta:hover{background:rgba(200,175,255,0.12);border-color:rgba(200,175,255,0.4)}
+.sleep-cta.sleeping{color:rgba(200,175,255,0.4);border-color:rgba(200,175,255,0.1);cursor:default}
+.sleep-start-day{width:100%;padding:14px;border-radius:12px;background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.22);color:rgba(200,175,255,0.82);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;cursor:pointer;display:none;margin-top:.75rem;transition:all .25s}
+.sleep-start-day:hover{background:rgba(200,175,255,0.12)}
+.sleep-pro-note{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;color:rgba(200,175,255,0.18);text-align:center;margin-top:.75rem}
+.sleep-timer-display{font-family:'Cinzel',serif;font-size:28px;color:rgba(200,175,255,0.5);text-align:center;margin:.5rem 0;letter-spacing:.1em;display:none}
+.sleep-btn-row{display:flex;gap:8px;width:100%;margin-top:.5rem}
+
+
 .why-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:1rem 0 1.25rem}
 .why-card{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:.9rem .75rem;text-align:center;transition:all .3s}
 .why-card:hover{border-color:var(--border2);background:rgba(200,175,255,0.06)}
@@ -537,6 +567,11 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
 
+  <!-- SLEEP MODE BUTTON -->
+  <div style="text-align:center;margin:1rem 0 .5rem">
+    <button onclick="openSleep()" style="background:transparent;border:.5px solid var(--border);border-radius:20px;padding:7px 18px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--muted);cursor:pointer;transition:all .2s" id="sleep-mode-btn">☽ SLEEP MODE</button>
+  </div>
+
   <!-- WHY KAIROSCOPE -->
   <div style="margin-top:1.5rem;border-top:.5px solid var(--border);padding-top:1.25rem">
     <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:var(--muted);text-align:center;margin-bottom:.85rem">WHY KAIROSCOPE</div>
@@ -683,6 +718,7 @@ function setLanguage(lang){
   const sel=document.getElementById('lang-select');
   if(sel){sel.style.borderColor='var(--gold)';setTimeout(()=>sel.style.borderColor='',800);}
   applyLanguage();
+  applyLanguageToSleep();
 }
 (function(){
   const saved=localStorage.getItem('k_lang')||'English';
@@ -1496,6 +1532,7 @@ const TRANSLATIONS={
 function t(key){return(TRANSLATIONS[APP.language]||TRANSLATIONS.English)[key]||TRANSLATIONS.English[key]||key;}
 
 function applyLanguage(){
+  if(document.getElementById('sleep-screen').classList.contains('on'))applyLanguageToSleep();
   const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
   document.body.dir=APP.language==='Arabic'?'rtl':'ltr';
   const sel=document.getElementById('lang-select');if(sel)sel.value=APP.language;
@@ -1538,6 +1575,283 @@ function applyLanguage(){
   const meNameEl=document.getElementById('me-name-h');
   const meDescEl=document.getElementById('me-desc-h');
   if(meDescEl&&meDescEl.textContent.indexOf('Loading')>=0&&T.loadingLunar)meDescEl.textContent=T.loadingLunar;
+}
+
+
+// ============================================================
+// SLEEP MODE
+// ============================================================
+const SLEEP_STATE={
+  sleepSound:'holy',
+  wakeSound:'bowl',
+  timerMins:60,
+  sleeping:false,
+  timerInterval:null,
+  audioNodes:[],
+  audioCtx:null,
+  audioMaster:null
+};
+
+const DREAM_PROMPTS=[
+  '"What are you ready to release before you sleep?"',
+  '"What intention do you carry into the night?"',
+  '"What did today teach you that you haven't yet acknowledged?"',
+  '"What feeling are you taking with you into the dark?"',
+  '"Who or what do you hope visits you in your dreams tonight?"',
+  '"What are you grateful for that you forgot to notice today?"',
+  '"What would you like your subconscious to work on while you rest?"',
+  '"What story did you tell yourself today that you'd like to rewrite?"',
+];
+
+function openSleep(){
+  document.getElementById('sleep-screen').classList.add('on');
+  document.body.style.overflow='hidden';
+  updateSleepMoon();
+  randomDreamPrompt();
+  applyLanguageToSleep();
+}
+
+function closeSleep(){
+  stopSleepAudio();
+  document.getElementById('sleep-screen').classList.remove('on');
+  document.body.style.overflow='';
+  SLEEP_STATE.sleeping=false;
+  clearInterval(SLEEP_STATE.timerInterval);
+  document.getElementById('sleep-cta').style.display='';
+  document.getElementById('sleep-start-day').style.display='none';
+  document.getElementById('sleep-timer-display').style.display='none';
+  document.getElementById('sleep-cta').classList.remove('sleeping');
+  document.getElementById('sleep-cta').textContent='✦ BEGIN SLEEP MODE ✦';
+}
+
+function startYourDay(){
+  closeSleep();
+  switchTab('h', document.querySelector('.tab'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function randomDreamPrompt(){
+  const p=DREAM_PROMPTS[Math.floor(Math.random()*DREAM_PROMPTS.length)];
+  document.getElementById('sleep-prompt-text').textContent=p;
+}
+
+function updateSleepMoon(){
+  const phase=APP.currentPhase||'waning-gibbous';
+  const phases=['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'];
+  const idx=phases.indexOf(phase);
+  const name=phase.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  document.getElementById('sleep-phase-lbl').textContent=name.toUpperCase();
+
+  // Adjust shadow ellipse based on phase
+  const shadow=document.getElementById('sleep-shadow');
+  if(!shadow)return;
+  const shadowConfigs={
+    'new-moon':{cx:100,rx:80,flip:false,opacity:0.98},
+    'waxing-crescent':{cx:130,rx:65,flip:false,opacity:0.95},
+    'first-quarter':{cx:100,rx:40,flip:false,opacity:0.95},
+    'waxing-gibbous':{cx:80,rx:25,flip:false,opacity:0.9},
+    'full-moon':{cx:300,rx:10,flip:false,opacity:0},
+    'waning-gibbous':{cx:118,rx:28,flip:true,opacity:0.9},
+    'last-quarter':{cx:100,rx:40,flip:true,opacity:0.95},
+    'waning-crescent':{cx:72,rx:62,flip:true,opacity:0.95},
+  };
+  const cfg=shadowConfigs[phase]||shadowConfigs['waning-gibbous'];
+  shadow.setAttribute('cx',cfg.cx);
+  shadow.setAttribute('rx',cfg.rx);
+  shadow.style.opacity=cfg.opacity;
+}
+
+function selectSleepSound(el,sound){
+  SLEEP_STATE.sleepSound=sound;
+  document.querySelectorAll('#sleep-sound-pills .sleep-pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function selectWakeSound(el,sound){
+  SLEEP_STATE.wakeSound=sound;
+  document.querySelectorAll('#sleep-wake-pills .sleep-pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function selectTimer(el,mins){
+  SLEEP_STATE.timerMins=mins;
+  document.querySelectorAll('.sleep-timer-pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function beginSleep(){
+  if(SLEEP_STATE.sleeping)return;
+  SLEEP_STATE.sleeping=true;
+  const cta=document.getElementById('sleep-cta');
+  cta.textContent='✦ SLEEPING ✦';
+  cta.classList.add('sleeping');
+  startSleepAudio();
+  if(SLEEP_STATE.timerMins>0&&APP.isPro){
+    startSleepTimer();
+  }
+}
+
+function startSleepTimer(){
+  let secs=SLEEP_STATE.timerMins*60;
+  const disp=document.getElementById('sleep-timer-display');
+  disp.style.display='block';
+  function tick(){
+    const m=Math.floor(secs/60),s=secs%60;
+    disp.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=0){
+      clearInterval(SLEEP_STATE.timerInterval);
+      stopSleepAudio();
+      document.getElementById('sleep-cta').style.display='none';
+      document.getElementById('sleep-start-day').style.display='block';
+      return;
+    }
+    secs--;
+  }
+  tick();
+  SLEEP_STATE.timerInterval=setInterval(tick,1000);
+}
+
+// ============================================================
+// SLEEP AUDIO ENGINE
+// ============================================================
+function initSleepAudio(){
+  if(SLEEP_STATE.audioCtx)return;
+  SLEEP_STATE.audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  SLEEP_STATE.audioMaster=SLEEP_STATE.audioCtx.createGain();
+  SLEEP_STATE.audioMaster.gain.value=.6;
+  SLEEP_STATE.audioMaster.connect(SLEEP_STATE.audioCtx.destination);
+}
+
+function stopSleepAudio(){
+  SLEEP_STATE.audioNodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});
+  SLEEP_STATE.audioNodes=[];
+}
+
+function pinkBuf(ctx,secs){
+  const buf=ctx.createBuffer(1,ctx.sampleRate*secs,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for(let i=0;i<d.length;i++){
+    const w=Math.random()*2-1;
+    b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;
+    b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;
+    b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;
+    d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;
+  }
+  return buf;
+}
+
+function brownBuf(ctx,secs){
+  const buf=ctx.createBuffer(1,ctx.sampleRate*secs,ctx.sampleRate);
+  const d=buf.getChannelData(0);let last=0;
+  for(let i=0;i<d.length;i++){const w=Math.random()*2-1;last=(last+.02*w)/1.02;d[i]=last*3.5;}
+  return buf;
+}
+
+function sleepOsc(f,type='sine'){const o=SLEEP_STATE.audioCtx.createOscillator();o.type=type;o.frequency.value=f;return o;}
+function sleepGain(v){const g=SLEEP_STATE.audioCtx.createGain();g.gain.value=v;return g;}
+
+function startSleepAudio(){
+  initSleepAudio();
+  if(SLEEP_STATE.audioCtx.state==='suspended')SLEEP_STATE.audioCtx.resume();
+  stopSleepAudio();
+  const ctx=SLEEP_STATE.audioCtx;
+  const master=SLEEP_STATE.audioMaster;
+  const ns=SLEEP_STATE.audioNodes;
+
+  if(SLEEP_STATE.sleepSound==='pink'){
+    const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,6);src.loop=true;
+    const g=sleepGain(.35);src.connect(g);g.connect(master);src.start();ns.push(src);
+  }
+  else if(SLEEP_STATE.sleepSound==='brown'){
+    const src=ctx.createBufferSource();src.buffer=brownBuf(ctx,6);src.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=800;
+    const g=sleepGain(.4);src.connect(lpf);lpf.connect(g);g.connect(master);src.start();ns.push(src);
+  }
+  else if(SLEEP_STATE.sleepSound==='ocean'){
+    const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,8);src.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=420;lpf.Q.value=.8;
+    const lpf2=ctx.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=300;
+    const g=sleepGain(.18);
+    const wl1=sleepOsc(.075);const wg1=sleepGain(.11);wl1.connect(wg1);wg1.connect(g.gain);
+    const wl2=sleepOsc(.052);const wg2=sleepGain(.055);wl2.connect(wg2);wg2.connect(g.gain);
+    src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(master);
+    src.start();wl1.start();wl2.start();ns.push(src,wl1,wl2);
+  }
+  else { // holy light
+    const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,6);src.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
+    const bg=sleepGain(.055);
+    const glfo=sleepOsc(.035);const gg=sleepGain(.025);glfo.connect(gg);gg.connect(bg.gain);
+    src.connect(lpf);lpf.connect(bg);bg.connect(master);src.start();glfo.start();ns.push(src,glfo);
+    const pingFreqs=[1047,1175,1319,1568,1760,2093];
+    let alive=true;
+    function ping(){
+      if(!alive)return;
+      const f=pingFreqs[Math.floor(Math.random()*pingFreqs.length)]*(0.97+Math.random()*.06);
+      const now=ctx.currentTime;
+      const o1=sleepOsc(f);const o2=sleepOsc(f*1.003);const cg=sleepGain(0);
+      cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(.07,now+.005);
+      cg.gain.exponentialRampToValueAtTime(.001,now+4);
+      o1.connect(cg);o2.connect(cg);cg.connect(master);
+      o1.start(now);o2.start(now);o1.stop(now+4.5);o2.stop(now+4.5);
+      const sc=Math.floor(8+Math.random()*15);
+      for(let i=0;i<sc;i++){
+        const delay=.05+Math.random()*.7;const sf=2500+Math.random()*8000;
+        const so=sleepOsc(sf);const sg=sleepGain(0);const st=now+delay;
+        sg.gain.setValueAtTime(0,st);sg.gain.linearRampToValueAtTime(.006+Math.random()*.012,st+.003);
+        sg.gain.exponentialRampToValueAtTime(.001,st+.1+Math.random()*.25);
+        so.connect(sg);sg.connect(master);so.start(st);so.stop(st+.4);ns.push(so);
+      }
+      ns.push(o1,o2);
+      setTimeout(ping,3000+Math.random()*7000);
+    }
+    setTimeout(ping,2000);
+    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  }
+}
+
+// ============================================================
+// SLEEP MODE TRANSLATIONS
+// ============================================================
+function applyLanguageToSleep(){
+  const lang=APP.language||'English';
+  const ST={
+    English:{back:'← back',phase:'MOON PHASE',promptLbl:"TONIGHT'S DREAM PROMPT",soundLbl:'SLEEP SOUND',timerLbl:'SLEEP TIMER',wakeLbl:'WAKE-UP SOUND',cta:'✦ BEGIN SLEEP MODE ✦',startDay:'✦ START YOUR DAY ✦',proNote:'SLEEP TIMER · WAKE-UP ALARM · DREAM PROMPT — PRO',holy:'Holy Light',pink:'Pink noise',brown:'Brown noise',ocean:'Ocean',bowl:'Sunrise bowl',oceanW:'Ocean tide',holyW:'Holy Light',cosmic:'Cosmic dawn'},
+    French:{back:'← retour',phase:'PHASE LUNAIRE',promptLbl:"INVITATION DE RÊVE DE CE SOIR",soundLbl:'SON DE SOMMEIL',timerLbl:'MINUTERIE DE SOMMEIL',wakeLbl:'SON DE RÉVEIL',cta:'✦ COMMENCER LE MODE SOMMEIL ✦',startDay:'✦ COMMENCER VOTRE JOURNÉE ✦',proNote:'MINUTERIE · RÉVEIL · INVITATION — PRO',holy:'Lumière Sacrée',pink:'Bruit rose',brown:'Bruit brun',ocean:'Océan',bowl:'Bol du lever',oceanW:'Marée océanique',holyW:'Lumière Sacrée',cosmic:'Aube cosmique'},
+    Spanish:{back:'← atrás',phase:'FASE LUNAR',promptLbl:"INVITACIÓN DE SUEÑO DE HOY",soundLbl:'SONIDO DE SUEÑO',timerLbl:'TEMPORIZADOR',wakeLbl:'SONIDO DE DESPERTAR',cta:'✦ INICIAR MODO SUEÑO ✦',startDay:'✦ COMENZAR TU DÍA ✦',proNote:'TEMPORIZADOR · ALARMA · INVITACIÓN — PRO',holy:'Luz Sagrada',pink:'Ruido rosa',brown:'Ruido marrón',ocean:'Océano',bowl:'Cuenco amanecer',oceanW:'Marea oceánica',holyW:'Luz Sagrada',cosmic:'Alba cósmica'},
+    Portuguese:{back:'← voltar',phase:'FASE LUNAR',promptLbl:"CONVITE DE SONHO DE HOJE",soundLbl:'SOM DE SONO',timerLbl:'TEMPORIZADOR',wakeLbl:'SOM DE DESPERTAR',cta:'✦ INICIAR MODO SONO ✦',startDay:'✦ COMEÇAR SEU DIA ✦',proNote:'TEMPORIZADOR · ALARME · CONVITE — PRO',holy:'Luz Sagrada',pink:'Ruído rosa',brown:'Ruído marrom',ocean:'Oceano',bowl:'Tigela do amanhecer',oceanW:'Maré oceânica',holyW:'Luz Sagrada',cosmic:'Amanhecer cósmico'},
+    German:{back:'← zurück',phase:'MONDPHASE',promptLbl:"HEUTIGER TRAUMIMPULS",soundLbl:'SCHLAFGERÄUSCH',timerLbl:'SCHLAF-TIMER',wakeLbl:'WECKGERÄUSCH',cta:'✦ SCHLAFMODUS STARTEN ✦',startDay:'✦ DEINEN TAG BEGINNEN ✦',proNote:'TIMER · WECKER · TRAUMIMPULS — PRO',holy:'Heiliges Licht',pink:'Rosa Rauschen',brown:'Braunes Rauschen',ocean:'Ozean',bowl:'Morgenklangschale',oceanW:'Meeresgezeiten',holyW:'Heiliges Licht',cosmic:'Kosmische Morgendämmerung'},
+    Italian:{back:'← indietro',phase:'FASE LUNARE',promptLbl:"INVITO AL SOGNO DI STASERA",soundLbl:'SUONO DEL SONNO',timerLbl:'TIMER DEL SONNO',wakeLbl:'SUONO DEL RISVEGLIO',cta:'✦ INIZIA MODALITÀ SONNO ✦',startDay:'✦ INIZIA LA TUA GIORNATA ✦',proNote:'TIMER · SVEGLIA · INVITO — PRO',holy:'Luce Sacra',pink:'Rumore rosa',brown:'Rumore marrone',ocean:'Oceano',bowl:'Ciotola dell'alba',oceanW:'Marea oceanica',holyW:'Luce Sacra',cosmic:'Alba cosmica'},
+    Greek:{back:'← πίσω',phase:'ΦΑΣΗ ΣΕΛΗΝΗΣ',promptLbl:"ΕΡΩΤΗΜΑ ΟΝΕΙΡΟΥ ΑΠΌΨΕ",soundLbl:'ΉΧΟΣ ΎΠΝΟΥ',timerLbl:'ΧΡΟΝΌΜΕΤΡΟ ΎΠΝΟΥ',wakeLbl:'ΉΧΟΣ ΑΦΎΠΝΙΣΗΣ',cta:'✦ ΕΝΑΡΞΗ ΛΕΙΤΟΥΡΓΙΑΣ ΎΠΝΟΥ ✦',startDay:'✦ ΞΕΚΙΝΉΣΤΕ ΤΗΝ ΗΜΈΡΑ ΣΑΣ ✦',proNote:'ΧΡΟΝΌΜΕΤΡΟ · ΑΦΎΠΝΙΣΗ · ΕΡΏΤΗΜΑ — PRO',holy:'Ιερό Φως',pink:'Ροζ θόρυβος',brown:'Καφέ θόρυβος',ocean:'Ωκεανός',bowl:'Κύπελλο ανατολής',oceanW:'Παλίρροια',holyW:'Ιερό Φως',cosmic:'Κοσμική αυγή'},
+    Japanese:{back:'← 戻る',phase:'月の位相',promptLbl:"今夜の夢のプロンプト",soundLbl:'睡眠音',timerLbl:'睡眠タイマー',wakeLbl:'起床音',cta:'✦ スリープモード開始 ✦',startDay:'✦ 一日を始める ✦',proNote:'タイマー · アラーム · プロンプト — PRO',holy:'聖なる光',pink:'ピンクノイズ',brown:'ブラウンノイズ',ocean:'海',bowl:'日の出のボウル',oceanW:'海の潮',holyW:'聖なる光',cosmic:'宇宙の夜明け'},
+    Chinese:{back:'← 返回',phase:'月相',promptLbl:"今晚的梦境提示",soundLbl:'睡眠声音',timerLbl:'睡眠计时器',wakeLbl:'起床声音',cta:'✦ 开始睡眠模式 ✦',startDay:'✦ 开始你的一天 ✦',proNote:'计时器 · 闹钟 · 提示 — PRO',holy:'圣光',pink:'粉红噪音',brown:'棕色噪音',ocean:'海洋',bowl:'日出颂钵',oceanW:'海浪',holyW:'圣光',cosmic:'宇宙黎明'},
+    Korean:{back:'← 뒤로',phase:'달의 위상',promptLbl:"오늘 밤 꿈 프롬프트",soundLbl:'수면 소리',timerLbl:'수면 타이머',wakeLbl:'기상 소리',cta:'✦ 수면 모드 시작 ✦',startDay:'✦ 하루를 시작하세요 ✦',proNote:'타이머 · 알람 · 프롬프트 — PRO',holy:'거룩한 빛',pink:'핑크 노이즈',brown:'브라운 노이즈',ocean:'바다',bowl:'일출 그릇',oceanW:'조수',holyW:'거룩한 빛',cosmic:'우주의 새벽'},
+    Hindi:{back:'← वापस',phase:'चंद्र चरण',promptLbl:"आज रात का स्वप्न प्रश्न",soundLbl:'नींद की ध्वनि',timerLbl:'नींद टाइमर',wakeLbl:'जागने की ध्वनि',cta:'✦ स्लीप मोड शुरू करें ✦',startDay:'✦ अपना दिन शुरू करें ✦',proNote:'टाइमर · अलार्म · प्रश्न — PRO',holy:'पवित्र प्रकाश',pink:'गुलाबी शोर',brown:'भूरा शोर',ocean:'सागर',bowl:'सूर्योदय कटोरा',oceanW:'समुद्री लहर',holyW:'पवित्र प्रकाश',cosmic:'ब्रह्मांडीय भोर'},
+    Arabic:{back:'← رجوع',phase:'مرحلة القمر',promptLbl:"دعوة حلم الليلة",soundLbl:'صوت النوم',timerLbl:'مؤقت النوم',wakeLbl:'صوت الاستيقاظ',cta:'✦ بدء وضع النوم ✦',startDay:'✦ ابدأ يومك ✦',proNote:'مؤقت · منبه · دعوة — PRO',holy:'النور المقدس',pink:'ضوضاء وردية',brown:'ضوضاء بنية',ocean:'المحيط',bowl:'وعاء الشروق',oceanW:'مد المحيط',holyW:'النور المقدس',cosmic:'فجر كوني'},
+    Dutch:{back:'← terug',phase:'MAANFASE',promptLbl:"DROOMUITNODIGING VANAVOND",soundLbl:'SLAAPGELUID',timerLbl:'SLAAPTIMER',wakeLbl:'WEKGELUID',cta:'✦ SLAAPSTAND STARTEN ✦',startDay:'✦ BEGIN JE DAG ✦',proNote:'TIMER · WEKKER · UITNODIGING — PRO',holy:'Heilig Licht',pink:'Roze ruis',brown:'Bruine ruis',ocean:'Oceaan',bowl:'Zonsopgang klankschaal',oceanW:'Oceaangetij',holyW:'Heilig Licht',cosmic:'Kosmische dageraad'},
+    Polish:{back:'← wróć',phase:'FAZA KSIĘŻYCA',promptLbl:"DZISIEJSZE ZAPROSZENIE DO SNU",soundLbl:'DŹWIĘK SNU',timerLbl:'TIMER SNU',wakeLbl:'DŹWIĘK BUDZENIA',cta:'✦ ROZPOCZNIJ TRYB SNU ✦',startDay:'✦ ROZPOCZNIJ SWÓJ DZIEŃ ✦',proNote:'TIMER · BUDZIK · ZAPROSZENIE — PRO',holy:'Święte Światło',pink:'Różowy szum',brown:'Brązowy szum',ocean:'Ocean',bowl:'Miska wschodu słońca',oceanW:'Przypływ oceanu',holyW:'Święte Światło',cosmic:'Kosmiczny świt'},
+    Turkish:{back:'← geri',phase:'AY EVRESİ',promptLbl:"BU GECEKİ RÜYA SORUSU",soundLbl:'UYKU SESİ',timerLbl:'UYKU ZAMANLAYICI',wakeLbl:'UYANMA SESİ',cta:'✦ UYKU MODUNU BAŞLAT ✦',startDay:'✦ GÜNÜNE BAŞLA ✦',proNote:'ZAMANLAYICI · ALARM · SORU — PRO',holy:'Kutsal Işık',pink:'Pembe gürültü',brown:'Kahverengi gürültü',ocean:'Okyanus',bowl:'Gün doğumu kâsesi',oceanW:'Okyanus gelgiti',holyW:'Kutsal Işık',cosmic:'Kozmik şafak'},
+    Swedish:{back:'← tillbaka',phase:'MÅNFAS',promptLbl:"KVÄLLENS DRÖMFRÅGA",soundLbl:'SÖMNLJUD',timerLbl:'SÖMNTIMER',wakeLbl:'VÄCKNINGSLJUD',cta:'✦ STARTA SÖMNLÄGE ✦',startDay:'✦ BÖRJA DIN DAG ✦',proNote:'TIMER · VÄCKARKLOCKA · FRÅGA — PRO',holy:'Heligt Ljus',pink:'Rosa brus',brown:'Brunt brus',ocean:'Ocean',bowl:'Soluppgångsklockspel',oceanW:'Havsström',holyW:'Heligt Ljus',cosmic:'Kosmisk gryning'},
+  };
+  const T=ST[lang]||ST.English;
+  const set=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt;};
+  set('sleep-back-btn',T.back);
+  set('sleep-prompt-lbl',T.promptLbl);
+  set('sleep-sound-lbl',T.soundLbl);
+  set('sleep-timer-lbl',T.timerLbl+' ');
+  set('sleep-wake-lbl',T.wakeLbl+' ');
+  set('sleep-cta','✦ '+T.cta.replace(/✦\s*/g,'').trim()+' ✦');
+  set('sleep-start-day','✦ '+T.startDay.replace(/✦\s*/g,'').trim()+' ✦');
+  set('sleep-pro-note',T.proNote);
+  document.getElementById('sleep-mode-btn').textContent='☽ '+(lang==='English'?'SLEEP MODE':T.timerLbl.split(' ')[0]+' MODE');
+  // Sound pill labels
+  const sPills=document.querySelectorAll('#sleep-sound-pills .sleep-pill');
+  const sLabels=[T.holy,T.pink,T.brown,T.ocean];
+  sPills.forEach((p,i)=>{if(sLabels[i])p.textContent=sLabels[i];});
+  const wPills=document.querySelectorAll('#sleep-wake-pills .sleep-pill');
+  const wLabels=[T.bowl,T.oceanW,T.holyW,T.cosmic];
+  wPills.forEach((p,i)=>{if(wLabels[i])p.textContent=wLabels[i];});
 }
 
 const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -2524,5 +2838,86 @@ function openModal(id){document.getElementById('modal-'+id).classList.add('on');
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('on');document.body.style.overflow='';}
 document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('on');document.body.style.overflow='';}});});
 </script>
+
+<!-- SLEEP SCREEN -->
+<div class="sleep-screen" id="sleep-screen">
+
+  <div class="sleep-top">
+    <button class="sleep-back" id="sleep-back-btn" onclick="closeSleep()">← back</button>
+    <div class="sleep-phase-lbl" id="sleep-phase-lbl">MOON PHASE</div>
+    <div style="width:40px"></div>
+  </div>
+
+  <!-- MOON -->
+  <div class="sleep-moon-wrap">
+    <svg id="sleep-moon-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="smg" cx="42%" cy="42%" r="50%">
+          <stop offset="0%" stop-color="#e8deff" stop-opacity=".95"/>
+          <stop offset="60%" stop-color="#c8b8f0" stop-opacity=".85"/>
+          <stop offset="100%" stop-color="#8b78c8" stop-opacity=".6"/>
+        </radialGradient>
+        <radialGradient id="ssg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#1a0840" stop-opacity=".95"/>
+          <stop offset="100%" stop-color="#03020d" stop-opacity="1"/>
+        </radialGradient>
+        <clipPath id="smc"><circle cx="100" cy="100" r="80"/></clipPath>
+      </defs>
+      <circle cx="100" cy="100" r="90" fill="#0d0820" opacity=".5"/>
+      <circle cx="100" cy="100" r="82" fill="url(#smg)"/>
+      <ellipse id="sleep-shadow" cx="138" cy="100" rx="52" ry="80" fill="url(#ssg)" clip-path="url(#smc)"/>
+      <circle cx="72" cy="78" r="6" fill="#9080c0" opacity=".15"/>
+      <circle cx="88" cy="118" r="4" fill="#9080c0" opacity=".1"/>
+      <circle cx="60" cy="105" r="8" fill="#9080c0" opacity=".08"/>
+      <circle cx="78" cy="92" r="3" fill="#b0a0d8" opacity=".12"/>
+      <circle cx="100" cy="100" r="82" fill="none" stroke="#d0c0f8" stroke-width=".5" opacity=".15"/>
+    </svg>
+  </div>
+
+  <!-- DREAM PROMPT -->
+  <div class="sleep-prompt">
+    <div class="sleep-prompt-lbl" id="sleep-prompt-lbl">TONIGHT'S DREAM PROMPT</div>
+    <div class="sleep-prompt-text" id="sleep-prompt-text">"What are you ready to release before you sleep?"</div>
+  </div>
+
+  <div class="sleep-divider"></div>
+
+  <!-- SLEEP SOUND -->
+  <div class="sleep-lbl" id="sleep-sound-lbl">SLEEP SOUND</div>
+  <div class="sleep-pills" id="sleep-sound-pills">
+    <button class="sleep-pill on" data-sound="holy" onclick="selectSleepSound(this,'holy')">Holy Light</button>
+    <button class="sleep-pill" data-sound="pink" onclick="selectSleepSound(this,'pink')">Pink noise</button>
+    <button class="sleep-pill" data-sound="brown" onclick="selectSleepSound(this,'brown')">Brown noise</button>
+    <button class="sleep-pill" data-sound="ocean" onclick="selectSleepSound(this,'ocean')">Ocean</button>
+  </div>
+
+  <!-- SLEEP TIMER (Pro) -->
+  <div class="sleep-lbl" id="sleep-timer-lbl">SLEEP TIMER <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
+  <div class="sleep-timer-row">
+    <button class="sleep-timer-pill" data-t="15" onclick="selectTimer(this,15)">15m</button>
+    <button class="sleep-timer-pill" data-t="30" onclick="selectTimer(this,30)">30m</button>
+    <button class="sleep-timer-pill on" data-t="60" onclick="selectTimer(this,60)">60m</button>
+    <button class="sleep-timer-pill" data-t="90" onclick="selectTimer(this,90)">90m</button>
+    <button class="sleep-timer-pill" data-t="0" onclick="selectTimer(this,0)">all night</button>
+  </div>
+
+  <!-- WAKE SOUND (Pro) -->
+  <div class="sleep-lbl" id="sleep-wake-lbl">WAKE-UP SOUND <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
+  <div class="sleep-pills" id="sleep-wake-pills">
+    <button class="sleep-pill on" data-wake="bowl" onclick="selectWakeSound(this,'bowl')">Sunrise bowl</button>
+    <button class="sleep-pill" data-wake="ocean" onclick="selectWakeSound(this,'ocean')">Ocean tide</button>
+    <button class="sleep-pill" data-wake="holy" onclick="selectWakeSound(this,'holy')">Holy Light</button>
+    <button class="sleep-pill" data-wake="cosmic" onclick="selectWakeSound(this,'cosmic')">Cosmic dawn</button>
+  </div>
+
+  <div class="sleep-timer-display" id="sleep-timer-display">60:00</div>
+
+  <button class="sleep-cta" id="sleep-cta" onclick="beginSleep()">✦ BEGIN SLEEP MODE ✦</button>
+  <button class="sleep-start-day" id="sleep-start-day" onclick="startYourDay()">✦ START YOUR DAY ✦</button>
+
+  <div class="sleep-pro-note" id="sleep-pro-note">SLEEP TIMER · WAKE-UP ALARM · DREAM PROMPT — PRO</div>
+
+</div>
+
 </body>
 </html>
