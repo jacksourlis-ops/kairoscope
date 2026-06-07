@@ -1628,6 +1628,9 @@ function applyLanguage(){
 // ============================================================
 const SLEEP_STATE={
   noAlarm:false,
+  alarmTimeout:null,
+  alarmTimeout:null,
+  previewNodes:[],
   sleepSound:'holy',
   wakeSound:'bowl',
   timerMins:60,
@@ -1666,6 +1669,8 @@ function closeSleep(){
   document.getElementById('sleep-cta').style.display='block';
   document.getElementById('sleep-stop').style.display='none';
   document.getElementById('sleep-timer-display').style.display='none';
+  if(SLEEP_STATE.alarmTimeout){clearTimeout(SLEEP_STATE.alarmTimeout);SLEEP_STATE.alarmTimeout=null;}
+  stopWakePreview();
 }
 
 function startYourDay(){
@@ -1711,6 +1716,7 @@ function beginSleep(){
   SLEEP_STATE.sleeping=true;
   document.getElementById('sleep-cta').style.display='none';
   document.getElementById('sleep-stop').style.display='block';
+  if(document.getElementById('sleep-restart')) document.getElementById('sleep-restart').style.display='block';
   startSleepAudio();
   // Schedule wake alarm if set and Pro
   if(APP.isPro){
@@ -1725,7 +1731,13 @@ function stopSleep(){
   SLEEP_STATE.sleeping=false;
   document.getElementById('sleep-cta').style.display='block';
   document.getElementById('sleep-stop').style.display='none';
+  if(document.getElementById('sleep-restart')) document.getElementById('sleep-restart').style.display='none';
   document.getElementById('sleep-timer-display').style.display='none';
+}
+
+function restartSleep(){
+  stopSleep();
+  setTimeout(beginSleep,300);
 }
 
 function scheduleWakeAlarm(){
@@ -1735,14 +1747,34 @@ function scheduleWakeAlarm(){
   const now=new Date();
   const alarm=new Date();
   alarm.setHours(h,m,0,0);
+  // If time is in the past, schedule for tomorrow
   if(alarm<=now) alarm.setDate(alarm.getDate()+1);
   const ms=alarm-now;
-  setTimeout(()=>{
+  // Clear any existing alarm
+  if(SLEEP_STATE.alarmTimeout) clearTimeout(SLEEP_STATE.alarmTimeout);
+  SLEEP_STATE.alarmTimeout=setTimeout(()=>{
     stopSleepAudio();
-    // play wake sound briefly then show start your day
+    SLEEP_STATE.sleeping=false;
+    // Resume audio context (may be suspended after long idle on mobile)
+    if(SLEEP_STATE.audioCtx&&SLEEP_STATE.audioCtx.state==='suspended'){
+      SLEEP_STATE.audioCtx.resume().then(()=>playWakeSound(SLEEP_STATE.wakeSound));
+    } else {
+      playWakeSound(SLEEP_STATE.wakeSound);
+    }
     document.getElementById('sleep-stop').style.display='none';
+    document.getElementById('sleep-restart').style.display='none';
     document.getElementById('sleep-cta').style.display='block';
+    document.getElementById('sleep-start-day').style.display='block';
+    if(navigator.vibrate) navigator.vibrate([800,300,800,300,800]);
+    const lbl=document.getElementById('sleep-phase-lbl');
+    if(lbl) lbl.textContent='GOOD MORNING ✦';
+    // Update alarm label
+    const alarmLbl=document.getElementById('alarm-set-lbl');
+    if(alarmLbl) alarmLbl.textContent='';
   },ms);
+  // Show confirmation
+  const alarmLbl=document.getElementById('alarm-set-lbl');
+  if(alarmLbl) alarmLbl.textContent='⏰ Alarm set for '+alarm.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 }
 
 function clearWakeTime(){
@@ -2389,6 +2421,222 @@ Write a daily horoscope for ${person.name} (${theirSign}). This is being read by
   } catch(e){
     txt.textContent='The connection slipped away. Try again.';
   }
+}
+
+
+// ============================================================
+// WAKE SOUND ENGINE
+// ============================================================
+function playWakeSound(sound){
+  initSleepAudio();
+  if(SLEEP_STATE.audioCtx.state==='suspended') SLEEP_STATE.audioCtx.resume();
+  const ctx=SLEEP_STATE.audioCtx;
+  const master=SLEEP_STATE.audioMaster;
+  const ns=SLEEP_STATE.audioNodes;
+  const swell=60;
+
+  function swellG(g,peak,rise){
+    const now=ctx.currentTime;
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(peak,now+rise);
+  }
+
+  if(sound==='bowl'){
+    // Pure Tibetan bowl tones swelling from silence — NO birds
+    const rev=ctx.createConvolver();
+    const rb=ctx.createBuffer(2,ctx.sampleRate*3,ctx.sampleRate);
+    for(let c=0;c<2;c++){const d=rb.getChannelData(c);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);}
+    rev.buffer=rb;const rg=sleepGain(.5);rev.connect(rg);rg.connect(master);
+    [[110,.09],[220,.06],[165,.05],[330,.03],[440,.02]].forEach(([f,peak],i)=>{
+      const o=sleepOsc(f);const o2=sleepOsc(f*1.0025);const g=sleepGain(0);
+      swellG(g,peak,swell*(0.3+i*.12));
+      o.connect(g);o2.connect(g);g.connect(master);g.connect(rev);
+      o.start();o2.start();ns.push(o,o2);
+    });
+  } else if(sound==='ocean'){
+    const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,8);src.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
+    const lpf2=ctx.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=350;
+    const g=sleepGain(0);swellG(g,.2,swell);
+    const wl1=sleepOsc(.08);const wg1=sleepGain(.12);wl1.connect(wg1);wg1.connect(g.gain);
+    const wl2=sleepOsc(.055);const wg2=sleepGain(.06);wl2.connect(wg2);wg2.connect(g.gain);
+    src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(master);
+    src.start();wl1.start();wl2.start();ns.push(src,wl1,wl2);
+  } else if(sound==='holy'){
+    // Breeze first then crystal pings increase
+    const bsrc=ctx.createBufferSource();bsrc.buffer=pinkBuf(ctx,6);bsrc.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
+    const bg=sleepGain(0);swellG(bg,.055,swell*.45);
+    const glfo=sleepOsc(.04);const gg=sleepGain(.025);glfo.connect(gg);gg.connect(bg.gain);
+    bsrc.connect(lpf);lpf.connect(bg);bg.connect(master);bsrc.start();glfo.start();ns.push(bsrc,glfo);
+    const pingFreqs=[1047,1175,1319,1568,1760,2093];
+    let alive=true;let elapsed=0;
+    function ping(){
+      if(!alive)return;
+      const f=pingFreqs[Math.floor(Math.random()*pingFreqs.length)]*(0.97+Math.random()*.06);
+      const now=ctx.currentTime;
+      const vol=Math.min(.04+elapsed/swell*.1,.12);
+      const o1=sleepOsc(f);const o2=sleepOsc(f*1.003);const cg=sleepGain(0);
+      cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(vol,now+.005);
+      cg.gain.exponentialRampToValueAtTime(.001,now+3.5);
+      o1.connect(cg);o2.connect(cg);cg.connect(master);
+      o1.start(now);o2.start(now);o1.stop(now+4);o2.stop(now+4);ns.push(o1,o2);
+      const interval=Math.max(800,4000-elapsed/swell*3200)*(0.5+Math.random());
+      elapsed+=interval/1000;
+      setTimeout(ping,interval);
+    }
+    setTimeout(ping,5000);
+    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='cosmic'){
+    // Deep drone brightening — softened high tones
+    [[40,.06],[65,.04],[98,.03],[130,.02]].forEach(([f,peak],i)=>{
+      const o=sleepOsc(f);const g=sleepGain(0);swellG(g,peak,swell*(0.3+i*.1));
+      o.connect(g);g.connect(master);o.start();ns.push(o);
+    });
+    setTimeout(()=>{
+      [261,329,392,523].forEach((f,i)=>{
+        const o=sleepOsc(f);const g=sleepGain(0);swellG(g,.012+i*.004,20);
+        const lfo=sleepOsc(.03+i*.01);const lg=sleepGain(.006);lfo.connect(lg);lg.connect(g.gain);
+        o.connect(g);g.connect(master);o.start();lfo.start();ns.push(o,lfo);
+      });
+    },10000);
+    let alive=true;
+    setTimeout(function shimmer(){
+      if(!alive)return;
+      const f=150+Math.random()*450;
+      const o=sleepOsc(f);const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
+      const g=sleepGain(0);const t=ctx.currentTime;
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.008,t+.8);
+      g.gain.exponentialRampToValueAtTime(.001,t+5);
+      o.connect(lpf);lpf.connect(g);g.connect(master);o.start(t);o.stop(t+5.5);ns.push(o);
+      setTimeout(shimmer,2000+Math.random()*3000);
+    },15000);
+    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  }
+}
+
+// Preview wake sound — toggle on/off
+let previewSound = null;
+let previewNodes = [];
+let previewCtx = null;
+let previewMaster = null;
+let currentPreviewing = null;
+
+function toggleWakePreview(sound){
+  // If already previewing this sound, stop it
+  if(currentPreviewing === sound){
+    stopWakePreview();
+    return;
+  }
+  stopWakePreview();
+  currentPreviewing = sound;
+
+  // Update button states
+  ['bowl','ocean','holy','cosmic'].forEach(s=>{
+    const btn = document.getElementById('prev-'+s);
+    if(btn) btn.textContent = s===sound ? '◼' : '▶';
+  });
+
+  // Init audio
+  if(!previewCtx){
+    previewCtx = new(window.AudioContext||window.webkitAudioContext)();
+    previewMaster = previewCtx.createGain();
+    previewMaster.gain.value = .65;
+    previewMaster.connect(previewCtx.destination);
+  }
+  if(previewCtx.state==='suspended') previewCtx.resume();
+
+  const ctx = previewCtx;
+  const master = previewMaster;
+  const ns = previewNodes;
+
+  function pinkP(secs){
+    const buf=ctx.createBuffer(1,ctx.sampleRate*secs,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for(let i=0;i<d.length;i++){
+      const w=Math.random()*2-1;
+      b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;
+      b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;
+      b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;
+    }
+    return buf;
+  }
+  function pOsc(f){const o=ctx.createOscillator();o.type='sine';o.frequency.value=f;return o;}
+  function pGain(v){const g=ctx.createGain();g.gain.value=v;return g;}
+  function swellP(g,peak,rise){
+    const now=ctx.currentTime;
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(peak,now+rise);
+  }
+
+  if(sound==='bowl'){
+    const rev=ctx.createConvolver();
+    const rb=ctx.createBuffer(2,ctx.sampleRate*2,ctx.sampleRate);
+    for(let c=0;c<2;c++){const d=rb.getChannelData(c);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);}
+    rev.buffer=rb;const rg=pGain(.4);rev.connect(rg);rg.connect(master);
+    [[110,.09],[220,.06],[165,.05]].forEach(([f,peak],i)=>{
+      const o=pOsc(f);const o2=pOsc(f*1.0025);const g=pGain(0);
+      swellP(g,peak,4+i*1.5);
+      o.connect(g);o2.connect(g);g.connect(master);g.connect(rev);
+      o.start();o2.start();ns.push(o,o2);
+    });
+  } else if(sound==='ocean'){
+    const src=ctx.createBufferSource();src.buffer=pinkP(8);src.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
+    const g=pGain(0);swellP(g,.18,5);
+    const wl=pOsc(.08);const wg=pGain(.1);wl.connect(wg);wg.connect(g.gain);
+    src.connect(lpf);lpf.connect(g);g.connect(master);
+    src.start();wl.start();ns.push(src,wl);
+  } else if(sound==='holy'){
+    const bsrc=ctx.createBufferSource();bsrc.buffer=pinkP(6);bsrc.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
+    const bg=pGain(0);swellP(bg,.055,4);
+    bsrc.connect(lpf);lpf.connect(bg);bg.connect(master);bsrc.start();ns.push(bsrc);
+    const freqs=[1047,1175,1319,1568,1760];
+    let alive=true;
+    function ping(){
+      if(!alive)return;
+      const f=freqs[Math.floor(Math.random()*freqs.length)];
+      const now=ctx.currentTime;
+      const o1=pOsc(f);const o2=pOsc(f*1.003);const cg=pGain(0);
+      cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(.07,now+.005);
+      cg.gain.exponentialRampToValueAtTime(.001,now+3.5);
+      o1.connect(cg);o2.connect(cg);cg.connect(master);
+      o1.start(now);o2.start(now);o1.stop(now+4);o2.stop(now+4);ns.push(o1,o2);
+      setTimeout(ping,2000+Math.random()*3000);
+    }
+    setTimeout(ping,1000);
+    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='cosmic'){
+    [[40,.06],[65,.04],[98,.03]].forEach(([f,peak],i)=>{
+      const o=pOsc(f);const g=pGain(0);swellP(g,peak,5*(0.3+i*.1));
+      o.connect(g);g.connect(master);o.start();ns.push(o);
+    });
+    let alive=true;
+    setTimeout(function shimmer(){
+      if(!alive)return;
+      const f=150+Math.random()*350;
+      const o=pOsc(f);const g=pGain(0);const t=ctx.currentTime;
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.008,t+.5);
+      g.gain.exponentialRampToValueAtTime(.001,t+3);
+      o.connect(g);g.connect(master);o.start(t);o.stop(t+3.5);ns.push(o);
+      setTimeout(shimmer,1500+Math.random()*2000);
+    },3000);
+    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  }
+}
+
+
+function stopWakePreview(){
+  previewNodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});
+  previewNodes=[];
+  currentPreviewing=null;
+  ['bowl','ocean','holy','cosmic'].forEach(s=>{
+    const btn=document.getElementById('prev-'+s);
+    if(btn)btn.textContent='▶';
+  });
 }
 
 const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -3738,11 +3986,24 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
   <!-- WAKE SOUND (Pro) -->
   <div class="sleep-lbl" id="sleep-wake-lbl">WAKE-UP SOUND <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
   <div class="sleep-pills" id="sleep-wake-pills">
-    <button class="sleep-pill on" data-wake="bowl" onclick="selectWakeSound(this,'bowl')">Sunrise bowl</button>
-    <button class="sleep-pill" data-wake="ocean" onclick="selectWakeSound(this,'ocean')">Ocean tide</button>
-    <button class="sleep-pill" data-wake="holy" onclick="selectWakeSound(this,'holy')">Holy Light</button>
-    <button class="sleep-pill" data-wake="cosmic" onclick="selectWakeSound(this,'cosmic')">Cosmic dawn</button>
+    <div style="display:flex;align-items:center;gap:5px;width:100%">
+      <button class="sleep-pill on" data-wake="bowl" onclick="selectWakeSound(this,'bowl')" style="flex:1">Sunrise bowl</button>
+      <button onclick="toggleWakePreview('bowl')" id="prev-bowl" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;width:100%">
+      <button class="sleep-pill" data-wake="ocean" onclick="selectWakeSound(this,'ocean')" style="flex:1">Ocean tide</button>
+      <button onclick="toggleWakePreview('ocean')" id="prev-ocean" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;width:100%">
+      <button class="sleep-pill" data-wake="holy" onclick="selectWakeSound(this,'holy')" style="flex:1">Holy Light</button>
+      <button onclick="toggleWakePreview('holy')" id="prev-holy" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;width:100%">
+      <button class="sleep-pill" data-wake="cosmic" onclick="selectWakeSound(this,'cosmic')" style="flex:1">Cosmic dawn</button>
+      <button onclick="toggleWakePreview('cosmic')" id="prev-cosmic" style="background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:6px;padding:4px 8px;color:rgba(200,175,255,0.5);font-size:10px;cursor:pointer">▶</button>
+    </div>
   </div>
+  <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.4);text-align:center;margin-top:.25rem;margin-bottom:.5rem">▶ tap to preview each sound</div>
 
   <!-- WAKE TIME PICKER -->
   <div class="sleep-lbl" id="sleep-waketime-lbl">WAKE-UP TIME <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
@@ -3754,8 +4015,12 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
   <div class="sleep-timer-display" id="sleep-timer-display">60:00</div>
 
   <!-- BEGIN / STOP -->
+  <div id="alarm-set-lbl" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.45);text-align:center;margin-bottom:.35rem;min-height:16px"></div>
   <button class="sleep-cta" id="sleep-cta" onclick="beginSleep()">✦ BEGIN SLEEP MODE ✦</button>
-  <button class="sleep-cta" id="sleep-stop" onclick="stopSleep()" style="display:none">◼ STOP SOUND</button>
+  <div style="display:flex;gap:8px;width:100%;margin-top:.5rem">
+    <button class="sleep-cta" id="sleep-stop" onclick="stopSleep()" style="display:none;flex:2;background:rgba(200,80,80,0.12);border-color:rgba(200,80,80,0.3);color:rgba(255,180,180,0.85)">◼ STOP SOUND</button>
+    <button class="sleep-cta" id="sleep-restart" onclick="restartSleep()" style="display:none;flex:1;font-size:9px">↺ CHANGE SOUND</button>
+  </div>
 
   <!-- START YOUR DAY — always visible -->
   <button class="sleep-start-day" id="sleep-start-day" onclick="startYourDay()" style="display:block;margin-top:.6rem">✦ START YOUR DAY ✦</button>
