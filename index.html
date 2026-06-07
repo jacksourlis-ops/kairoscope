@@ -1894,9 +1894,10 @@ function logoTap(){
   clearTimeout(logoTimer);
   if(logoTaps >= 7){
     logoTaps = 0;
-    activatePro();
-    const logo = document.querySelector('.site-logo');
-    if(logo){ logo.style.color='var(--gold)'; setTimeout(()=>logo.style.color='',1000); }
+    localStorage.setItem('k_pro','true');
+    setTier('pro');
+    const el=document.getElementById('me-phase-h');
+    if(el){const orig=el.textContent;el.textContent='✦';setTimeout(()=>el.textContent=orig,1000);}
   }
   logoTimer = setTimeout(()=>logoTaps=0, 2000);
 }
