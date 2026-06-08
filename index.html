@@ -484,8 +484,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <div class="birth-card">
         <div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl" style="margin:0">FULL BIRTH CHART</span><span class="pro-badge">✦ PRO</span></div>
         <div class="birth-row">
-          <div><span class="lbl">DATE OF BIRTH</span><input type="date" class="birth-input" id="bdate" onchange="saveBirthData()" onchange="calcChart()"></div>
-          <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="saveBirthData()" onchange="calcChart()"></div>
+          <div><span class="lbl">DATE OF BIRTH</span><input type="date" class="birth-input" id="bdate" onchange="saveBirthData();calcChart()"></div>
+          <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="saveBirthData();calcChart()"></div>
         </div>
         <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
         <div class="chart-cards" id="chart-cards">
@@ -1668,7 +1668,8 @@ function closeSleep(){
   SLEEP_STATE.sleeping=false;
   clearInterval(SLEEP_STATE.timerInterval);
   document.getElementById('sleep-cta').style.display='block';
-  if(document.getElementById('sleep-active-controls')) document.getElementById('sleep-active-controls').style.display='none';
+  if(document.getElementById('sleep-active')) document.getElementById('sleep-active').style.display='none';
+  if(document.getElementById('sleep-setup')) document.getElementById('sleep-setup').style.display='block';
   document.getElementById('sleep-timer-display').style.display='none';
   if(SLEEP_STATE.alarmTimeout){clearTimeout(SLEEP_STATE.alarmTimeout);SLEEP_STATE.alarmTimeout=null;}
   stopWakePreview();
@@ -1716,14 +1717,17 @@ function beginSleep(){
   if(SLEEP_STATE.sleeping)return;
   SLEEP_STATE.sleeping=true;
   SLEEP_STATE.paused=false;
-  document.getElementById('sleep-cta').style.display='none';
-  document.getElementById('sleep-active-controls').style.display='block';
+  // Swap panels
+  document.getElementById('sleep-setup').style.display='none';
+  document.getElementById('sleep-active').style.display='block';
+  // Start audio
   initSleepAudio();
   if(SLEEP_STATE.audioCtx.state==='suspended') SLEEP_STATE.audioCtx.resume();
   startSleepAudio();
-  // Apply current volume
+  // Apply volume
   const vol=parseInt(document.getElementById('sleep-vol').value)/100;
   SLEEP_STATE.audioMaster.gain.value=vol;
+  // Pro features
   if(APP.isPro){
     scheduleWakeAlarm();
     if(SLEEP_STATE.timerMins>0){
@@ -1739,23 +1743,15 @@ function stopSleep(){
   if(SLEEP_STATE.alarmTimeout){clearTimeout(SLEEP_STATE.alarmTimeout);SLEEP_STATE.alarmTimeout=null;}
   SLEEP_STATE.sleeping=false;
   SLEEP_STATE.paused=false;
-  document.getElementById('sleep-cta').style.display='block';
-  document.getElementById('sleep-active-controls').style.display='none';
+  // Swap panels back
+  document.getElementById('sleep-setup').style.display='block';
+  document.getElementById('sleep-active').style.display='none';
   document.getElementById('sleep-timer-display').style.display='none';
-  const lbl=document.getElementById('alarm-set-lbl');
-  if(lbl) lbl.textContent='';
+  const btn=document.getElementById('sleep-pause-btn');
+  if(btn) btn.textContent='⏸ PAUSE';
 }
 
-function restartSleep(){
-  // Stop audio, stay in sleep mode, let user pick new sound then re-begin
-  stopSleepAudio();
-  SLEEP_STATE.sleeping=false;
-  SLEEP_STATE.paused=false;
-  document.getElementById('sleep-active-controls').style.display='none';
-  document.getElementById('sleep-cta').style.display='block';
-  document.getElementById('sleep-timer-display').style.display='none';
-  document.getElementById('sleep-sound-pills').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
+function restartSleep(){ stopSleep(); }
 
 function scheduleWakeAlarm(){
   const timeInput=document.getElementById('sleep-wake-time');
@@ -1778,8 +1774,8 @@ function scheduleWakeAlarm(){
     } else {
       playWakeSound(SLEEP_STATE.wakeSound);
     }
-    document.getElementById('sleep-active-controls').style.display='none';
-    document.getElementById('sleep-cta').style.display='block';
+    document.getElementById('sleep-active').style.display='none';
+    document.getElementById('sleep-setup').style.display='block';
     document.getElementById('sleep-start-day').style.display='block';
     if(navigator.vibrate) navigator.vibrate([800,300,800,300,800]);
     const lbl=document.getElementById('sleep-phase-lbl');
@@ -2933,15 +2929,15 @@ function calcChart(){
     const matchKey=Object.keys(CITIES).find(k=>k===city||k.startsWith(city)||city.startsWith(k));
     if(matchKey) coords=CITIES[matchKey];
   }
-  if(coords&&tob&&tob!=='12:00'){
+  if(coords&&tob){
     const asc=ascendant(jd,coords[0],coords[1]);
     APP.chart.riseDeg=asc;APP.chart.rising=lonToSign(asc);APP.chart.city=city;
     document.getElementById('cv-rise').textContent=APP.chart.rising;
     document.getElementById('cd-rise').textContent=lonToDegMin(asc);
-  }else if(!tob||tob==='12:00'){
+  }else if(!tob){
     document.getElementById('cv-rise').textContent='Need birth time';
     document.getElementById('cd-rise').textContent='';
-  }else{
+  }else if(!coords){
     document.getElementById('cv-rise').textContent='Enter birth city';
     document.getElementById('cd-rise').textContent='';
   }
@@ -4031,19 +4027,16 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 <!-- SLEEP SCREEN -->
 <div class="sleep-screen" id="sleep-screen">
 
-  <!-- TOP BAR -->
   <div class="sleep-top">
     <button class="sleep-back" id="sleep-back-btn" onclick="closeSleep()">← back</button>
     <div class="sleep-phase-lbl" id="sleep-phase-lbl">MOON PHASE</div>
     <div style="width:40px"></div>
   </div>
 
-  <!-- MOON PHOTO -->
   <div class="sleep-moon-wrap" style="border-radius:50%;overflow:hidden;">
     <img id="sleep-moon-img" src="" alt="Moon" style="width:100%;height:100%;display:block;"/>
   </div>
 
-  <!-- DREAM PROMPT -->
   <div class="sleep-prompt">
     <div class="sleep-prompt-lbl" id="sleep-prompt-lbl">TONIGHT'S DREAM PROMPT</div>
     <div class="sleep-prompt-text" id="sleep-prompt-text">"What are you ready to release before you sleep?"</div>
@@ -4051,85 +4044,79 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 
   <div class="sleep-divider"></div>
 
-  <!-- SLEEP SOUNDS + VOLUME -->
-  <div class="sleep-lbl" id="sleep-sound-lbl">SLEEP SOUND</div>
-  <div class="sleep-pills" id="sleep-sound-pills">
-    <button class="sleep-pill on" data-sound="holy"  onclick="selectSleepSound(this,'holy')">Holy Light</button>
-    <button class="sleep-pill"    data-sound="pink"  onclick="selectSleepSound(this,'pink')">Pink Noise</button>
-    <button class="sleep-pill"    data-sound="brown" onclick="selectSleepSound(this,'brown')">Brown Noise</button>
-    <button class="sleep-pill"    data-sound="ocean" onclick="selectSleepSound(this,'ocean')">Ocean</button>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;width:100%;margin:.5rem 0 .75rem">
-    <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.45);white-space:nowrap">VOLUME</div>
-    <input type="range" id="sleep-vol" min="0" max="100" value="60" oninput="setSleepVolume(this.value)" style="flex:1;accent-color:rgba(180,150,255,0.7);height:4px;cursor:pointer"/>
-    <div id="sleep-vol-lbl" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;color:rgba(200,175,255,0.45);min-width:30px">60%</div>
-  </div>
+  <!-- SETUP PANEL — visible before sleep starts -->
+  <div id="sleep-setup">
 
-  <!-- SLEEP TIMER -->
-  <div class="sleep-lbl" id="sleep-timer-lbl">SLEEP TIMER <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
-  <div class="sleep-timer-row">
-    <button class="sleep-timer-pill" data-t="15" onclick="selectTimer(this,15)">15m</button>
-    <button class="sleep-timer-pill" data-t="30" onclick="selectTimer(this,30)">30m</button>
-    <button class="sleep-timer-pill on" data-t="60" onclick="selectTimer(this,60)">60m</button>
-    <button class="sleep-timer-pill" data-t="90" onclick="selectTimer(this,90)">90m</button>
-    <button class="sleep-timer-pill" data-t="0" onclick="selectTimer(this,0)">all night</button>
-  </div>
-
-  <div class="sleep-divider" style="margin:.75rem 0"></div>
-
-  <!-- WAKE-UP SOUND + VOLUME -->
-  <div class="sleep-lbl" id="sleep-wake-lbl">WAKE-UP SOUND <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
-  <div class="sleep-pills" id="sleep-wake-pills">
-    <div style="display:flex;align-items:center;gap:5px;width:100%">
-      <button class="sleep-pill on" data-wake="bowl"   onclick="selectWakeSound(this,'bowl')"   style="flex:1">Sunrise Bowl</button>
-      <button onclick="toggleWakePreview('bowl')"   id="prev-bowl"   style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer">▶</button>
+    <div class="sleep-lbl" id="sleep-sound-lbl">SLEEP SOUND</div>
+    <div class="sleep-pills" id="sleep-sound-pills">
+      <button class="sleep-pill on" data-sound="holy"  onclick="selectSleepSound(this,'holy')">Holy Light</button>
+      <button class="sleep-pill"    data-sound="pink"  onclick="selectSleepSound(this,'pink')">Pink Noise</button>
+      <button class="sleep-pill"    data-sound="brown" onclick="selectSleepSound(this,'brown')">Brown Noise</button>
+      <button class="sleep-pill"    data-sound="ocean" onclick="selectSleepSound(this,'ocean')">Ocean</button>
     </div>
-    <div style="display:flex;align-items:center;gap:5px;width:100%">
-      <button class="sleep-pill" data-wake="ocean"   onclick="selectWakeSound(this,'ocean')"   style="flex:1">Ocean Tide</button>
-      <button onclick="toggleWakePreview('ocean')"   id="prev-ocean"  style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer">▶</button>
+
+    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:.4rem 0 .75rem">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.5)">VOLUME</div>
+      <input type="range" id="sleep-vol" min="0" max="100" value="70" oninput="setSleepVolume(this.value)" style="flex:1;accent-color:rgba(180,150,255,0.8);cursor:pointer"/>
     </div>
-    <div style="display:flex;align-items:center;gap:5px;width:100%">
-      <button class="sleep-pill" data-wake="holy"    onclick="selectWakeSound(this,'holy')"    style="flex:1">Holy Light</button>
-      <button onclick="toggleWakePreview('holy')"    id="prev-holy"   style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer">▶</button>
+
+    <div class="sleep-lbl" id="sleep-timer-lbl">SLEEP TIMER <span style="font-size:7px;color:rgba(200,175,255,0.22)">PRO</span></div>
+    <div class="sleep-timer-row">
+      <button class="sleep-timer-pill"    data-t="15" onclick="selectTimer(this,15)">15m</button>
+      <button class="sleep-timer-pill"    data-t="30" onclick="selectTimer(this,30)">30m</button>
+      <button class="sleep-timer-pill on" data-t="60" onclick="selectTimer(this,60)">60m</button>
+      <button class="sleep-timer-pill"    data-t="90" onclick="selectTimer(this,90)">90m</button>
+      <button class="sleep-timer-pill"    data-t="0"  onclick="selectTimer(this,0)">all night</button>
     </div>
-    <div style="display:flex;align-items:center;gap:5px;width:100%">
-      <button class="sleep-pill" data-wake="cosmic"  onclick="selectWakeSound(this,'cosmic')"  style="flex:1">Cosmic Dawn</button>
-      <button onclick="toggleWakePreview('cosmic')"  id="prev-cosmic" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:12px;cursor:pointer">▶</button>
+
+    <div class="sleep-divider" style="margin:.75rem 0 .6rem"></div>
+
+    <div class="sleep-lbl" id="sleep-wake-lbl">WAKE-UP SOUND <span style="font-size:7px;color:rgba(200,175,255,0.22)">PRO</span></div>
+    <div class="sleep-pills" id="sleep-wake-pills">
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill on" data-wake="bowl"   onclick="selectWakeSound(this,'bowl')"   style="flex:1">Sunrise Bowl</button>
+        <button onclick="toggleWakePreview('bowl')"   id="prev-bowl"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:7px 13px;color:rgba(200,175,255,0.8);font-size:12px;cursor:pointer">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill" data-wake="ocean"  onclick="selectWakeSound(this,'ocean')"  style="flex:1">Ocean Tide</button>
+        <button onclick="toggleWakePreview('ocean')"  id="prev-ocean"  style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:7px 13px;color:rgba(200,175,255,0.8);font-size:12px;cursor:pointer">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill" data-wake="holy"   onclick="selectWakeSound(this,'holy')"   style="flex:1">Holy Light</button>
+        <button onclick="toggleWakePreview('holy')"   id="prev-holy"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:7px 13px;color:rgba(200,175,255,0.8);font-size:12px;cursor:pointer">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill" data-wake="cosmic" onclick="selectWakeSound(this,'cosmic')" style="flex:1">Cosmic Dawn</button>
+        <button onclick="toggleWakePreview('cosmic')" id="prev-cosmic" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:6px;padding:7px 13px;color:rgba(200,175,255,0.8);font-size:12px;cursor:pointer">▶</button>
+      </div>
     </div>
+
+    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:.4rem 0 .75rem">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.5)">ALARM VOL</div>
+      <input type="range" id="wake-vol" min="0" max="100" value="90" oninput="setWakeVolume(this.value)" style="flex:1;accent-color:rgba(180,150,255,0.8);cursor:pointer"/>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;width:100%;margin-bottom:.75rem">
+      <button id="alarm-toggle-btn" onclick="toggleAlarm()" style="padding:8px 16px;border-radius:20px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;cursor:pointer;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.2);color:rgba(200,175,255,0.6);white-space:nowrap">○ NO ALARM</button>
+      <div id="alarm-time-wrap" style="display:none;flex:1">
+        <input type="time" id="sleep-wake-time" value="07:00" onchange="confirmAlarmTime(this.value)" style="width:100%;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.3);border-radius:8px;padding:9px 12px;color:rgba(235,225,255,0.95);font-family:'Cinzel',serif;font-size:15px;outline:none;-webkit-appearance:none">
+      </div>
+    </div>
+    <div id="alarm-set-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(200,175,255,0.7);text-align:center;min-height:18px;margin-bottom:.5rem"></div>
+
+    <button class="sleep-cta" id="sleep-cta" onclick="beginSleep()">✦ BEGIN SLEEP MODE ✦</button>
+
+  </div><!-- end sleep-setup -->
+
+  <!-- ACTIVE PANEL — shown while sleeping -->
+  <div id="sleep-active" style="display:none;width:100%;text-align:center">
+    <div class="sleep-timer-display" id="sleep-timer-display" style="display:none">60:00</div>
+    <div id="alarm-active-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(200,175,255,0.6);margin:.5rem 0 1rem;min-height:18px"></div>
+    <button onclick="stopSleep()" style="width:100%;padding:14px;background:rgba(180,60,60,0.15);border:1px solid rgba(220,100,100,0.4);border-radius:12px;color:rgba(255,200,200,0.95);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;cursor:pointer;margin-bottom:.5rem">◼ STOP SLEEP SOUNDS</button>
+    <button onclick="pauseSleep()" id="sleep-pause-btn" style="width:100%;padding:11px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.2);border-radius:12px;color:rgba(200,175,255,0.75);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;cursor:pointer">⏸ PAUSE</button>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;width:100%;margin:.5rem 0 .75rem">
-    <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.45);white-space:nowrap">ALARM VOL</div>
-    <input type="range" id="wake-vol" min="0" max="100" value="85" oninput="setWakeVolume(this.value)" style="flex:1;accent-color:rgba(180,150,255,0.7);height:4px;cursor:pointer"/>
-    <div id="wake-vol-lbl" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;color:rgba(200,175,255,0.45);min-width:30px">85%</div>
-  </div>
 
-  <!-- ALARM TOGGLE -->
-  <div class="sleep-lbl" id="sleep-waketime-lbl">WAKE-UP ALARM <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
-  <div style="display:flex;align-items:center;gap:8px;width:100%;margin-bottom:.5rem">
-    <button id="alarm-toggle-btn" onclick="toggleAlarm()" style="padding:7px 14px;border-radius:20px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;cursor:pointer;transition:all .2s;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.2);color:rgba(200,175,255,0.55)">○ NO ALARM</button>
-    <div id="alarm-time-wrap" style="display:none;flex:1">
-      <input type="time" id="sleep-wake-time" value="07:00" onchange="confirmAlarmTime(this.value)" style="width:100%;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.3);border-radius:8px;padding:8px 12px;color:rgba(200,175,255,0.9);font-family:'Cinzel',serif;font-size:14px;outline:none;-webkit-appearance:none">
-    </div>
-  </div>
-  <div id="alarm-set-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(200,175,255,0.65);text-align:center;margin-bottom:.75rem;min-height:18px"></div>
-
-  <!-- TIMER DISPLAY -->
-  <div class="sleep-timer-display" id="sleep-timer-display" style="display:none">60:00</div>
-
-  <!-- MAIN BUTTONS -->
-  <button class="sleep-cta" id="sleep-cta" onclick="beginSleep()">✦ BEGIN SLEEP MODE ✦</button>
-
-  <!-- ACTIVE SLEEP CONTROLS (shown once sleeping) -->
-  <div id="sleep-active-controls" style="display:none;width:100%;display:none">
-    <div style="display:flex;gap:8px;width:100%;margin-top:.6rem">
-      <button class="sleep-cta" onclick="stopSleep()" style="flex:2;background:rgba(200,80,80,0.12);border-color:rgba(200,80,80,0.3);color:rgba(255,180,180,0.9);font-size:10px">◼ STOP</button>
-      <button class="sleep-cta" onclick="pauseSleep()" id="sleep-pause-btn" style="flex:1;font-size:9px">⏸ PAUSE</button>
-      <button class="sleep-cta" onclick="restartSleep()" style="flex:1;font-size:9px">↺ SOUND</button>
-    </div>
-  </div>
-
-  <!-- START YOUR DAY -->
-  <button class="sleep-start-day" id="sleep-start-day" onclick="startYourDay()" style="display:none;margin-top:.6rem">✦ START YOUR DAY ✦</button>
+  <button class="sleep-start-day" id="sleep-start-day" onclick="startYourDay()" style="display:none;margin-top:.75rem">✦ START YOUR DAY ✦</button>
 
 </div>
 
