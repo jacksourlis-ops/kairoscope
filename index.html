@@ -2036,7 +2036,7 @@ function saveBirthData(){
   if(c&&c.value){
     localStorage.setItem('k_bcity',c.value);
     // Persist coords so Rising sign survives page reload
-    const key=c.value.split(',')[0].toLowerCase().trim();
+    const key=c.value.toLowerCase().trim();  // full string as key
     if(CITIES[key]) localStorage.setItem('k_bcity_coords',JSON.stringify(CITIES[key]));
   }
 }
@@ -2054,7 +2054,7 @@ function loadBirthData(){
   if(c&&cEl){cEl.value=c;}
   if(c&&coords){
     try{
-      const key=c.split(',')[0].toLowerCase().trim();
+      const key=c.toLowerCase().trim();  // full string as key
       CITIES[key]=JSON.parse(coords);
     }catch(e){}
     if(d) calcChart();
@@ -2851,7 +2851,7 @@ let cityTimer;
 // geocodeCity: look up coords for any city string, store in CITIES, then recalculate
 function geocodeCity(val, callback){
   if(!val||val.trim().length<2){if(callback)callback(false);return;}
-  const key=val.split(',')[0].toLowerCase().trim();
+  const key=val.toLowerCase().trim();  // use full string incl. country as key
   if(CITIES[key]){if(callback)callback(true);return;}
   fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&limit=1&format=json`,{
     headers:{'Accept-Language':'en'}
@@ -2956,7 +2956,7 @@ function lonToDegMin(l){const d=Math.floor(l%30),m=Math.floor((l%30-d)*60);retur
 function calcChart(){
   const dob=document.getElementById('bdate').value;
   const tob=document.getElementById('btime').value||'12:00';
-  const city=document.getElementById('bcity').value.split(',')[0].toLowerCase().trim();
+  const city=document.getElementById('bcity').value.toLowerCase().trim();  // full value incl. country
   console.log('calcChart called: dob='+dob+' tob='+tob+' city='+city);
   if(!dob)return;
   const p=dob.split('-'),t=tob.split(':');
