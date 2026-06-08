@@ -1627,7 +1627,7 @@ function applyLanguage(){
 // SLEEP MODE
 // ============================================================
 const SLEEP_STATE={
-  noAlarm:false,
+  noAlarm:true,
   alarmTimeout:null,
   alarmTimeout:null,
   previewNodes:[],
@@ -1742,7 +1742,7 @@ function restartSleep(){
 
 function scheduleWakeAlarm(){
   const timeInput=document.getElementById('sleep-wake-time');
-  if(!timeInput||!timeInput.value||SLEEP_STATE.noAlarm)return;
+  if(!timeInput||!timeInput.value||SLEEP_STATE.noAlarm!==false)return;
   const [h,m]=timeInput.value.split(':').map(Number);
   const now=new Date();
   const alarm=new Date();
@@ -1775,21 +1775,52 @@ function scheduleWakeAlarm(){
   // Show confirmation
   const alarmLbl=document.getElementById('alarm-set-lbl');
   if(alarmLbl) alarmLbl.textContent='⏰ Alarm set for '+alarm.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  // Also update the toggle button text
+  const tb=document.getElementById('alarm-toggle-btn');
+  if(tb) tb.textContent='● ALARM SET · '+alarm.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+
+
+function confirmAlarmTime(val){
+  if(!val) return;
+  const [h,m] = val.split(':').map(Number);
+  const alarm = new Date();
+  alarm.setHours(h,m,0,0);
+  if(alarm <= new Date()) alarm.setDate(alarm.getDate()+1);
+  const timeStr = alarm.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const lbl = document.getElementById('alarm-set-lbl');
+  if(lbl) lbl.textContent = '⏰ Alarm set for ' + timeStr;
+  const tb = document.getElementById('alarm-toggle-btn');
+  if(tb){ tb.textContent='● ALARM ON · '+timeStr; }
+}
+
+function toggleAlarm(){
+  SLEEP_STATE.noAlarm=!SLEEP_STATE.noAlarm;
+  const btn=document.getElementById('alarm-toggle-btn');
+  const wrap=document.getElementById('alarm-time-wrap');
+  const lbl=document.getElementById('alarm-set-lbl');
+  if(!SLEEP_STATE.noAlarm){
+    // Alarm ON
+    btn.textContent='● ALARM ON';
+    btn.style.background='rgba(200,175,255,0.12)';
+    btn.style.borderColor='rgba(200,175,255,0.45)';
+    btn.style.color='rgba(235,225,255,0.9)';
+    wrap.style.display='flex';
+    lbl.textContent='';
+  } else {
+    // Alarm OFF
+    btn.textContent='○ NO ALARM';
+    btn.style.background='rgba(200,175,255,0.05)';
+    btn.style.borderColor='rgba(200,175,255,0.2)';
+    btn.style.color='rgba(200,175,255,0.55)';
+    wrap.style.display='none';
+    lbl.textContent='';
+  }
 }
 
 function clearWakeTime(){
-  SLEEP_STATE.noAlarm=!SLEEP_STATE.noAlarm;
-  const btn=document.getElementById('sleep-wake-clear');
-  const inp=document.getElementById('sleep-wake-time');
-  if(SLEEP_STATE.noAlarm){
-    btn.style.color='rgba(200,175,255,0.7)';
-    btn.textContent='alarm off';
-    inp.style.opacity='.3';
-  } else {
-    btn.style.color='rgba(200,175,255,0.25)';
-    btn.textContent='no alarm';
-    inp.style.opacity='1';
-  }
+  // Keep for compatibility
+  SLEEP_STATE.noAlarm=true;
 }
 
 function startSleepTimer(){
@@ -2433,7 +2464,7 @@ function playWakeSound(sound){
   const ctx=SLEEP_STATE.audioCtx;
   const master=SLEEP_STATE.audioMaster;
   const ns=SLEEP_STATE.audioNodes;
-  const swell=60;
+  const swell=15;
 
   function swellG(g,peak,rise){
     const now=ctx.currentTime;
@@ -2449,7 +2480,7 @@ function playWakeSound(sound){
     rev.buffer=rb;const rg=sleepGain(.5);rev.connect(rg);rg.connect(master);
     [[110,.09],[220,.06],[165,.05],[330,.03],[440,.02]].forEach(([f,peak],i)=>{
       const o=sleepOsc(f);const o2=sleepOsc(f*1.0025);const g=sleepGain(0);
-      swellG(g,peak,20*(0.3+i*.12));
+      swellG(g,peak,8*(0.3+i*.08));
       o.connect(g);o2.connect(g);g.connect(master);g.connect(rev);
       o.start();o2.start();ns.push(o,o2);
     });
@@ -2457,7 +2488,7 @@ function playWakeSound(sound){
     const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,8);src.loop=true;
     const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
     const lpf2=ctx.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=350;
-    const g=sleepGain(0);swellG(g,.2,20);
+    const g=sleepGain(0);swellG(g,.35,10);
     const wl1=sleepOsc(.08);const wg1=sleepGain(.12);wl1.connect(wg1);wg1.connect(g.gain);
     const wl2=sleepOsc(.055);const wg2=sleepGain(.06);wl2.connect(wg2);wg2.connect(g.gain);
     src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(master);
@@ -2466,7 +2497,7 @@ function playWakeSound(sound){
     // Breeze first then crystal pings increase
     const bsrc=ctx.createBufferSource();bsrc.buffer=pinkBuf(ctx,6);bsrc.loop=true;
     const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
-    const bg=sleepGain(0);swellG(bg,.055,8);
+    const bg=sleepGain(0);swellG(bg,.15,6);
     const glfo=sleepOsc(.04);const gg=sleepGain(.025);glfo.connect(gg);gg.connect(bg.gain);
     bsrc.connect(lpf);lpf.connect(bg);bg.connect(master);bsrc.start();glfo.start();ns.push(bsrc,glfo);
     const pingFreqs=[1047,1175,1319,1568,1760,2093];
@@ -2475,21 +2506,21 @@ function playWakeSound(sound){
       if(!alive)return;
       const f=pingFreqs[Math.floor(Math.random()*pingFreqs.length)]*(0.97+Math.random()*.06);
       const now=ctx.currentTime;
-      const vol=Math.min(.04+elapsed/swell*.1,.12);
+      const vol=Math.min(.08+elapsed/15*.15,.25);
       const o1=sleepOsc(f);const o2=sleepOsc(f*1.003);const cg=sleepGain(0);
       cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(vol,now+.005);
       cg.gain.exponentialRampToValueAtTime(.001,now+3.5);
       o1.connect(cg);o2.connect(cg);cg.connect(master);
       o1.start(now);o2.start(now);o1.stop(now+4);o2.stop(now+4);ns.push(o1,o2);
-      const interval=Math.max(800,4000-elapsed/swell*3200)*(0.5+Math.random());
+      const interval=Math.max(400,2000-elapsed/15*1600)*(0.5+Math.random());
       elapsed+=interval/1000;
       setTimeout(ping,interval);
     }
-    setTimeout(ping,5000);
+    setTimeout(ping,2000);
     ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
   } else if(sound==='cosmic'){
     // Deep drone brightening — softened high tones
-    [[40,.06],[65,.04],[98,.03],[130,.02]].forEach(([f,peak],i)=>{
+    [[40,.15],[65,.10],[98,.08],[130,.06]].forEach(([f,peak],i)=>{
       const o=sleepOsc(f);const g=sleepGain(0);swellG(g,peak,swell*(0.3+i*.1));
       o.connect(g);g.connect(master);o.start();ns.push(o);
     });
@@ -4006,16 +4037,18 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
   <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.4);text-align:center;margin-top:.25rem;margin-bottom:.5rem">▶ tap to preview each sound</div>
 
   <!-- WAKE TIME PICKER -->
-  <div class="sleep-lbl" id="sleep-waketime-lbl">WAKE-UP TIME <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
-  <div style="display:flex;align-items:center;gap:10px;width:100%;margin-bottom:1rem">
-    <input type="time" id="sleep-wake-time" value="07:00" style="background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);border-radius:8px;padding:8px 12px;color:rgba(200,175,255,0.7);font-family:'Cinzel',serif;font-size:13px;letter-spacing:.08em;flex:1;outline:none;-webkit-appearance:none">
-    <button onclick="clearWakeTime()" style="background:none;border:none;color:rgba(200,175,255,0.25);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;cursor:pointer;white-space:nowrap" id="sleep-wake-clear">no alarm</button>
+  <div class="sleep-lbl" id="sleep-waketime-lbl">WAKE-UP ALARM <span style="font-size:7px;color:rgba(200,175,255,0.22);letter-spacing:.08em">PRO</span></div>
+  <div style="display:flex;align-items:center;gap:8px;width:100%;margin-bottom:.5rem">
+    <button id="alarm-toggle-btn" onclick="toggleAlarm()" style="padding:7px 14px;border-radius:20px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.2);color:rgba(200,175,255,0.55)">○ NO ALARM</button>
+    <div id="alarm-time-wrap" style="display:none;flex:1;align-items:center;gap:8px">
+      <input type="time" id="sleep-wake-time" value="07:00" onchange="confirmAlarmTime(this.value)" style="background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.3);border-radius:8px;padding:8px 12px;color:rgba(200,175,255,0.9);font-family:'Cinzel',serif;font-size:14px;flex:1;outline:none;-webkit-appearance:none">
+    </div>
   </div>
+  <div id="alarm-set-lbl" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.55);text-align:center;margin-bottom:.5rem;min-height:16px"></div>
 
   <div class="sleep-timer-display" id="sleep-timer-display">60:00</div>
 
   <!-- BEGIN / STOP -->
-  <div id="alarm-set-lbl" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.45);text-align:center;margin-bottom:.35rem;min-height:16px"></div>
   <button class="sleep-cta" id="sleep-cta" onclick="beginSleep()">✦ BEGIN SLEEP MODE ✦</button>
   <div style="display:flex;gap:8px;width:100%;margin-top:.5rem">
     <button class="sleep-cta" id="sleep-stop" onclick="stopSleep()" style="display:none;flex:2;background:rgba(200,80,80,0.12);border-color:rgba(200,80,80,0.3);color:rgba(255,180,180,0.85)">◼ STOP SOUND</button>
