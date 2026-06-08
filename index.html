@@ -1631,7 +1631,6 @@ const SLEEP_STATE={
   paused:false,
   wakeVolume:0.85,
   alarmTimeout:null,
-  alarmTimeout:null,
   previewNodes:[],
   sleepSound:'holy',
   wakeSound:'bowl',
@@ -1669,7 +1668,7 @@ function closeSleep(){
   SLEEP_STATE.sleeping=false;
   clearInterval(SLEEP_STATE.timerInterval);
   document.getElementById('sleep-cta').style.display='block';
-  document.getElementById('sleep-stop').style.display='none';
+  if(document.getElementById('sleep-active-controls')) document.getElementById('sleep-active-controls').style.display='none';
   document.getElementById('sleep-timer-display').style.display='none';
   if(SLEEP_STATE.alarmTimeout){clearTimeout(SLEEP_STATE.alarmTimeout);SLEEP_STATE.alarmTimeout=null;}
   stopWakePreview();
@@ -1716,30 +1715,46 @@ function selectTimer(el,mins){
 function beginSleep(){
   if(SLEEP_STATE.sleeping)return;
   SLEEP_STATE.sleeping=true;
+  SLEEP_STATE.paused=false;
   document.getElementById('sleep-cta').style.display='none';
-  document.getElementById('sleep-stop').style.display='block';
-  if(document.getElementById('sleep-restart')) document.getElementById('sleep-restart').style.display='block';
+  document.getElementById('sleep-active-controls').style.display='block';
+  initSleepAudio();
+  if(SLEEP_STATE.audioCtx.state==='suspended') SLEEP_STATE.audioCtx.resume();
   startSleepAudio();
-  // Schedule wake alarm if set and Pro
+  // Apply current volume
+  const vol=parseInt(document.getElementById('sleep-vol').value)/100;
+  SLEEP_STATE.audioMaster.gain.value=vol;
   if(APP.isPro){
     scheduleWakeAlarm();
-    if(SLEEP_STATE.timerMins>0) startSleepTimer();
+    if(SLEEP_STATE.timerMins>0){
+      document.getElementById('sleep-timer-display').style.display='block';
+      startSleepTimer();
+    }
   }
 }
 
 function stopSleep(){
   stopSleepAudio();
   clearInterval(SLEEP_STATE.timerInterval);
+  if(SLEEP_STATE.alarmTimeout){clearTimeout(SLEEP_STATE.alarmTimeout);SLEEP_STATE.alarmTimeout=null;}
   SLEEP_STATE.sleeping=false;
+  SLEEP_STATE.paused=false;
   document.getElementById('sleep-cta').style.display='block';
-  document.getElementById('sleep-stop').style.display='none';
-  if(document.getElementById('sleep-restart')) document.getElementById('sleep-restart').style.display='none';
+  document.getElementById('sleep-active-controls').style.display='none';
   document.getElementById('sleep-timer-display').style.display='none';
+  const lbl=document.getElementById('alarm-set-lbl');
+  if(lbl) lbl.textContent='';
 }
 
 function restartSleep(){
-  stopSleep();
-  setTimeout(beginSleep,300);
+  // Stop audio, stay in sleep mode, let user pick new sound then re-begin
+  stopSleepAudio();
+  SLEEP_STATE.sleeping=false;
+  SLEEP_STATE.paused=false;
+  document.getElementById('sleep-active-controls').style.display='none';
+  document.getElementById('sleep-cta').style.display='block';
+  document.getElementById('sleep-timer-display').style.display='none';
+  document.getElementById('sleep-sound-pills').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function scheduleWakeAlarm(){
@@ -1763,8 +1778,7 @@ function scheduleWakeAlarm(){
     } else {
       playWakeSound(SLEEP_STATE.wakeSound);
     }
-    document.getElementById('sleep-stop').style.display='none';
-    document.getElementById('sleep-restart').style.display='none';
+    document.getElementById('sleep-active-controls').style.display='none';
     document.getElementById('sleep-cta').style.display='block';
     document.getElementById('sleep-start-day').style.display='block';
     if(navigator.vibrate) navigator.vibrate([800,300,800,300,800]);
