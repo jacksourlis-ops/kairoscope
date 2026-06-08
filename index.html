@@ -487,7 +487,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
           <div><span class="lbl">DATE OF BIRTH</span><input type="date" class="birth-input" id="bdate" onchange="saveBirthData();calcChart()"></div>
           <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="saveBirthData();calcChart()"></div>
         </div>
-        <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
+        <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" onchange="citySelected(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
         <div class="chart-cards" id="chart-cards">
           <div class="cc"><div class="cc-icon">☀️</div><div class="cc-lbl">SUN</div><div class="cc-val" id="cv-sun">—</div><div class="cc-deg" id="cd-sun"></div></div>
           <div class="cc"><div class="cc-icon">🌙</div><div class="cc-lbl">MOON</div><div class="cc-val" id="cv-moon">—</div><div class="cc-deg" id="cd-moon"></div></div>
@@ -2051,18 +2051,19 @@ function loadBirthData(){
   const cEl=document.getElementById('bcity');
   if(d&&dEl){dEl.value=d;}
   if(t&&tEl){tEl.value=t;}
-  if(c&&cEl){
-    cEl.value=c;
-    // Restore city coords into CITIES so calcChart can find them
-    if(coords){
-      try{
-        const key=c.split(',')[0].toLowerCase().trim();
-        CITIES[key]=JSON.parse(coords);
-      }catch(e){}
-    }
+  if(c&&cEl){cEl.value=c;}
+  if(c&&coords){
+    try{
+      const key=c.split(',')[0].toLowerCase().trim();
+      CITIES[key]=JSON.parse(coords);
+    }catch(e){}
+    if(d) calcChart();
+  } else if(c&&d){
+    // Coords not cached — geocode now then calculate
+    geocodeCity(c,function(found){calcChart();});
+  } else if(d){
+    calcChart();
   }
-  // Recalculate chart if we have data
-  if(d) calcChart();
 }
 
 
@@ -2847,13 +2848,39 @@ const CITIES={
 };
 
 let cityTimer;
+// geocodeCity: look up coords for any city string, store in CITIES, then recalculate
+function geocodeCity(val, callback){
+  if(!val||val.trim().length<2){if(callback)callback(false);return;}
+  const key=val.split(',')[0].toLowerCase().trim();
+  if(CITIES[key]){if(callback)callback(true);return;}
+  fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&limit=1&format=json`,{
+    headers:{'Accept-Language':'en'}
+  })
+  .then(r=>r.json())
+  .then(results=>{
+    if(results&&results.length>0){
+      const r=results[0];
+      CITIES[key]=[parseFloat(r.lat),parseFloat(r.lon)];
+      // Persist coords to localStorage
+      localStorage.setItem('k_bcity_coords',JSON.stringify(CITIES[key]));
+      if(callback)callback(true);
+    } else {if(callback)callback(false);}
+  })
+  .catch(()=>{if(callback)callback(false);});
+}
+
+function citySelected(val){
+  if(!val||val.trim().length<2)return;
+  geocodeCity(val,function(found){
+    if(found){saveBirthData();calcChart();}
+  });
+}
+
 function cityLookup(val){
   const dl=document.getElementById('city-list');
   dl.innerHTML='';
-  calcChart();
-  saveBirthData();
   if(val.trim().length<2)return;
-  // First check local list for instant results
+  // Check local list for instant suggestions
   const key=val.toLowerCase().trim();
   const local=Object.keys(CITIES).filter(c=>c.includes(key)).slice(0,5);
   local.forEach(c=>{
@@ -2861,10 +2888,10 @@ function cityLookup(val){
     o.value=c.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
     dl.appendChild(o);
   });
-  // Then query Nominatim for any city in the world
+  // Query Nominatim for worldwide suggestions
   clearTimeout(cityTimer);
   cityTimer=setTimeout(()=>{
-    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&featuretype=city&limit=8&format=json`,{
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&limit=8&format=json`,{
       headers:{'Accept-Language':'en'}
     })
     .then(r=>r.json())
@@ -2877,7 +2904,6 @@ function cityLookup(val){
         const display=name+(country?', '+country:'');
         if(!seen.has(display)){
           seen.add(display);
-          // Store coords in CITIES for later use
           CITIES[name.toLowerCase()]=[parseFloat(r.lat),parseFloat(r.lon)];
           const o=document.createElement('option');
           o.value=display;
