@@ -2913,6 +2913,7 @@ function calcChart(){
   const dob=document.getElementById('bdate').value;
   const tob=document.getElementById('btime').value||'12:00';
   const city=document.getElementById('bcity').value.split(',')[0].toLowerCase().trim();
+  console.log('calcChart called: dob='+dob+' tob='+tob+' city='+city);
   if(!dob)return;
   const p=dob.split('-'),t=tob.split(':');
   const jd=julianDay(+p[0],+p[1],+p[2],+t[0]+(+t[1]||0)/60);
@@ -2924,11 +2925,13 @@ function calcChart(){
   document.getElementById('cd-moon').textContent=lonToDegMin(ml);
   // Try exact city, then partial match
   let coords=CITIES[city];
+  console.log('city lookup: "'+city+'" found='+!!coords);
   if(!coords){
-    // Try matching any key that starts with or contains the city name
     const matchKey=Object.keys(CITIES).find(k=>k===city||k.startsWith(city)||city.startsWith(k));
+    console.log('partial match: '+matchKey);
     if(matchKey) coords=CITIES[matchKey];
   }
+  console.log('coords='+JSON.stringify(coords)+' tob='+tob);
   if(coords&&tob){
     const asc=ascendant(jd,coords[0],coords[1]);
     APP.chart.riseDeg=asc;APP.chart.rising=lonToSign(asc);APP.chart.city=city;
