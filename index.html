@@ -2033,19 +2033,34 @@ function saveBirthData(){
   const c=document.getElementById('bcity');
   if(d&&d.value) localStorage.setItem('k_bdate',d.value);
   if(t&&t.value) localStorage.setItem('k_btime',t.value);
-  if(c&&c.value) localStorage.setItem('k_bcity',c.value);
+  if(c&&c.value){
+    localStorage.setItem('k_bcity',c.value);
+    // Persist coords so Rising sign survives page reload
+    const key=c.value.split(',')[0].toLowerCase().trim();
+    if(CITIES[key]) localStorage.setItem('k_bcity_coords',JSON.stringify(CITIES[key]));
+  }
 }
 
 function loadBirthData(){
   const d=localStorage.getItem('k_bdate');
   const t=localStorage.getItem('k_btime');
   const c=localStorage.getItem('k_bcity');
+  const coords=localStorage.getItem('k_bcity_coords');
   const dEl=document.getElementById('bdate');
   const tEl=document.getElementById('btime');
   const cEl=document.getElementById('bcity');
   if(d&&dEl){dEl.value=d;}
   if(t&&tEl){tEl.value=t;}
-  if(c&&cEl){cEl.value=c;}
+  if(c&&cEl){
+    cEl.value=c;
+    // Restore city coords into CITIES so calcChart can find them
+    if(coords){
+      try{
+        const key=c.split(',')[0].toLowerCase().trim();
+        CITIES[key]=JSON.parse(coords);
+      }catch(e){}
+    }
+  }
   // Recalculate chart if we have data
   if(d) calcChart();
 }
