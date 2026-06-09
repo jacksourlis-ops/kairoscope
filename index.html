@@ -612,20 +612,22 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 
   <!-- SLEEP MODE + CONNECTIONS BUTTONS -->
-  <div style="text-align:center;margin:1rem 0 .5rem;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
-    <button onclick="openSleep()" style="background:transparent;border:.5px solid var(--border);border-radius:20px;padding:7px 18px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--muted);cursor:pointer;transition:all .2s" id="sleep-mode-btn">☽ SLEEP MODE</button>
-    <button onclick="openConnections()" style="background:transparent;border:.5px solid var(--border);border-radius:20px;padding:7px 18px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--muted);cursor:pointer;transition:all .2s" id="connections-btn">◎ PEOPLE IN MY SKY</button>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1.25rem 0 1.5rem">
+    <button onclick="openSleep()" id="sleep-mode-btn" style="background:rgba(80,60,180,0.15);border:.5px solid rgba(140,120,230,0.35);border-radius:16px;padding:18px 10px 16px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center">
+      <div style="font-size:22px;margin-bottom:8px">☽</div>
+      <div style="font-size:8.5px;letter-spacing:.14em;color:rgba(220,210,255,0.9);margin-bottom:4px">SLEEP MODE</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:11px;color:rgba(200,175,255,0.45);font-style:italic">Sounds, timer &amp; alarm</div>
+    </button>
+    <button onclick="openConnections()" id="connections-btn" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:16px;padding:18px 10px 16px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center">
+      <div style="font-size:22px;margin-bottom:8px">◎</div>
+      <div style="font-size:8.5px;letter-spacing:.14em;color:rgba(220,210,255,0.9);margin-bottom:4px">PEOPLE IN MY SKY</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:11px;color:rgba(200,175,255,0.45);font-style:italic">Charts &amp; compatibility</div>
+    </button>
   </div>
 
-  <!-- WHY KAIROSCOPE -->
-  <div style="margin-top:1.5rem;border-top:.5px solid var(--border);padding-top:1.25rem">
-    <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:var(--muted);text-align:center;margin-bottom:.85rem">WHY KAIROSCOPE</div>
-    <div class="why-cards">
-      <div class="why-card"><div class="why-icon">🔒</div><div class="why-title">PRIVATE BY DESIGN</div><div class="why-desc">Your dreams and journal stay on your device. No ads. No tracking. No data brokers.</div></div>
-      <div class="why-card"><div class="why-icon">🌙</div><div class="why-title">GUIDED BY THE SKY</div><div class="why-desc">Live moon phases and real astronomical calculations. Not recycled templates.</div></div>
-      <div class="why-card"><div class="why-icon">✨</div><div class="why-title">PATTERNS OVER PREDICTIONS</div><div class="why-desc">Discover recurring themes across dreams, journal entries, and cosmic cycles.</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;text-align:center;margin-top:.85rem">
+  <!-- JOURNEY -->
+  <div style="border-top:.5px solid var(--border);padding-top:1.25rem">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;text-align:center">
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 1</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Read your horoscope</div></div>
       <div style="color:var(--border2);font-size:10px;margin-top:6px">→</div>
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 7</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Interpret dreams</div></div>
@@ -637,14 +639,9 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div style="text-align:center;margin-top:.75rem;font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">A personal archive of your inner life.</div>
   </div>
 
-  <!-- PRIVACY STATEMENT -->
-  <div class="privacy-statement">
-    <div class="ps-title">YOUR PRIVACY, PROTECTED</div>
-    <div class="ps-items">
-      <div class="ps-item">🔒 Your dreams and journal entries never leave your device</div>
-      <div class="ps-item">🚫 No ads. No tracking. No data brokers. Ever.</div>
-      <div class="ps-item">🇨🇦 Built in Canada · PIPEDA compliant</div>
-    </div>
+  <!-- PRIVACY ONE-LINER -->
+  <div style="text-align:center;padding:1rem 0 .5rem;border-top:.5px solid var(--border);margin-top:1.25rem">
+    <div style="font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.12em;color:var(--muted)">🔒 Private by design &nbsp;·&nbsp; No ads &nbsp;·&nbsp; No tracking</div>
   </div>
 
   <div class="site-footer">
@@ -652,6 +649,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <a onclick="openModal('privacy')">Privacy Policy</a> &nbsp;·&nbsp;
     <a onclick="openModal('terms')">Terms of Service</a> &nbsp;·&nbsp;
     <a onclick="openModal('faq')">FAQ</a> &nbsp;·&nbsp;
+    <a onclick="openModal('why')">Why Kairoscope</a> &nbsp;·&nbsp;
     <a href="mailto:hello@kairoscope.app">hello@kairoscope.app</a>
   </div>
 </div>
@@ -4062,6 +4060,24 @@ setTimeout(loadBirthData,100);
     <div class="modal-section"><div class="faq-q">HOW DO I CANCEL?</div><div class="faq-a">Cancel any time from your account settings. Your Pro access runs until the end of your billing period. If you ever have trouble, email hello@kairoscope.app and we will sort it out personally.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">SOMETHING ELSE ON YOUR MIND?</div><div class="faq-a">Write to us at hello@kairoscope.app. We read every message ourselves.</div></div>
+  </div>
+</div>
+
+<!-- WHY KAIROSCOPE MODAL -->
+<div class="modal-overlay" id="modal-why">
+  <div class="modal-inner">
+    <div class="modal-header"><div class="modal-title">WHY KAIROSCOPE</div><button class="modal-close" onclick="closeModal('why')">✕ CLOSE</button></div>
+    <div class="modal-section">
+      <div style="font-family:'Crimson Pro',serif;font-size:15px;color:var(--text2);line-height:1.75;font-style:italic;text-align:center;padding:.5rem 0">Kairos is an ancient Greek word for the perfect, sacred moment in time. Not clock time — the right time. The moment when everything aligns. Kairoscope helps you see that moment through your stars and your dreams.</div>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">🔒 PRIVATE BY DESIGN</div><div class="faq-a">Your dreams and journal stay on your device. No ads. No tracking. No data brokers. We are Canadian, we operate under PIPEDA, and we built privacy in from the start — not as a feature, but as the foundation.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">🌙 GUIDED BY THE SKY</div><div class="faq-a">Every reading is calculated fresh using live astronomical data and real planetary positions. Your moon phase is accurate to the minute. Your birth chart uses the same mathematical foundations as professional astrology software. No recycled templates. No generic content.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">✨ PATTERNS OVER PREDICTIONS</div><div class="faq-a">The real value of Kairoscope grows over time. As you build your dream journal and track your readings, patterns emerge across your entries, your moods, and the cosmic cycles above you. Not fortune telling — self knowledge.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section"><div class="faq-q">🇨🇦 BUILT IN CANADA</div><div class="faq-a">Kairoscope is independently built and operated in Canada. No venture capital. No growth-at-all-costs. Just a thoughtfully made app for people who take their inner life seriously.</div></div>
   </div>
 </div>
 
