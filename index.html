@@ -169,6 +169,22 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 /* SLEEP MODE */
 .sleep-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9999;flex-direction:column;align-items:center;overflow-y:auto;padding:1.5rem 1.25rem 2rem}
 .sleep-screen.on{display:flex}
+
+.sleep-screen, .sleep-screen * {
+  -webkit-font-smoothing: antialiased;
+}
+.sleep-screen .sleep-lbl,
+.sleep-screen .sleep-prompt-lbl,
+.sleep-screen .sleep-phase-lbl {
+  color: rgba(200,175,255,0.55) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.sleep-screen button {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 .sleep-top{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
 .sleep-back{background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.3);cursor:pointer;padding:0}
 .sleep-back:hover{color:rgba(200,175,255,0.7)}
@@ -634,10 +650,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 <!-- JOURNAL SCREEN -->
 <div id="journal-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9997;overflow-y:auto;padding:1.5rem 1.25rem 3rem">
 
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-    <button onclick="closeJournal()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.45);cursor:pointer">← back</button>
-    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(235,225,255,0.7)">DREAM JOURNAL</div>
-    <div style="width:40px"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;position:sticky;top:0;background:#03020d;padding:.5rem 0;z-index:10">
+    <button onclick="closeJournal()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.6);cursor:pointer;padding:8px 0">← BACK</button>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(235,225,255,0.85)">DREAM JOURNAL</div>
+    <div style="width:50px;text-align:right"><button onclick="closeJournal()" style="background:none;border:none;color:rgba(200,175,255,0.4);font-size:20px;cursor:pointer;padding:4px">×</button></div>
   </div>
 
   <!-- STATS -->
@@ -663,7 +679,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
   <!-- CALENDAR -->
-  <div id="dream-calendar" style="display:none;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem;margin-bottom:.75rem">
+  <div id="dream-calendar" style="display:block;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem;margin-bottom:.75rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
       <button onclick="calMonth(-1)" style="background:none;border:none;color:rgba(200,175,255,0.5);font-size:18px;cursor:pointer;padding:0 8px">‹</button>
       <div id="cal-month-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(200,175,255,0.65)"></div>
@@ -2213,6 +2229,7 @@ function openJournal(){
   document.getElementById('journal-screen').style.display='block';
   document.body.style.overflow='hidden';
   refreshJournal();
+  setTimeout(renderCalendar, 50);
 }
 function closeJournal(){
   document.getElementById('journal-screen').style.display='none';
@@ -3235,7 +3252,7 @@ function refreshJournal(){
   if(moonEl){ const md=getMoonData(); moonEl.textContent=md.emoji; }
 
   // Calendar
-  if(cal){ cal.style.display=dreams.length?'block':'none'; renderCalendar(); }
+  if(cal){ cal.style.display='block'; renderCalendar(); }
 
   // Entry button — free limit
   const totalFree=3; // max free dreams logged
