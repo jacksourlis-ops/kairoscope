@@ -701,16 +701,21 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
   <!-- CALENDAR -->
-  <div id="dream-calendar" style="display:block;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem;margin-bottom:.75rem">
+  <!-- CALENDAR TOGGLE -->
+  <button onclick="toggleCalendar()" id="cal-toggle-btn" style="width:100%;padding:13px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.18);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(210,195,255,0.78);cursor:pointer;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:8px">
+    <span>📅</span><span>DREAM CALENDAR</span><span id="cal-toggle-arrow" style="opacity:.5">▾</span>
+  </button>
+
+  <div id="dream-calendar" style="display:none;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem;margin-bottom:.75rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
-      <button onclick="calMonth(-1)" style="background:none;border:none;color:rgba(200,175,255,0.5);font-size:18px;cursor:pointer;padding:0 8px">‹</button>
-      <div id="cal-month-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(200,175,255,0.65)"></div>
-      <button onclick="calMonth(1)" style="background:none;border:none;color:rgba(200,175,255,0.5);font-size:18px;cursor:pointer;padding:0 8px">›</button>
+      <button onclick="calMonth(-1)" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.2);border-radius:8px;color:rgba(200,175,255,0.8);font-size:16px;cursor:pointer;padding:4px 12px">‹</button>
+      <div id="cal-month-lbl" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.88)"></div>
+      <button onclick="calMonth(1)" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.2);border-radius:8px;color:rgba(200,175,255,0.8);font-size:16px;cursor:pointer;padding:4px 12px">›</button>
     </div>
     <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center"></div>
     <div style="display:flex;gap:12px;margin-top:.5rem;justify-content:center">
-      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(160,130,255,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.35)">DREAM</div></div>
-      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(220,180,80,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.35)">INTERPRETED</div></div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(160,130,255,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.55)">DREAM LOGGED</div></div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(220,180,80,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.55)">INTERPRETED</div></div>
     </div>
   </div>
 
@@ -3182,6 +3187,16 @@ function renderCalendar(){
   }
 }
 
+
+function toggleCalendar(){
+  const cal = document.getElementById('dream-calendar');
+  const arrow = document.getElementById('cal-toggle-arrow');
+  const open = cal.style.display === 'block';
+  cal.style.display = open ? 'none' : 'block';
+  if(arrow) arrow.textContent = open ? '▾' : '▴';
+  if(!open) renderCalendar();
+}
+
 function calMonth(dir){
   calCurrentDate=new Date(calCurrentDate.getFullYear(),calCurrentDate.getMonth()+dir,1);
   renderCalendar();
@@ -3269,7 +3284,7 @@ function refreshJournal(){
   if(moonEl){ const md=getMoonData(); moonEl.textContent=md.emoji; }
 
   // Calendar
-  if(cal){ cal.style.display='block'; renderCalendar(); }
+  renderCalendar();
 
   // Entry button — free limit
   const totalFree=3; // max free dreams logged
@@ -4768,14 +4783,14 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 
     <!-- 2. VOLUME -->
     <div style="display:flex;align-items:center;gap:10px;width:100%;margin-bottom:1.1rem">
-      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.45);white-space:nowrap">VOLUME</div>
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(220,205,255,0.92);white-space:nowrap">VOLUME</div>
       <input type="range" id="sleep-vol" min="0" max="100" value="70" oninput="setSleepVolume(this.value)" style="flex:1;accent-color:rgba(180,150,255,0.8);cursor:pointer"/>
     </div>
 
     <div class="sleep-divider" style="margin:0 0 .9rem"></div>
 
     <!-- 3. SLEEP TIMER -->
-    <div class="sleep-lbl" id="sleep-timer-lbl">SLEEP TIMER <span style="font-size:7px;color:rgba(200,175,255,0.22)">PRO</span></div>
+    <div class="sleep-lbl" id="sleep-timer-lbl">SLEEP TIMER <span style="font-size:7px;color:rgba(200,175,255,0.82)">PRO</span></div>
     <div class="sleep-timer-row" style="margin-bottom:1.1rem">
       <button class="sleep-timer-pill"    data-t="15" onclick="selectTimer(this,15)">15m</button>
       <button class="sleep-timer-pill"    data-t="30" onclick="selectTimer(this,30)">30m</button>
@@ -4787,29 +4802,29 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
     <div class="sleep-divider" style="margin:0 0 .9rem"></div>
 
     <!-- 4. WAKE-UP SOUND -->
-    <div class="sleep-lbl" id="sleep-wake-lbl">WAKE-UP SOUND <span style="font-size:7px;color:rgba(200,175,255,0.22)">PRO</span></div>
+    <div class="sleep-lbl" id="sleep-wake-lbl">WAKE-UP SOUND <span style="font-size:7px;color:rgba(200,175,255,0.82)">PRO</span></div>
     <div id="sleep-wake-pills" style="display:flex;flex-direction:column;gap:7px;width:100%;margin-bottom:.6rem">
       <div style="display:flex;align-items:center;gap:6px;width:100%">
         <button class="sleep-pill on" data-wake="bowl"   onclick="selectWakeSound(this,'bowl')"   style="flex:1;text-align:left">Sunrise Bowl</button>
-        <button onclick="toggleWakePreview('bowl')"   id="prev-bowl"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button onclick="toggleWakePreview('bowl')"   id="prev-bowl"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;width:100%">
         <button class="sleep-pill" data-wake="ocean"  onclick="selectWakeSound(this,'ocean')"  style="flex:1;text-align:left">Ocean Tide</button>
-        <button onclick="toggleWakePreview('ocean')"  id="prev-ocean"  style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button onclick="toggleWakePreview('ocean')"  id="prev-ocean"  style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;width:100%">
         <button class="sleep-pill" data-wake="holy"   onclick="selectWakeSound(this,'holy')"   style="flex:1;text-align:left">Holy Light</button>
-        <button onclick="toggleWakePreview('holy')"   id="prev-holy"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button onclick="toggleWakePreview('holy')"   id="prev-holy"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;width:100%">
         <button class="sleep-pill" data-wake="cosmic" onclick="selectWakeSound(this,'cosmic')" style="flex:1;text-align:left">Cosmic Dawn</button>
-        <button onclick="toggleWakePreview('cosmic')" id="prev-cosmic" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(200,175,255,0.75);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button onclick="toggleWakePreview('cosmic')" id="prev-cosmic" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
     </div>
 
     <!-- 5. ALARM VOLUME -->
     <div style="display:flex;align-items:center;gap:10px;width:100%;margin-bottom:1.1rem">
-      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.45);white-space:nowrap">ALARM VOL</div>
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(220,205,255,0.92);white-space:nowrap">ALARM VOL</div>
       <input type="range" id="wake-vol" min="0" max="100" value="90" oninput="setWakeVolume(this.value)" style="flex:1;accent-color:rgba(180,150,255,0.8);cursor:pointer"/>
     </div>
 
@@ -4817,11 +4832,11 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 
     <!-- 6. ALARM TOGGLE -->
     <div style="width:100%;margin-bottom:1rem">
-      <button id="alarm-toggle-btn" onclick="toggleAlarm()" style="width:100%;padding:10px 16px;border-radius:10px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);color:rgba(200,175,255,0.55);text-align:center;transition:all .2s">○ NO ALARM</button>
+      <button id="alarm-toggle-btn" onclick="toggleAlarm()" style="width:100%;padding:10px 16px;border-radius:10px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);color:rgba(200,175,255,0.82);text-align:center;transition:all .2s">○ NO ALARM</button>
       <div id="alarm-time-wrap" style="display:none;margin-top:8px">
         <input type="time" id="sleep-wake-time" value="07:00" onchange="confirmAlarmTime(this.value)" style="width:100%;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.28);border-radius:8px;padding:10px 14px;color:rgba(235,225,255,0.95);font-family:'Cinzel',serif;font-size:16px;outline:none;-webkit-appearance:none;box-sizing:border-box">
       </div>
-      <div id="alarm-set-lbl" style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.1em;color:rgba(200,175,255,0.65);text-align:center;min-height:16px;margin-top:6px"></div>
+      <div id="alarm-set-lbl" style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.1em;color:rgba(220,205,255,0.88);text-align:center;min-height:16px;margin-top:6px"></div>
     </div>
 
     <!-- 7. BEGIN BUTTON -->
@@ -4832,7 +4847,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
   <!-- ACTIVE PANEL — shown while sleeping -->
   <div id="sleep-active" style="display:none;width:100%;text-align:center;padding-top:1rem">
     <div class="sleep-timer-display" id="sleep-timer-display" style="display:none;margin-bottom:.75rem">60:00</div>
-    <div id="alarm-active-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(200,175,255,0.55);margin-bottom:1.5rem;min-height:18px"></div>
+    <div id="alarm-active-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(200,175,255,0.82);margin-bottom:1.5rem;min-height:18px"></div>
     <button onclick="stopSleep()" style="width:100%;padding:16px;background:rgba(160,40,40,0.18);border:1px solid rgba(220,90,90,0.45);border-radius:12px;color:rgba(255,195,195,0.95);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;cursor:pointer;margin-bottom:10px">◼ STOP</button>
     <button onclick="pauseSleep()" id="sleep-pause-btn" style="width:100%;padding:13px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.18);border-radius:12px;color:rgba(200,175,255,0.7);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;cursor:pointer">⏸ PAUSE</button>
   </div>
