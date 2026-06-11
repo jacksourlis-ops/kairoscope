@@ -3911,7 +3911,7 @@ async function activatePro(){
     alert('Something went wrong: '+e.message);
   }
 }
-if(APP.isPro)setTier('pro');
+if(APP.isPro)setTimeout(()=>setTier('pro'),200);
 
 function switchTab(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
