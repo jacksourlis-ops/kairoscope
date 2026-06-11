@@ -3414,7 +3414,7 @@ function getMoonPhase(date){
 }
 
 const moonData=getMoonPhase(new Date());
-APP.currentPhase=localStorage.getItem('k_phase')||moonData.key;
+APP.currentPhase=moonData.key;// Always start with real moon on fresh load
 
 const PHASE_CYCLE=['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'];
 let phaseIdx=PHASE_CYCLE.indexOf(APP.currentPhase);
@@ -4661,6 +4661,11 @@ function chimeSound(){
 document.getElementById('audio-label').textContent='';
 updateMoonEnergy();
 updateDreamPersistBar();
+// Clear any stale loading state from previous session
+['res-h','res-d','res-c'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el&&el.querySelector('.shimmer')){el.classList.remove('on');el.innerHTML='';}
+});
 if(!localStorage.getItem('k_first_visit'))localStorage.setItem('k_first_visit',Date.now());
 setTimeout(applyLanguage,50);
 setTimeout(loadBirthData,100);
