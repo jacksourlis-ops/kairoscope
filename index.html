@@ -3911,7 +3911,7 @@ async function activatePro(){
     alert('Something went wrong: '+e.message);
   }
 }
-if(APP.isPro)setTimeout(()=>setTier('pro'),200);
+if(APP.isPro)setTier('pro');
 
 function switchTab(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -4681,12 +4681,12 @@ setTimeout(loadBirthData,100);
   const lastC=localStorage.getItem('k_last_sign_c');
   if(lastH){
     APP.sh=lastH;
-    const btn=document.querySelector('#grid-h .zb[data-s="'+lastH+'"]');
+    const btn=document.querySelector('#zg-h .zb[data-s="'+lastH+'"]');
     if(btn){btn.classList.add('on');document.getElementById('btn-h').disabled=false;}
   }
   if(lastC){
     APP.sc=lastC;
-    const btn=document.querySelector('#grid-c .zb[data-s="'+lastC+'"]');
+    const btn=document.querySelector('#zg-c .zb[data-s="'+lastC+'"]');
     if(btn){btn.classList.add('on');document.getElementById('btn-c').disabled=false;}
   }
   // Also restore cached reading if available
