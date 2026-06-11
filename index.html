@@ -1814,9 +1814,13 @@ const DREAM_PROMPTS=[
 
 function openSleep(){
   const ss=document.getElementById('sleep-screen');
+  // Freeze body color transitions so they don't bleed into sleep screen
+  document.body.style.transition='none';
+  document.documentElement.style.transition='none';
   ss.classList.add('on');
-  // Force all text in sleep screen to stay visible
   ss.style.color='#f0ecff';
+  ss.style.setProperty('--text','#f0ecff','important');
+  ss.style.setProperty('--muted','rgba(200,175,255,0.65)','important');
   document.body.style.overflow='hidden';
   updateSleepMoon();
   randomDreamPrompt();
@@ -1832,6 +1836,11 @@ function closeSleep(){
   document.body.style.overflow='';
   document.body.style.filter='none';
   document.body.style.opacity='1';
+  // Restore body transitions
+  setTimeout(()=>{
+    document.body.style.transition='';
+    document.documentElement.style.transition='';
+  }, 100);
   SLEEP_STATE.sleeping=false;
   clearInterval(SLEEP_STATE.timerInterval);
   document.getElementById('sleep-cta').style.display='block';
@@ -3398,6 +3407,8 @@ const PHASE_CYCLE=['new-moon','waxing-crescent','first-quarter','waxing-gibbous'
 let phaseIdx=PHASE_CYCLE.indexOf(APP.currentPhase);
 
 function applyTheme(key){
+  // Don't change theme while sleep screen is open
+  if(document.getElementById('sleep-screen').classList.contains('on')) return;
   document.body.setAttribute('data-phase',key);
   const p=PHASE_CYCLE.find((k,i)=>k===key);
   const emoji=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][PHASE_CYCLE.indexOf(key)];
@@ -3410,6 +3421,8 @@ function applyTheme(key){
 }
 
 function cycleTheme(){
+  // Don't cycle theme while sleep screen is open — causes text to fade
+  if(document.getElementById('sleep-screen').classList.contains('on')) return;
   phaseIdx=(phaseIdx+1)%PHASE_CYCLE.length;
   APP.currentPhase=PHASE_CYCLE[phaseIdx];
   localStorage.setItem('k_phase',APP.currentPhase);
@@ -4718,7 +4731,7 @@ setTimeout(loadBirthData,100);
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">✨ PATTERNS OVER PREDICTIONS</div><div class="faq-a">The real value of Kairoscope grows over time. As you build your dream journal and track your readings, patterns emerge across your entries, your moods, and the cosmic cycles above you. Not fortune telling — self knowledge.</div></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><div class="faq-q">🇨🇦 BUILT IN CANADA</div><div class="faq-a">Kairoscope is independently built and operated in Canada. No venture capital. No growth-at-all-costs. Just a thoughtfully made app for people who take their inner life seriously.</div></div>
+    <div class="modal-section"><div class="faq-q">🇨🇦 BUILT IN CANADA</div><div class="faq-a">Kairoscope is independently built and operated in Canada. Kairoscope is independently built and operated in Canada. We answer to our users, not to investors. Just a thoughtfully made app for people who take their inner life seriously.</div></div>
   </div>
 </div>
 
