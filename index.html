@@ -3875,19 +3875,19 @@ function astroContextToPrompt(ctx){
 // ============================================================
 function setTier(t){
   APP.isPro=t==='pro';localStorage.setItem('k_pro',APP.isPro);
-  document.getElementById('free-btn').classList.toggle('on',!APP.isPro);
-  document.getElementById('pro-btn').classList.toggle('on',APP.isPro);
+  const freeBtn=document.getElementById('free-btn');
+  const proBtn=document.getElementById('pro-btn');
+  if(freeBtn) freeBtn.classList.toggle('on',!APP.isPro);
+  if(proBtn) proBtn.classList.toggle('on',APP.isPro);
   const pill=document.getElementById('main-pill');
   if(APP.isPro){
-    pill.className='pill pro';pill.innerHTML='✦ PRO — unlimited readings';
-    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
-    ['journal-stats','pattern-section','export-btn'].forEach(id=>document.getElementById(id).style.display=id==='journal-stats'?'grid':'block');
+    if(pill){pill.className='pill pro';pill.innerHTML='✦ PRO — unlimited readings';}
+    ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
   }else{
-    pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;
-    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
-    ['journal-stats','pattern-section','export-btn'].forEach(id=>document.getElementById(id).style.display='none');
+    if(pill){pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;}
+    ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
-  renderJournal();
+  refreshJournal();
 }
 async function activatePro(){
   const btn=document.querySelector('.pw-cta');
