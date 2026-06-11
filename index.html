@@ -622,63 +622,75 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
   <!-- JOURNAL -->
-  <div class="panel" id="panel-j">
-
-    <!-- STATS ROW -->
-    <div class="journal-stats" id="journal-stats">
-      <div class="stat-card"><div class="stat-num" id="stat-entries">0</div><div class="stat-lbl">DREAMS</div></div>
-      <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">DAY STREAK</div></div>
-      <div class="stat-card"><div class="stat-num" id="stat-moon">—</div><div class="stat-lbl">MOON NOW</div></div>
-    </div>
-
-    <!-- PATTERNS TEASER (free) / FULL (pro) -->
-    <div id="pattern-teaser" style="display:none;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:.85rem 1rem;margin-bottom:.75rem">
-      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.5);margin-bottom:.5rem">YOUR DREAM PATTERNS</div>
-      <div id="pattern-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.6rem"></div>
-      <div id="pattern-lock" style="display:none;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);border-radius:8px;padding:.7rem .85rem;text-align:center">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.6);margin-bottom:4px">✦ PATTERNS DETECTED</div>
-        <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.45);font-style:italic;margin-bottom:.6rem">We've noticed recurring themes in your dreams. Unlock to discover what they mean for your chart and this moment in time.</div>
-        <button onclick="document.getElementById('paywall').classList.add('on')" style="padding:7px 18px;border-radius:20px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.3);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.8);cursor:pointer">✦ UNLOCK PATTERN ANALYSIS</button>
-      </div>
-      <div id="pattern-full" style="display:none">
-        <div class="result-box" id="res-patterns" style="margin:0"></div>
-        <button onclick="analysePatterns()" style="width:100%;margin-top:.5rem;padding:8px;background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:8px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.4);cursor:pointer">↺ RE-ANALYSE</button>
-      </div>
-    </div>
-
-    <!-- CALENDAR -->
-    <div id="dream-calendar" style="margin-bottom:.75rem;display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
-        <button onclick="calMonth(-1)" style="background:none;border:none;color:rgba(200,175,255,0.4);font-size:16px;cursor:pointer;padding:0 8px">‹</button>
-        <div id="cal-month-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(200,175,255,0.6)"></div>
-        <button onclick="calMonth(1)" style="background:none;border:none;color:rgba(200,175,255,0.4);font-size:16px;cursor:pointer;padding:0 8px">›</button>
-      </div>
-      <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center"></div>
-      <div style="display:flex;gap:12px;margin-top:.5rem;justify-content:center">
-        <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(160,130,255,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.08em;color:rgba(200,175,255,0.35)">DREAM</div></div>
-        <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(220,180,80,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.08em;color:rgba(200,175,255,0.35)">INTERPRETED</div></div>
-      </div>
-    </div>
-
-    <!-- + RECORD DREAM BUTTON -->
-    <button onclick="openDreamEntry()" id="dream-entry-btn" style="width:100%;padding:16px;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.2);border-radius:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.8);cursor:pointer;transition:all .2s;margin-bottom:.75rem">
-      ✦ RECORD TONIGHT'S DREAM
-    </button>
-
-    <!-- FREE LIMIT NOTE -->
-    <div id="journal-limit-note" style="display:none;font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.4);font-style:italic;text-align:center;margin-bottom:.5rem"></div>
-
-    <!-- DREAM LIST -->
-    <div id="journal-list"></div>
-    <div class="journal-empty" id="journal-empty" style="text-align:center;padding:2rem 1rem;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.25);font-style:italic;line-height:1.8">
-      Your dream journal is empty.<br>
-      <span style="font-size:13px;opacity:.7">Tap above to record your first dream.<br>Stored only on your device. Always private.</span>
-    </div>
-
+  <div class="panel" id="panel-j" style="text-align:center;padding:2rem 1rem">
+    <div style="font-size:40px;margin-bottom:.75rem">◎</div>
+    <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.18em;color:rgba(235,225,255,0.85);margin-bottom:.5rem">DREAM JOURNAL</div>
+    <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(200,175,255,0.45);font-style:italic;line-height:1.7;margin-bottom:1.5rem">Record, interpret and track your dreams.<br>Discover the patterns your subconscious is weaving.</div>
+    <button onclick="openJournal()" style="width:100%;padding:16px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.85);cursor:pointer">✦ OPEN MY DREAM JOURNAL</button>
+    <div id="journal-preview" style="margin-top:1.25rem"></div>
   </div>
 
-  <!-- DREAM ENTRY POPUP -->
-  <div id="dream-entry-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9998;flex-direction:column;align-items:center;padding:1.5rem 1.25rem;overflow-y:auto">
+  
+<!-- JOURNAL SCREEN -->
+<div id="journal-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9997;overflow-y:auto;padding:1.5rem 1.25rem 3rem">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <button onclick="closeJournal()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.45);cursor:pointer">← back</button>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(235,225,255,0.7)">DREAM JOURNAL</div>
+    <div style="width:40px"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="journal-stats" id="journal-stats" style="display:none;margin-bottom:.75rem">
+    <div class="stat-card"><div class="stat-num" id="stat-entries">0</div><div class="stat-lbl">DREAMS</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">STREAK</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-moon">—</div><div class="stat-lbl">MOON</div></div>
+  </div>
+
+  <!-- PATTERNS -->
+  <div id="pattern-teaser" style="display:none;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:.85rem 1rem;margin-bottom:.75rem">
+    <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.55);margin-bottom:.5rem">YOUR RECURRING THEMES</div>
+    <div id="pattern-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.6rem"></div>
+    <div id="pattern-lock" style="display:none;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);border-radius:8px;padding:.7rem;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.7);margin-bottom:4px">PATTERNS DETECTED</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.5);font-style:italic;margin-bottom:.6rem">Upgrade to discover what these recurring symbols mean for your chart and this moment in time.</div>
+      <button onclick="document.getElementById('paywall').classList.add('on')" style="padding:7px 18px;border-radius:20px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.3);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.85);cursor:pointer">✦ UNLOCK PATTERN ANALYSIS</button>
+    </div>
+    <div id="pattern-full" style="display:none">
+      <div class="result-box" id="res-patterns" style="margin:0;font-size:14px"></div>
+      <button onclick="analysePatterns()" style="width:100%;margin-top:.5rem;padding:8px;background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:8px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.45);cursor:pointer">↺ RE-ANALYSE</button>
+    </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div id="dream-calendar" style="display:none;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem;margin-bottom:.75rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+      <button onclick="calMonth(-1)" style="background:none;border:none;color:rgba(200,175,255,0.5);font-size:18px;cursor:pointer;padding:0 8px">‹</button>
+      <div id="cal-month-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(200,175,255,0.65)"></div>
+      <button onclick="calMonth(1)" style="background:none;border:none;color:rgba(200,175,255,0.5);font-size:18px;cursor:pointer;padding:0 8px">›</button>
+    </div>
+    <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center"></div>
+    <div style="display:flex;gap:12px;margin-top:.5rem;justify-content:center">
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(160,130,255,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.35)">DREAM</div></div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(220,180,80,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.35)">INTERPRETED</div></div>
+    </div>
+  </div>
+
+  <!-- RECORD BUTTON -->
+  <button onclick="openDreamEntry()" id="dream-entry-btn" style="width:100%;padding:16px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.88);cursor:pointer;margin-bottom:.5rem">✦ RECORD TONIGHT'S DREAM</button>
+  <div id="journal-limit-note" style="display:none;font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.45);font-style:italic;text-align:center;margin-bottom:.5rem"></div>
+
+  <!-- DREAM LIST -->
+  <div id="journal-list"></div>
+  <div id="journal-empty" style="text-align:center;padding:2rem 1rem;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.25);font-style:italic;line-height:1.8">
+    Your dream journal is empty.<br>
+    <span style="font-size:13px;opacity:.7">Tap above to record your first dream.</span>
+  </div>
+
+</div>
+
+<!-- DREAM ENTRY POPUP -->
+  <div id="dream-entry-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9998;flex-direction:column;align-items:center;padding:1.5rem 1.25rem;overflow-y:auto">
     <div style="width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
       <button onclick="closeDreamEntry()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.4);cursor:pointer">← back</button>
       <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:rgba(200,175,255,0.5)">DREAM JOURNAL</div>
@@ -695,7 +707,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div id="dream-entry-prompt" style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(200,175,255,0.4);font-style:italic;text-align:center;margin-bottom:1rem;line-height:1.6"></div>
 
     <!-- TEXTAREA -->
-    <textarea id="dream-entry-input" placeholder="Describe your dream in as much detail as you remember..." style="width:100%;min-height:200px;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;color:rgba(235,225,255,0.88);font-family:'Crimson Pro',serif;font-size:16px;line-height:1.8;resize:none;outline:none;margin-bottom:1rem" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+    <textarea id="dream-entry-input" placeholder="Describe your dream in as much detail as you remember..." style="width:100%;min-height:200px;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;color:rgba(235,225,255,0.88);font-family:'Crimson Pro',serif;font-size:16px;line-height:1.8;resize:none;outline:none;margin-bottom:1rem"></textarea>
 
     <!-- QUICK TAGS -->
     <div style="width:100%;margin-bottom:1rem">
@@ -1778,12 +1790,17 @@ function openSleep(){
   updateSleepMoon();
   randomDreamPrompt();
   applyLanguageToSleep();
+  // Ensure main content brightness is not affected
+  document.body.style.filter='none';
+  document.body.style.opacity='1';
 }
 
 function closeSleep(){
   stopSleepAudio();
   document.getElementById('sleep-screen').classList.remove('on');
   document.body.style.overflow='';
+  document.body.style.filter='none';
+  document.body.style.opacity='1';
   SLEEP_STATE.sleeping=false;
   clearInterval(SLEEP_STATE.timerInterval);
   document.getElementById('sleep-cta').style.display='block';
@@ -2190,6 +2207,17 @@ function loadBirthData(){
 // PEOPLE IN MY SKY — CONNECTIONS
 // ============================================================
 let selectedRel = '💜 Crush';
+
+
+function openJournal(){
+  document.getElementById('journal-screen').style.display='block';
+  document.body.style.overflow='hidden';
+  refreshJournal();
+}
+function closeJournal(){
+  document.getElementById('journal-screen').style.display='none';
+  document.body.style.overflow='';
+}
 
 function openConnections(){
   document.body.style.filter='';
