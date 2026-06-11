@@ -528,10 +528,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   <!-- MOON ENERGY -->
   <div class="moon-energy" id="moon-energy-h">
-    <div class="me-phase" id="me-phase-h" onclick="logoTap()" style="cursor:pointer">🌙</div>
+    <div class="me-phase" id="me-phase-h" onclick="logoTap()" style="cursor:pointer">🌘</div>
     <div class="me-text">
-      <div class="me-name" id="me-name-h">MOON PHASE</div>
-      <div class="me-desc" id="me-desc-h">Loading lunar energy...</div>
+      <div class="me-name" id="me-name-h">WANING CRESCENT ENERGY</div>
+      <div class="me-desc" id="me-desc-h">Rest and reflection. Surrender. Prepare to begin again.</div>
     </div>
   </div>
 
@@ -4664,6 +4664,8 @@ updateDreamPersistBar();
 // Ensure moon energy bar always shows correct phase on load
 setTimeout(updateMoonEnergy, 100);
 setTimeout(updateMoonEnergy, 500);
+// Final sync after everything renders
+window.addEventListener('load', updateMoonEnergy);
 // Clear any stale loading state from previous session
 ['res-h','res-d','res-c'].forEach(id=>{
   const el=document.getElementById(id);
