@@ -347,6 +347,35 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 @keyframes sh{0%,100%{opacity:.3}50%{opacity:.8}}
 
 /* JOURNAL */
+
+/* DREAM JOURNAL */
+.qtag{padding:5px 11px;border-radius:20px;font-family:'Crimson Pro',serif;font-size:12px;color:rgba(200,175,255,0.5);border:.5px solid rgba(200,175,255,0.15);background:transparent;cursor:pointer;transition:all .2s}
+.qtag.on{color:rgba(235,225,255,0.9);border-color:rgba(200,175,255,0.45);background:rgba(200,175,255,0.1)}
+.selected-tag{padding:4px 10px;border-radius:20px;font-family:'Crimson Pro',serif;font-size:12px;color:rgba(220,205,255,0.8);border:.5px solid rgba(200,175,255,0.3);background:rgba(200,175,255,0.08);display:flex;align-items:center;gap:5px}
+.selected-tag button{background:none;border:none;color:rgba(200,175,255,0.4);cursor:pointer;font-size:12px;padding:0;line-height:1}
+.cal-day{padding:5px 2px;border-radius:6px;font-family:'Cinzel',serif;font-size:9px;color:rgba(200,175,255,0.25);position:relative;cursor:default;min-height:32px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px}
+.cal-day.has-dream{color:rgba(200,175,255,0.7);cursor:pointer}
+.cal-day.has-dream:hover{background:rgba(200,175,255,0.08)}
+.cal-day.today{color:rgba(235,225,255,0.9);font-weight:bold}
+.cal-dot{width:5px;height:5px;border-radius:50%;background:rgba(160,130,255,0.7)}
+.cal-dot.gold{background:rgba(220,180,80,0.8)}
+.cal-dow{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.08em;color:rgba(200,175,255,0.25);text-align:center;padding:3px 0}
+.journal-entry{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem 1rem;margin-bottom:8px}
+.journal-entry-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.journal-entry-date{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.4)}
+.journal-entry-moon{font-size:14px}
+.journal-entry-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.5rem}
+.journal-entry-tag{padding:2px 8px;border-radius:20px;font-family:'Crimson Pro',serif;font-size:11px;color:rgba(200,175,255,0.55);border:.5px solid rgba(200,175,255,0.12);background:transparent}
+.journal-entry-text{font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.72);line-height:1.75;font-style:italic;margin-bottom:.5rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.journal-entry-text.expanded{-webkit-line-clamp:unset;overflow:visible}
+.journal-entry-interp{font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,185,255,0.6);line-height:1.7;font-style:italic;border-top:.5px solid rgba(200,175,255,0.08);padding-top:.5rem;margin-top:.5rem;display:none}
+.journal-entry-interp.on{display:block}
+.journal-entry-actions{display:flex;gap:6px;margin-top:.5rem}
+.je-action{padding:5px 10px;border-radius:8px;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.08em;color:rgba(200,175,255,0.45);border:.5px solid rgba(200,175,255,0.12);background:transparent;cursor:pointer;transition:all .2s}
+.je-action:hover{color:rgba(200,175,255,0.8);border-color:rgba(200,175,255,0.3)}
+#dream-entry-overlay{display:none}
+#dream-entry-overlay.on{display:flex}
+
 .journal-entry{background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:1rem;display:flex;flex-direction:column;gap:6px;transition:all .2s}
 .journal-entry:hover{border-color:var(--border2)}
 .je-header{display:flex;justify-content:space-between;align-items:center}
@@ -395,6 +424,15 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .faq-q{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
 .faq-a{font-family:'Crimson Pro',serif;font-size:15px;color:var(--text2);line-height:1.75}
 </style>
+
+  <!-- PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kairoscope">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#03020d">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
 <canvas id="starfield"></canvas>
@@ -583,31 +621,112 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   <!-- JOURNAL -->
   <div class="panel" id="panel-j">
-    <div id="journal-pro-lock" style="display:none">
-      <div class="birth-card" style="padding:.8rem 1rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <span class="lbl" style="margin:0">DREAM JOURNAL</span><span class="pro-badge">✦ PRO — UNLIMITED</span>
-        </div>
-        <div style="font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">Unlimited entries, pattern analysis & export</div>
-      </div>
-    </div>
-    <div class="journal-stats" id="journal-stats" style="display:none">
+
+    <!-- STATS ROW -->
+    <div class="journal-stats" id="journal-stats">
       <div class="stat-card"><div class="stat-num" id="stat-entries">0</div><div class="stat-lbl">DREAMS</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">DAY STREAK</div></div>
       <div class="stat-card"><div class="stat-num" id="stat-moon">—</div><div class="stat-lbl">MOON NOW</div></div>
     </div>
-    <div><span class="lbl">LOG A DREAM</span>
-      <textarea class="dream-ta" id="journal-input" placeholder="Record what you dreamed last night..." rows="4" oninput="checkJournalLimit()"></textarea>
+
+    <!-- PATTERNS TEASER (free) / FULL (pro) -->
+    <div id="pattern-teaser" style="display:none;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:.85rem 1rem;margin-bottom:.75rem">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.5);margin-bottom:.5rem">YOUR DREAM PATTERNS</div>
+      <div id="pattern-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.6rem"></div>
+      <div id="pattern-lock" style="display:none;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);border-radius:8px;padding:.7rem .85rem;text-align:center">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.6);margin-bottom:4px">✦ PATTERNS DETECTED</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.45);font-style:italic;margin-bottom:.6rem">We've noticed recurring themes in your dreams. Unlock to discover what they mean for your chart and this moment in time.</div>
+        <button onclick="document.getElementById('paywall').classList.add('on')" style="padding:7px 18px;border-radius:20px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.3);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.8);cursor:pointer">✦ UNLOCK PATTERN ANALYSIS</button>
+      </div>
+      <div id="pattern-full" style="display:none">
+        <div class="result-box" id="res-patterns" style="margin:0"></div>
+        <button onclick="analysePatterns()" style="width:100%;margin-top:.5rem;padding:8px;background:transparent;border:.5px solid rgba(200,175,255,0.15);border-radius:8px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(200,175,255,0.4);cursor:pointer">↺ RE-ANALYSE</button>
+      </div>
     </div>
-    <div id="journal-limit-warn" style="display:none;font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,80,80,0.8);font-style:italic">Free tier — 5 entries maximum. Upgrade to Pro for unlimited journaling.</div>
-    <button class="reveal-btn" id="btn-j" onclick="addJournalEntry()">+ LOG THIS DREAM</button>
-    <div id="pattern-section" style="display:none">
-      <button class="reveal-btn" style="font-size:9px;letter-spacing:.12em;opacity:.8" onclick="analysePatterns()">✦ ANALYSE MY DREAM PATTERNS</button>
-      <div class="result-box" id="res-patterns"></div>
+
+    <!-- CALENDAR -->
+    <div id="dream-calendar" style="margin-bottom:.75rem;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+        <button onclick="calMonth(-1)" style="background:none;border:none;color:rgba(200,175,255,0.4);font-size:16px;cursor:pointer;padding:0 8px">‹</button>
+        <div id="cal-month-lbl" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(200,175,255,0.6)"></div>
+        <button onclick="calMonth(1)" style="background:none;border:none;color:rgba(200,175,255,0.4);font-size:16px;cursor:pointer;padding:0 8px">›</button>
+      </div>
+      <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center"></div>
+      <div style="display:flex;gap:12px;margin-top:.5rem;justify-content:center">
+        <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(160,130,255,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.08em;color:rgba(200,175,255,0.35)">DREAM</div></div>
+        <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:rgba(220,180,80,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.08em;color:rgba(200,175,255,0.35)">INTERPRETED</div></div>
+      </div>
     </div>
+
+    <!-- + RECORD DREAM BUTTON -->
+    <button onclick="openDreamEntry()" id="dream-entry-btn" style="width:100%;padding:16px;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.2);border-radius:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.8);cursor:pointer;transition:all .2s;margin-bottom:.75rem">
+      ✦ RECORD TONIGHT'S DREAM
+    </button>
+
+    <!-- FREE LIMIT NOTE -->
+    <div id="journal-limit-note" style="display:none;font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.4);font-style:italic;text-align:center;margin-bottom:.5rem"></div>
+
+    <!-- DREAM LIST -->
     <div id="journal-list"></div>
-    <button class="export-btn" id="export-btn" style="display:none" onclick="exportJournal()">↓ EXPORT JOURNAL AS .TXT</button>
-    <div class="journal-empty" id="journal-empty">Your dream journal is empty.<br><br>Log your first dream above.<br><span style="opacity:.6">Stored only on your device. Private always.</span></div>
+    <div class="journal-empty" id="journal-empty" style="text-align:center;padding:2rem 1rem;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.25);font-style:italic;line-height:1.8">
+      Your dream journal is empty.<br>
+      <span style="font-size:13px;opacity:.7">Tap above to record your first dream.<br>Stored only on your device. Always private.</span>
+    </div>
+
+  </div>
+
+  <!-- DREAM ENTRY POPUP -->
+  <div id="dream-entry-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9998;flex-direction:column;align-items:center;padding:1.5rem 1.25rem;overflow-y:auto">
+    <div style="width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <button onclick="closeDreamEntry()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.4);cursor:pointer">← back</button>
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:rgba(200,175,255,0.5)">DREAM JOURNAL</div>
+      <div style="width:40px"></div>
+    </div>
+
+    <!-- DATE -->
+    <div id="dream-entry-date" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.35);margin-bottom:.35rem;text-align:center"></div>
+
+    <!-- MOON -->
+    <div id="dream-entry-moon" style="font-size:22px;margin-bottom:.5rem;text-align:center"></div>
+
+    <!-- PROMPT -->
+    <div id="dream-entry-prompt" style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(200,175,255,0.4);font-style:italic;text-align:center;margin-bottom:1rem;line-height:1.6"></div>
+
+    <!-- TEXTAREA -->
+    <textarea id="dream-entry-input" placeholder="Describe your dream in as much detail as you remember..." style="width:100%;min-height:200px;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;color:rgba(235,225,255,0.88);font-family:'Crimson Pro',serif;font-size:16px;line-height:1.8;resize:none;outline:none;margin-bottom:1rem" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+
+    <!-- QUICK TAGS -->
+    <div style="width:100%;margin-bottom:1rem">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:rgba(200,175,255,0.35);margin-bottom:.5rem">QUICK TAGS — tap to add</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="quick-tags-row">
+        <button class="qtag" onclick="addQuickTag(this,'Water')">🌊 Water</button>
+        <button class="qtag" onclick="addQuickTag(this,'Flying')">🕊 Flying</button>
+        <button class="qtag" onclick="addQuickTag(this,'Chasing')">🏃 Chasing</button>
+        <button class="qtag" onclick="addQuickTag(this,'Home')">🏠 Home</button>
+        <button class="qtag" onclick="addQuickTag(this,'Falling')">⬇ Falling</button>
+        <button class="qtag" onclick="addQuickTag(this,'Unknown Figure')">👤 Unknown Figure</button>
+        <button class="qtag" onclick="addQuickTag(this,'Death')">🌑 Death</button>
+        <button class="qtag" onclick="addQuickTag(this,'Love')">♡ Love</button>
+        <button class="qtag" onclick="addQuickTag(this,'Animals')">🐾 Animals</button>
+        <button class="qtag" onclick="addQuickTag(this,'Conflict')">⚡ Conflict</button>
+      </div>
+    </div>
+    <div id="selected-tags-row" style="display:flex;flex-wrap:wrap;gap:6px;width:100%;min-height:24px;margin-bottom:1rem"></div>
+
+    <!-- ACTION BUTTONS -->
+    <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+      <button onclick="saveDreamEntry('log')" style="width:100%;padding:14px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.2);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:rgba(220,205,255,0.8);cursor:pointer">+ SAVE DREAM</button>
+      <button onclick="saveDreamEntry('interpret')" id="dream-interp-btn" style="width:100%;padding:14px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.28);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:rgba(220,205,255,0.9);cursor:pointer">◈ SAVE & INTERPRET</button>
+      <button onclick="saveDreamEntry('combine')" id="dream-combine-btn" style="width:100%;padding:14px;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.18);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:rgba(200,185,255,0.7);cursor:pointer">✦ SAVE & COMBINE WITH STARS</button>
+      <div id="dream-free-note" style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(200,175,255,0.35);text-align:center;font-style:italic"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="dream-entry-result" style="display:none;width:100%;margin-top:1rem;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem">
+      <div id="dream-entry-result-title" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.5);margin-bottom:.75rem;text-align:center"></div>
+      <div id="dream-entry-result-text" style="font-family:'Crimson Pro',serif;font-size:16px;color:rgba(235,228,255,0.88);line-height:1.9;font-style:italic"></div>
+    </div>
+
   </div>
 
 
@@ -2729,6 +2848,457 @@ function setWakeVolume(val){
   }
 }
 
+
+// ============================================================
+// DREAM JOURNAL
+// ============================================================
+let selectedTags = [];
+let calCurrentDate = new Date();
+let editingDreamId = null;
+
+const FREE_INTERP_LIMIT = 3;
+function getDreams(){
+  try{ return JSON.parse(localStorage.getItem('k_dreams')||'[]'); }
+  catch{ return []; }
+}
+function saveDreams(d){ localStorage.setItem('k_dreams',JSON.stringify(d)); }
+
+function getDreamInterpCount(){
+  return parseInt(localStorage.getItem('k_dream_interps')||'0');
+}
+function incrementDreamInterp(){
+  localStorage.setItem('k_dream_interps', getDreamInterpCount()+1);
+}
+function canInterpretDream(){
+  if(APP.isPro) return true;
+  return getDreamInterpCount() < FREE_INTERP_LIMIT;
+}
+
+function openDreamEntry(dreamId){
+  editingDreamId = dreamId||null;
+  selectedTags = [];
+
+  const overlay = document.getElementById('dream-entry-overlay');
+  overlay.classList.add('on');
+  document.body.style.overflow='hidden';
+
+  // Set date
+  const now = new Date();
+  const dateEl = document.getElementById('dream-entry-date');
+  if(dateEl) dateEl.textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
+
+  // Moon
+  const moonEl = document.getElementById('dream-entry-moon');
+  const moonData = getMoonData();
+  if(moonEl) moonEl.textContent = moonData.emoji;
+
+  // Prompt
+  const promptEl = document.getElementById('dream-entry-prompt');
+  if(promptEl) promptEl.textContent = DREAM_PROMPTS[Math.floor(Math.random()*DREAM_PROMPTS.length)];
+
+  // If editing — prefill
+  const ta = document.getElementById('dream-entry-input');
+  if(editingDreamId){
+    const dreams = getDreams();
+    const dream = dreams.find(d=>d.id===editingDreamId);
+    if(dream){
+      ta.value = dream.text;
+      selectedTags = dream.tags||[];
+      renderSelectedTags();
+    }
+  } else {
+    ta.value='';
+  }
+
+  // Free limit note
+  const note = document.getElementById('dream-free-note');
+  const interpBtn = document.getElementById('dream-interp-btn');
+  const combineBtn = document.getElementById('dream-combine-btn');
+  if(!APP.isPro){
+    const remaining = FREE_INTERP_LIMIT - getDreamInterpCount();
+    if(remaining<=0){
+      if(note) note.textContent='You have used your '+FREE_INTERP_LIMIT+' free interpretations. Upgrade to Pro for unlimited.';
+      if(interpBtn){ interpBtn.style.opacity='.4'; interpBtn.onclick=()=>document.getElementById('paywall').classList.add('on'); }
+      if(combineBtn){ combineBtn.style.opacity='.4'; combineBtn.onclick=()=>document.getElementById('paywall').classList.add('on'); }
+    } else {
+      if(note) note.textContent=remaining+' free interpretation'+(remaining!==1?'s':'')+' remaining.';
+      if(interpBtn){ interpBtn.style.opacity='1'; interpBtn.onclick=()=>saveDreamEntry('interpret'); }
+      if(combineBtn){ combineBtn.style.opacity='1'; combineBtn.onclick=()=>saveDreamEntry('combine'); }
+    }
+  }
+
+  // Reset result
+  document.getElementById('dream-entry-result').style.display='none';
+
+  // Reset quick tags
+  document.querySelectorAll('.qtag').forEach(b=>b.classList.remove('on'));
+}
+
+function closeDreamEntry(){
+  document.getElementById('dream-entry-overlay').classList.remove('on');
+  document.body.style.overflow='';
+  editingDreamId=null;
+  refreshJournal();
+}
+
+function addQuickTag(btn, tag){
+  if(selectedTags.includes(tag)){
+    selectedTags=selectedTags.filter(t=>t!==tag);
+    btn.classList.remove('on');
+  } else {
+    selectedTags.push(tag);
+    btn.classList.add('on');
+  }
+  renderSelectedTags();
+}
+
+function renderSelectedTags(){
+  const row=document.getElementById('selected-tags-row');
+  if(!row) return;
+  row.innerHTML='';
+  selectedTags.forEach(tag=>{
+    const d=document.createElement('div');
+    d.className='selected-tag';
+    d.innerHTML=tag+' <button onclick="removeTag(\''+tag+'\')">&times;</button>';
+    row.appendChild(d);
+  });
+}
+
+function removeTag(tag){
+  selectedTags=selectedTags.filter(t=>t!==tag);
+  // Deselect quick tag button
+  document.querySelectorAll('.qtag').forEach(b=>{
+    if(b.textContent.includes(tag)) b.classList.remove('on');
+  });
+  renderSelectedTags();
+}
+
+async function saveDreamEntry(action){
+  const text=document.getElementById('dream-entry-input').value.trim();
+  if(!text){ alert('Please describe your dream first.'); return; }
+
+  const moonData=getMoonData();
+  const now=new Date();
+  const dreams=getDreams();
+
+  let dream;
+  if(editingDreamId){
+    const idx=dreams.findIndex(d=>d.id===editingDreamId);
+    if(idx>-1){
+      dreams[idx].text=text;
+      dreams[idx].tags=selectedTags;
+      dream=dreams[idx];
+    }
+  } else {
+    dream={
+      id:Date.now(),
+      date:now.toISOString(),
+      text,
+      tags:[...selectedTags],
+      moon:moonData.name,
+      moonEmoji:moonData.emoji,
+      interpretation:null,
+      combined:null
+    };
+    dreams.unshift(dream);
+  }
+  saveDreams(dreams);
+
+  if(action==='log'){
+    closeDreamEntry();
+    return;
+  }
+
+  // Interpret or combine
+  if(!canInterpretDream()&&!APP.isPro){
+    document.getElementById('paywall').classList.add('on');
+    return;
+  }
+
+  const resultBox=document.getElementById('dream-entry-result');
+  const resultTitle=document.getElementById('dream-entry-result-title');
+  const resultText=document.getElementById('dream-entry-result-text');
+  resultBox.style.display='block';
+  resultTitle.textContent = action==='interpret'?'DREAM INTERPRETATION':'DREAM + STARS';
+  resultText.textContent='Reading the symbols...';
+  resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  const sign=APP.sh||APP.sc||'unknown';
+  const astroCtx=buildAstroContext(sign,'today');
+  const astroStr=astroContextToPrompt(astroCtx);
+
+  const prompt = action==='interpret'
+    ? `DREAM: "${text}"\nTAGS: ${selectedTags.join(', ')||'none'}\nMOON: ${moonData.name}\nSIGN: ${sign}\n\nInterpret this dream with depth — Jungian symbolism, archetypal meaning, emotional undercurrent. What threshold does the dreamer stand at? End with one quiet question for reflection. 3 paragraphs.`
+    : `${astroStr}\n\nDREAM: "${text}"\nTAGS: ${selectedTags.join(', ')||'none'}\n\nWeave the current planetary transits and this dream into one unified insight. How does the cosmos mirror what the unconscious is processing? 3-4 paragraphs.`;
+
+  const system = action==='interpret'
+    ? 'You are Kairoscope — a dream analyst versed in Jungian psychology, mythology, and astrology. Interpret dreams with depth and poetic intelligence. Never generic. End with one quiet reflective question.'
+    : 'You are Kairoscope — weave current planetary transits and the dream into one unified cosmic message. Show how the stars and the unconscious deliver the same insight from different directions. Poetic, technically grounded.';
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const txt=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
+    resultText.textContent=txt;
+
+    // Save interpretation to dream
+    const idx=dreams.findIndex(d=>d.id===dream.id);
+    if(idx>-1){
+      if(action==='interpret') dreams[idx].interpretation=txt;
+      else dreams[idx].combined=txt;
+      saveDreams(dreams);
+    }
+
+    if(!APP.isPro) incrementDreamInterp();
+  } catch(e){
+    resultText.textContent='Something slipped away. Try again.';
+  }
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+function renderCalendar(){
+  const grid=document.getElementById('cal-grid');
+  const lbl=document.getElementById('cal-month-lbl');
+  if(!grid) return;
+
+  const dreams=getDreams();
+  const dreamDates={};
+  dreams.forEach(d=>{
+    const dt=new Date(d.date);
+    const key=dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
+    dreamDates[key]={has:true,interpreted:!!(d.interpretation||d.combined)};
+  });
+
+  const now=new Date();
+  const y=calCurrentDate.getFullYear();
+  const m=calCurrentDate.getMonth();
+  lbl.textContent=new Date(y,m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'}).toUpperCase();
+
+  const firstDay=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const dows=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+  grid.innerHTML='';
+  dows.forEach(d=>{
+    const el=document.createElement('div');
+    el.className='cal-dow';
+    el.textContent=d;
+    grid.appendChild(el);
+  });
+
+  for(let i=0;i<firstDay;i++){
+    const el=document.createElement('div');
+    el.className='cal-day';
+    grid.appendChild(el);
+  }
+
+  for(let day=1;day<=daysInMonth;day++){
+    const el=document.createElement('div');
+    el.className='cal-day';
+    const key=y+'-'+(m+1)+'-'+day;
+    const isToday=now.getFullYear()===y&&now.getMonth()===m&&now.getDate()===day;
+    if(isToday) el.classList.add('today');
+    el.innerHTML='<div>'+day+'</div>';
+    if(dreamDates[key]){
+      el.classList.add('has-dream');
+      const dot=document.createElement('div');
+      dot.className='cal-dot'+(dreamDates[key].interpreted?' gold':'');
+      el.appendChild(dot);
+      el.onclick=()=>showDreamForDate(key);
+    }
+    grid.appendChild(el);
+  }
+}
+
+function calMonth(dir){
+  calCurrentDate=new Date(calCurrentDate.getFullYear(),calCurrentDate.getMonth()+dir,1);
+  renderCalendar();
+}
+
+function showDreamForDate(key){
+  const dreams=getDreams();
+  const [y,m,d]=key.split('-').map(Number);
+  const dream=dreams.find(dr=>{
+    const dt=new Date(dr.date);
+    return dt.getFullYear()===y&&(dt.getMonth()+1)===m&&dt.getDate()===d;
+  });
+  if(dream) openDreamEntry(dream.id);
+}
+
+// ============================================================
+// PATTERN ANALYSIS
+// ============================================================
+async function analysePatterns(){
+  const dreams=getDreams();
+  if(dreams.length<3) return;
+
+  const el=document.getElementById('res-patterns');
+  if(el) el.textContent='Analysing your dream patterns...';
+
+  const allTags=dreams.flatMap(d=>d.tags||[]);
+  const tagCounts={};
+  allTags.forEach(t=>tagCounts[t]=(tagCounts[t]||0)+1);
+  const topTags=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t,c])=>t+' (×'+c+')').join(', ');
+
+  const dreamSummaries=dreams.slice(0,10).map(d=>`"${d.text.slice(0,80)}..."`).join('\n');
+  const sign=APP.sh||APP.sc||'unknown';
+
+  const prompt=`DREAM JOURNAL ANALYSIS:\n\nRECURRING TAGS: ${topTags||'none yet'}\n\nRECENT DREAMS:\n${dreamSummaries}\n\nSIGN: ${sign}\n\nAnalyse the recurring patterns in these dreams. What symbols and themes keep appearing? What is the subconscious processing? How do these patterns connect to ${sign}'s astrological nature? What insight does this reveal about where the dreamer stands right now? 3-4 paragraphs. Deeply personal, poetic, grounded in real Jungian and astrological symbolism.`;
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:'You are Kairoscope — a dream pattern analyst and astrologer. Analyse recurring dream patterns with Jungian depth and astrological insight. Poetic, personal, never generic.',messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const txt=data.content?.find(b=>b.type==='text')?.text||'Try again.';
+    if(el) el.textContent=txt;
+  } catch(e){
+    if(el) el.textContent='Something slipped away. Try again.';
+  }
+}
+
+// ============================================================
+// REFRESH JOURNAL TAB
+// ============================================================
+function refreshJournal(){
+  const dreams=getDreams();
+  const empty=document.getElementById('journal-empty');
+  const list=document.getElementById('journal-list');
+  const cal=document.getElementById('dream-calendar');
+  const stats=document.getElementById('journal-stats');
+  const teaser=document.getElementById('pattern-teaser');
+  const entryBtn=document.getElementById('dream-entry-btn');
+  const limitNote=document.getElementById('journal-limit-note');
+
+  // Stats
+  if(stats) stats.style.display=dreams.length?'grid':'none';
+  const statEl=document.getElementById('stat-entries');
+  if(statEl) statEl.textContent=dreams.length;
+
+  // Streak
+  const streakEl=document.getElementById('stat-streak');
+  if(streakEl){
+    let streak=0,check=new Date();
+    check.setHours(0,0,0,0);
+    for(let i=0;i<365;i++){
+      const key=check.getFullYear()+'-'+(check.getMonth()+1)+'-'+check.getDate();
+      const found=dreams.find(d=>{const dt=new Date(d.date);return dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate()===key;});
+      if(found) streak++;
+      else if(i>0) break;
+      check.setDate(check.getDate()-1);
+    }
+    streakEl.textContent=streak;
+  }
+
+  // Moon
+  const moonEl=document.getElementById('stat-moon');
+  if(moonEl){ const md=getMoonData(); moonEl.textContent=md.emoji; }
+
+  // Calendar
+  if(cal){ cal.style.display=dreams.length?'block':'none'; renderCalendar(); }
+
+  // Entry button — free limit
+  const totalFree=3; // max free dreams logged
+  if(!APP.isPro&&dreams.length>=totalFree){
+    if(limitNote){ limitNote.style.display='block'; limitNote.textContent='Upgrade to Pro to log unlimited dreams and unlock pattern analysis.'; }
+    if(entryBtn){ entryBtn.style.opacity='.4'; entryBtn.onclick=()=>document.getElementById('paywall').classList.add('on'); }
+  } else {
+    if(limitNote) limitNote.style.display='none';
+    if(entryBtn){ entryBtn.style.opacity='1'; entryBtn.onclick=()=>openDreamEntry(); }
+  }
+
+  // Pattern teaser
+  if(teaser){
+    teaser.style.display=dreams.length>=3?'block':'none';
+    if(dreams.length>=3){
+      // Show tags
+      const allTags=dreams.flatMap(d=>d.tags||[]);
+      const tagCounts={};
+      allTags.forEach(t=>tagCounts[t]=(tagCounts[t]||0)+1);
+      const topTags=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+      const tagsEl=document.getElementById('pattern-tags');
+      if(tagsEl){
+        tagsEl.innerHTML='';
+        topTags.forEach(([tag,count])=>{
+          const t=document.createElement('div');
+          t.style.cssText='padding:4px 10px;border-radius:20px;font-family:"Crimson Pro",serif;font-size:12px;color:rgba(200,175,255,0.6);border:.5px solid rgba(200,175,255,0.18);background:rgba(200,175,255,0.05)';
+          t.textContent=tag+' ×'+count;
+          tagsEl.appendChild(t);
+        });
+      }
+      // Lock or unlock analysis
+      document.getElementById('pattern-lock').style.display=APP.isPro?'none':'block';
+      document.getElementById('pattern-full').style.display=APP.isPro?'block':'none';
+      if(APP.isPro) analysePatterns();
+    }
+  }
+
+  // Dream list
+  if(!list) return;
+  list.innerHTML='';
+  if(dreams.length===0){
+    if(empty) empty.style.display='block';
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  dreams.slice(0,APP.isPro?999:3).forEach(dream=>{
+    const d=document.createElement('div');
+    d.className='journal-entry';
+    const dt=new Date(dream.date);
+    const dateStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const tagsHtml=(dream.tags||[]).map(t=>`<span class="journal-entry-tag">${t}</span>`).join('');
+    const hasInterp=!!(dream.interpretation||dream.combined);
+
+    d.innerHTML=`
+      <div class="journal-entry-top">
+        <div class="journal-entry-date">${dateStr.toUpperCase()} · ${dream.moon||''}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="journal-entry-moon">${dream.moonEmoji||''}</span>
+          <button class="je-action" onclick="openDreamEntry(${dream.id})">✎ EDIT</button>
+        </div>
+      </div>
+      ${tagsHtml?`<div class="journal-entry-tags">${tagsHtml}</div>`:''}
+      <div class="journal-entry-text" id="jt-${dream.id}">${dream.text}</div>
+      <div class="journal-entry-actions">
+        <button class="je-action" onclick="toggleExpandDream(${dream.id})">↓ READ</button>
+        ${hasInterp?`<button class="je-action" onclick="toggleInterpDream(${dream.id})">◈ INTERPRETATION</button>`:''}
+      </div>
+      ${hasInterp?`<div class="journal-entry-interp" id="ji-${dream.id}">${dream.interpretation||dream.combined||''}</div>`:''}
+    `;
+    list.appendChild(d);
+  });
+
+  // Upgrade prompt if free and has more
+  if(!APP.isPro&&dreams.length>3){
+    const upgrade=document.createElement('div');
+    upgrade.style.cssText='text-align:center;padding:.75rem;font-family:"Cinzel",serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.35)';
+    upgrade.innerHTML=`+${dreams.length-3} more dreams · <button onclick="document.getElementById('paywall').classList.add('on')" style="background:none;border:none;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.6);cursor:pointer;text-decoration:underline">UPGRADE TO SEE ALL</button>`;
+    list.appendChild(upgrade);
+  }
+}
+
+function toggleExpandDream(id){
+  const el=document.getElementById('jt-'+id);
+  if(el) el.classList.toggle('expanded');
+}
+
+function toggleInterpDream(id){
+  const el=document.getElementById('ji-'+id);
+  if(el) el.classList.toggle('on');
+}
+
+// Call refreshJournal when journal tab is shown
+const origShowTab=typeof showTab==='function'?showTab:null;
+
 const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ZI={Aries:'♈',Taurus:'♉',Gemini:'♊',Cancer:'♋',Leo:'♌',Virgo:'♍',Libra:'♎',Scorpio:'♏',Sagittarius:'♐',Capricorn:'♑',Aquarius:'♒',Pisces:'♓'};
 const TODAY=new Date().toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
@@ -4250,5 +4820,40 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 
 </div>
 
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').then(function(reg){
+      console.log('SW registered:', reg.scope);
+    }).catch(function(err){
+      console.log('SW failed:', err);
+    });
+  });
+}
+</script>
+
+<div id="ios-install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,8,20,0.97);border-top:.5px solid rgba(200,175,255,0.2);padding:1rem 1.25rem;z-index:99999;font-family:'Cinzel',serif">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+    <div style="font-size:10px;letter-spacing:.14em;color:rgba(235,225,255,0.9)">ADD TO HOME SCREEN</div>
+    <button onclick="document.getElementById('ios-install-banner').style.display='none';localStorage.setItem('k_ios_dismissed','1')" style="background:none;border:none;color:rgba(200,175,255,0.4);font-size:18px;cursor:pointer;padding:0">×</button>
+  </div>
+  <div style="font-size:13px;color:rgba(200,175,255,0.6);font-family:'Crimson Pro',serif;font-style:italic;line-height:1.6">
+    Tap <span style="color:rgba(200,175,255,0.85)">Share</span> then <span style="color:rgba(200,175,255,0.85)">"Add to Home Screen"</span> to install Kairoscope on your iPhone — no App Store needed.
+  </div>
+</div>
+<script>
+// Show iOS install banner
+(function(){
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+  const dismissed=localStorage.getItem('k_ios_dismissed');
+  if(isIOS&&!isStandalone&&!dismissed){
+    setTimeout(()=>{
+      document.getElementById('ios-install-banner').style.display='block';
+    }, 3000);
+  }
+})();
+</script>
 </body>
 </html>
