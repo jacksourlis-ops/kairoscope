@@ -275,9 +275,11 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 /* TABS */
 .tabs{display:flex;border:.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1rem;transition:border-color 1.2s}
-.tab{flex:1;padding:10px 2px;background:transparent;border:none;color:var(--muted);font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.08em;cursor:pointer;transition:all .2s}
-.tab.on{background:var(--card);color:var(--gold)}
-.tab:hover:not(.on){background:var(--bg3)}
+.tab{flex:1;padding:11px 2px 8px;background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(200,175,255,0.38);font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.08em;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.2}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.tab:hover:not(.on){color:rgba(200,175,255,0.65)}
+.tab-icon{font-size:18px;line-height:1}
+.tab-lbl{font-size:7px;letter-spacing:.1em}
 
 /* PANELS */
 .panel{display:none;flex-direction:column;gap:.85rem}
@@ -494,10 +496,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab on" onclick="switchTab('h',this)">◈ Horoscope</button>
-    <button class="tab" onclick="switchTab('d',this)">◇ Dream</button>
-    <button class="tab" onclick="switchTab('c',this)">⊕ Combined</button>
-    <button class="tab" onclick="switchTab('j',this)">📖 Journal</button>
+    <button class="tab on" onclick="switchTab('h',this)"><span class="tab-icon">☽</span><span class="tab-lbl">HOROSCOPE</span></button>
+    <button class="tab" onclick="switchTab('d',this)"><span class="tab-icon">💭</span><span class="tab-lbl">DREAM</span></button>
+    <button class="tab" onclick="switchTab('c',this)"><span class="tab-icon">✦</span><span class="tab-lbl">COMBINED</span></button>
+    <button class="tab" onclick="switchTab('j',this)"><span class="tab-icon">◎</span><span class="tab-lbl">JOURNAL</span></button>
   </div>
 
   <!-- HOROSCOPE -->
@@ -2190,6 +2192,8 @@ function loadBirthData(){
 let selectedRel = '💜 Crush';
 
 function openConnections(){
+  document.body.style.filter='';
+  if(document.querySelector('.app-wrap')) document.querySelector('.app-wrap').style.opacity='1';
   document.getElementById('conn-screen').classList.add('on');
   document.body.style.overflow='hidden';
   updateConnYourChart();
@@ -3827,7 +3831,7 @@ function switchTab(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on');document.getElementById('panel-'+id).classList.add('on');
-  if(id==='j')renderJournal();
+  if(id==='j')refreshJournal();
 }
 function selSign(el,grid,key){
   document.querySelectorAll('#'+grid+' .zb').forEach(b=>b.classList.remove('on'));
