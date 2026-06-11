@@ -1794,9 +1794,8 @@ function applyLanguage(){
     if(allT.some(tr=>tr.footerTerms===txt)||txt==='Terms of Service')a.textContent=T.footerTerms;
     if(txt==='FAQ')a.textContent=T.footerFaq;
   });
-  const meNameEl=document.getElementById('me-name-h');
-  const meDescEl=document.getElementById('me-desc-h');
-  if(meDescEl&&meDescEl.textContent.indexOf('Loading')>=0&&T.loadingLunar)meDescEl.textContent=T.loadingLunar;
+  // Always sync moon energy bar with current phase
+  updateMoonEnergy();
 }
 
 
@@ -3428,7 +3427,8 @@ function applyTheme(key){
   const name=key.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
   const isOverride=key!==moonData.key;
   document.getElementById('moon-display').textContent=`${emoji} ${name}${isOverride?' (preview)':''}`;
-  document.getElementById('stat-moon').textContent=emoji;
+  const statMoon=document.getElementById('stat-moon');
+  if(statMoon)statMoon.textContent=emoji;
   if(ENV_AUDIO.ctx&&APP.sndOn)updateEnvironment(key);
   updateMoonEnergy();
 }
@@ -4661,6 +4661,9 @@ function chimeSound(){
 document.getElementById('audio-label').textContent='';
 updateMoonEnergy();
 updateDreamPersistBar();
+// Ensure moon energy bar always shows correct phase on load
+setTimeout(updateMoonEnergy, 100);
+setTimeout(updateMoonEnergy, 500);
 // Clear any stale loading state from previous session
 ['res-h','res-d','res-c'].forEach(id=>{
   const el=document.getElementById(id);
