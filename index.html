@@ -3880,11 +3880,11 @@ function setTier(t){
   const pill=document.getElementById('main-pill');
   if(APP.isPro){
     pill.className='pill pro';pill.innerHTML='✦ PRO — unlimited readings';
-    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>document.getElementById(id).style.display='block');
+    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
     ['journal-stats','pattern-section','export-btn'].forEach(id=>document.getElementById(id).style.display=id==='journal-stats'?'grid':'block');
   }else{
     pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;
-    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>document.getElementById(id).style.display='none');
+    ['birth-h','birth-d','journal-pro-lock'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
     ['journal-stats','pattern-section','export-btn'].forEach(id=>document.getElementById(id).style.display='none');
   }
   renderJournal();
