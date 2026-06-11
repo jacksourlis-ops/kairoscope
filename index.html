@@ -105,7 +105,7 @@
   --glow:rgba(155,135,195,0.03);
 }
 
-html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Crimson Pro',serif;transition:background 1.2s ease,color .6s ease}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Crimson Pro',serif;transition:background 1.2s ease}
 body.sleep-open{color:#f0ecff !important;transition:background 1.2s ease !important}
 body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
@@ -2165,7 +2165,7 @@ function applyLanguageToSleep(){
   const ctaEl=document.getElementById('sleep-cta');if(ctaEl&&!SLEEP_STATE.sleeping)ctaEl.textContent=T.cta;
   const sdEl=document.getElementById('sleep-start-day');if(sdEl)sdEl.textContent=T.startDay;
   set('sleep-pro-note',T.proNote);
-  document.getElementById('sleep-mode-btn').textContent='☽ SLEEP MODE';
+  // sleep-mode-btn has rich HTML content — don't overwrite it
   // Sound pill labels
   const sPills=document.querySelectorAll('#sleep-sound-pills .sleep-pill');
   const sLabels=[T.holy,T.pink,T.brown,T.ocean];
@@ -4683,10 +4683,10 @@ setTimeout(loadBirthData,100);
   if(lastH){
     const cacheKey=getCacheKey('h',lastH,APP.period||'today');
     const cached=cacheKey?loadReading(cacheKey):null;
-    if(cached){
+    if(cached&&cached.text&&cached.heads){
       const box=document.getElementById('res-h');
       const lockMsg=getNextRefreshMsg(APP.period||'today');
-      showCachedResult(box,cached.heads[0],cached.heads[1],cached.heads[2],cached.text,lockMsg);
+      showStructuredResult(box,cached.heads[0],cached.heads[1],cached.heads[2],cached.text,lockMsg);
     }
   }
 })();
