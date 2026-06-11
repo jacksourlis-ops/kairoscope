@@ -106,6 +106,7 @@
 }
 
 html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Crimson Pro',serif;transition:background 1.2s ease,color .6s ease}
+body.sleep-open{color:#f0ecff !important;transition:background 1.2s ease !important}
 body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 /* SLEEP SCREEN — completely isolated from theme changes */
@@ -870,7 +871,7 @@ const APP={
   sndOn:false,
   chart:{sun:'',moon:'',rising:'',sunDeg:0,moonDeg:0,riseDeg:0,city:''},
   lastDreamText:'',lastDreamInterp:'',
-  currentPhase:'',
+  currentPhase:localStorage.getItem('k_phase')||'full-moon',
   language:localStorage.getItem('k_lang')||'English',
   savedDreamToday:localStorage.getItem('k_dream_today')||''
 };
@@ -1830,6 +1831,7 @@ const DREAM_PROMPTS=[
 ];
 
 function openSleep(){
+  document.body.classList.add('sleep-open');
   document.getElementById('sleep-screen').classList.add('on');
   document.body.style.overflow='hidden';
   updateSleepMoon();
@@ -1840,6 +1842,7 @@ function openSleep(){
 function closeSleep(){
   stopSleepAudio();
   document.getElementById('sleep-screen').classList.remove('on');
+  document.body.classList.remove('sleep-open');
   document.body.style.overflow='';
   SLEEP_STATE.sleeping=false;
   clearInterval(SLEEP_STATE.timerInterval);
@@ -3920,6 +3923,8 @@ function selSign(el,grid,key){
   document.querySelectorAll('#'+grid+' .zb').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');APP[key]=el.dataset.s;
   document.getElementById(key==='sh'?'btn-h':'btn-c').disabled=false;
+  if(key==='sh') localStorage.setItem('k_last_sign_h', APP.sh);
+  if(key==='sc') localStorage.setItem('k_last_sign_c', APP.sc);
 }
 function selPeriod(el){
   document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
@@ -4659,6 +4664,32 @@ updateDreamPersistBar();
 if(!localStorage.getItem('k_first_visit'))localStorage.setItem('k_first_visit',Date.now());
 setTimeout(applyLanguage,50);
 setTimeout(loadBirthData,100);
+
+// Restore last used signs
+(function(){
+  const lastH=localStorage.getItem('k_last_sign_h');
+  const lastC=localStorage.getItem('k_last_sign_c');
+  if(lastH){
+    APP.sh=lastH;
+    const btn=document.querySelector('#grid-h .zb[data-s="'+lastH+'"]');
+    if(btn){btn.classList.add('on');document.getElementById('btn-h').disabled=false;}
+  }
+  if(lastC){
+    APP.sc=lastC;
+    const btn=document.querySelector('#grid-c .zb[data-s="'+lastC+'"]');
+    if(btn){btn.classList.add('on');document.getElementById('btn-c').disabled=false;}
+  }
+  // Also restore cached reading if available
+  if(lastH){
+    const cacheKey=getCacheKey('h',lastH,APP.period||'today');
+    const cached=cacheKey?loadReading(cacheKey):null;
+    if(cached){
+      const box=document.getElementById('res-h');
+      const lockMsg=getNextRefreshMsg(APP.period||'today');
+      showCachedResult(box,cached.heads[0],cached.heads[1],cached.heads[2],cached.text,lockMsg);
+    }
+  }
+})();
 </script>
 <!-- PRIVACY POLICY MODAL -->
 <div class="modal-overlay" id="modal-privacy">
