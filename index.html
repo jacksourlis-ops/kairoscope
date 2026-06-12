@@ -1754,7 +1754,8 @@ const TRANSLATIONS={
 function t(key){return(TRANSLATIONS[APP.language]||TRANSLATIONS.English)[key]||TRANSLATIONS.English[key]||key;}
 
 function applyLanguage(){
-  if(document.getElementById('sleep-screen').classList.contains('on'))applyLanguageToSleep();
+  const ss=document.getElementById('sleep-screen');
+  if(ss&&ss.classList.contains('on'))applyLanguageToSleep();
   const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
   document.body.dir=APP.language==='Arabic'?'rtl':'ltr';
   const sel=document.getElementById('lang-select');if(sel)sel.value=APP.language;
@@ -3414,13 +3415,15 @@ function getMoonPhase(date){
 
 const moonData=getMoonPhase(new Date());
 APP.currentPhase=moonData.key;// Always start with real moon on fresh load
+function getMoonData(){ return getMoonPhase(new Date()); }
 
 const PHASE_CYCLE=['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'];
 let phaseIdx=PHASE_CYCLE.indexOf(APP.currentPhase);
 
 function applyTheme(key){
   // Don't change theme while sleep screen is open
-  if(document.getElementById('sleep-screen').classList.contains('on')) return;
+  const ss=document.getElementById('sleep-screen');
+  if(ss&&ss.classList.contains('on')) return;
   document.body.setAttribute('data-phase',key);
   const p=PHASE_CYCLE.find((k,i)=>k===key);
   const emoji=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][PHASE_CYCLE.indexOf(key)];
@@ -3435,7 +3438,8 @@ function applyTheme(key){
 
 function cycleTheme(){
   // Don't cycle theme while sleep screen is open — causes text to fade
-  if(document.getElementById('sleep-screen').classList.contains('on')) return;
+  const ss=document.getElementById('sleep-screen');
+  if(ss&&ss.classList.contains('on')) return;
   phaseIdx=(phaseIdx+1)%PHASE_CYCLE.length;
   APP.currentPhase=PHASE_CYCLE[phaseIdx];
   localStorage.setItem('k_phase',APP.currentPhase);
@@ -4190,7 +4194,7 @@ function exportJournal(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=`kairoscope-journal-${new Date().toLocaleDateString('en-CA')}.txt`;a.click();
 }
 
-// Old journal init removed — elements no longer in DOM
+// old journal init removed
 
 // Check for Stripe redirect on page load
 (function(){
