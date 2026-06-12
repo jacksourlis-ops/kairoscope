@@ -2195,12 +2195,6 @@ function logoTap(){
     logoTaps = 0;
     localStorage.setItem('k_pro','true');
     setTier('pro');
-    // Belt-and-suspenders: directly show birth chart sections
-    const bh=document.getElementById('birth-h');
-    const bd=document.getElementById('birth-d');
-    if(bh){bh.style.display='block';bh.style.visibility='visible';}
-    if(bd){bd.style.display='block';bd.style.visibility='visible';}
-    loadBirthData();
     const el=document.getElementById('me-phase-h');
     if(el){const orig=el.textContent;el.textContent='✦';setTimeout(()=>el.textContent=orig,1000);}
   }
@@ -3888,13 +3882,10 @@ function setTier(t){
   const pill=document.getElementById('main-pill');
   if(APP.isPro){
     if(pill){pill.className='pill pro';pill.innerHTML='✦ PRO — unlimited readings';}
-    const bh=document.getElementById('birth-h');
-    const bd=document.getElementById('birth-d');
-    if(bh){bh.style.display='block';bh.style.visibility='visible';}
-    if(bd){bd.style.display='block';bd.style.visibility='visible';}
+    ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
   }else{
     if(pill){pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;}
-    ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='none';el.style.visibility='hidden';}});
+    ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
   refreshJournal();
 }
@@ -4142,8 +4133,10 @@ function saveJournal(e){localStorage.setItem('k_journal',JSON.stringify(e));}
 function checkJournalLimit(){
   if(APP.isPro)return;
   const e=getJournal();
-  document.getElementById('journal-limit-warn').style.display=e.length>=5?'block':'none';
-  document.getElementById('btn-j').disabled=e.length>=5;
+  const warn=document.getElementById('journal-limit-warn');
+  const btnJ=document.getElementById('btn-j');
+  if(warn) warn.style.display=e.length>=5?'block':'none';
+  if(btnJ) btnJ.disabled=e.length>=5;
 }
 
 function addJournalEntry(){
@@ -4197,7 +4190,7 @@ function exportJournal(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=`kairoscope-journal-${new Date().toLocaleDateString('en-CA')}.txt`;a.click();
 }
 
-renderJournal();checkJournalLimit();
+// Old journal init removed — elements no longer in DOM
 
 // Check for Stripe redirect on page load
 (function(){
