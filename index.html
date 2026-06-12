@@ -315,12 +315,12 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .tier-btn.on{background:var(--card);border-color:var(--border2);color:var(--gold)}
 
 /* TABS */
-.tabs{display:flex;border:.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1rem;transition:border-color 1.2s}
-.tab{flex:1;padding:11px 2px 8px;background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(200,175,255,0.38);font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.08em;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.2}
-.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
-.tab:hover:not(.on){color:rgba(200,175,255,0.65)}
-.tab-icon{font-size:18px;line-height:1}
-.tab-lbl{font-size:7px;letter-spacing:.1em}
+.tabs{display:flex;gap:6px;margin-bottom:1.25rem}
+.tab{flex:1;padding:12px 4px 10px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.12);border-radius:10px;color:rgba(200,175,255,0.45);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.1em;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.2}
+.tab.on{background:rgba(210,175,80,0.1);border-color:rgba(210,175,80,0.4);color:var(--gold)}
+.tab:hover:not(.on){background:rgba(200,175,255,0.08);border-color:rgba(200,175,255,0.22);color:rgba(200,175,255,0.75)}
+.tab-icon{font-size:20px;line-height:1}
+.tab-lbl{font-size:9px;letter-spacing:.12em}
 
 /* PANELS */
 .panel{display:none;flex-direction:column;gap:.85rem}
