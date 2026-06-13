@@ -523,7 +523,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <!-- TIER -->
   <div class="tier-bar">
     <button class="tier-btn on" id="free-btn" onclick="setTier('free')">◈ FREE</button>
-    <button class="tier-btn" id="pro-btn" onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')">✦ PRO — $4.99/mo</button>
+    <button class="tier-btn" id="pro-btn" onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')">✦ PRO — $5.99 USD/mo</button>
   </div>
 
   <!-- MOON ENERGY -->
@@ -626,40 +626,45 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
   <!-- COMBINED -->
-  <div class="panel" id="panel-c">
-    <!-- COMBINED EXPLAINER -->
-    <div class="combined-explainer">
-      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--gold);margin-bottom:.5rem">HOW COMBINED WORKS</div>
-      <div class="combined-flow">
-        <div class="cf-item"><div class="cf-icon">🌙</div><div class="cf-lbl">TODAY'S SKY</div></div>
-        <div class="cf-arrow">+</div>
-        <div class="cf-item"><div class="cf-icon">💭</div><div class="cf-lbl">YOUR DREAM</div></div>
-        <div class="cf-arrow">↓</div>
-        <div class="cf-item"><div class="cf-icon">✨</div><div class="cf-lbl">COMBINED INSIGHT</div></div>
+  <div class=\"panel\" id=\"panel-c\">
+    <!-- FREE TEASER (shown to non-Pro) -->
+    <div id=\"combined-teaser\" style=\"display:none;text-align:center;padding:1.5rem 1rem\">
+      <div style=\"font-size:36px;margin-bottom:.75rem\">✦</div>
+      <div style=\"font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);margin-bottom:.75rem\">STARS & DREAMS COMBINED</div>
+      <div style=\"font-family:'Crimson Pro',serif;font-size:15px;color:rgba(220,210,255,0.82);line-height:1.75;margin-bottom:1.25rem;font-style:italic\">Your horoscope reads the sky.<br>Your dream journal reads your soul.<br>Combined, they reveal what neither can alone.</div>
+      <div style=\"background:rgba(210,175,80,0.06);border:.5px solid rgba(210,175,80,0.2);border-radius:12px;padding:1rem;margin-bottom:1.25rem\">
+        <div style=\"font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.14em;color:var(--gold);margin-bottom:.6rem\">PRO EXCLUSIVE</div>
+        <div style=\"font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.78);line-height:1.65\">Unlock the Combined reading to see how today's planetary energy and last night's dream symbols are delivering the same message.</div>
       </div>
-      <div class="combined-desc">See how today's planetary energy and last night's dream symbols speak the same language.</div>
+      <button onclick=\"updatePaywallStats();document.getElementById('paywall').classList.add('on')\" style=\"width:100%;padding:14px;background:rgba(210,175,80,0.08);border:.5px solid rgba(210,175,80,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;color:var(--gold);cursor:pointer\">✦ UNLOCK COMBINED ✦</button>
     </div>
-    <div><span class="lbl">YOUR SIGN</span>
-      <div class="zodiac-grid" id="zg-c">
-        <button class="zb" data-s="Aries" onclick="selSign(this,'zg-c','sc')"><span class="zs">♈</span><span class="zn">Aries</span></button>
-        <button class="zb" data-s="Taurus" onclick="selSign(this,'zg-c','sc')"><span class="zs">♉</span><span class="zn">Taurus</span></button>
-        <button class="zb" data-s="Gemini" onclick="selSign(this,'zg-c','sc')"><span class="zs">♊</span><span class="zn">Gemini</span></button>
-        <button class="zb" data-s="Cancer" onclick="selSign(this,'zg-c','sc')"><span class="zs">♋</span><span class="zn">Cancer</span></button>
-        <button class="zb" data-s="Leo" onclick="selSign(this,'zg-c','sc')"><span class="zs">♌</span><span class="zn">Leo</span></button>
-        <button class="zb" data-s="Virgo" onclick="selSign(this,'zg-c','sc')"><span class="zs">♍</span><span class="zn">Virgo</span></button>
-        <button class="zb" data-s="Libra" onclick="selSign(this,'zg-c','sc')"><span class="zs">♎</span><span class="zn">Libra</span></button>
-        <button class="zb" data-s="Scorpio" onclick="selSign(this,'zg-c','sc')"><span class="zs">♏</span><span class="zn">Scorpio</span></button>
-        <button class="zb" data-s="Sagittarius" onclick="selSign(this,'zg-c','sc')"><span class="zs">♐</span><span class="zn">Sagittarius</span></button>
-        <button class="zb" data-s="Capricorn" onclick="selSign(this,'zg-c','sc')"><span class="zs">♑</span><span class="zn">Capricorn</span></button>
-        <button class="zb" data-s="Aquarius" onclick="selSign(this,'zg-c','sc')"><span class="zs">♒</span><span class="zn">Aquarius</span></button>
-        <button class="zb" data-s="Pisces" onclick="selSign(this,'zg-c','sc')"><span class="zs">♓</span><span class="zn">Pisces</span></button>
+    <!-- PRO COMBINED (shown to Pro users) -->
+    <div id=\"combined-pro\" style=\"display:none\">
+      <div class=\"combined-explainer\">
+        <div style=\"font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--gold);margin-bottom:.5rem\">STARS & DREAMS — COMBINED</div>
+        <div class=\"combined-flow\">
+          <div class=\"cf-item\"><div class=\"cf-icon\">🌙</div><div class=\"cf-lbl\">TODAY'S SKY</div></div>
+          <div class=\"cf-arrow\">+</div>
+          <div class=\"cf-item\"><div class=\"cf-icon\">💭</div><div class=\"cf-lbl\">LAST DREAM</div></div>
+          <div class=\"cf-arrow\">=</div>
+          <div class=\"cf-item\"><div class=\"cf-icon\">✨</div><div class=\"cf-lbl\">COMBINED INSIGHT</div></div>
+        </div>
+        <div class=\"combined-desc\">Your horoscope and dream journal are automatically woven together.</div>
       </div>
+      <!-- Auto-pulled context display -->
+      <div id=\"combined-context\" style=\"display:flex;flex-direction:column;gap:8px;margin-bottom:1rem\">
+        <div style=\"background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem\">
+          <div style=\"font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px\">TODAY'S SIGN</div>
+          <div id=\"combined-sign-display\" style=\"font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.9)\">—</div>
+        </div>
+        <div style=\"background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem\">
+          <div style=\"font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px\">LAST DREAM JOURNALED</div>
+          <div id=\"combined-dream-display\" style=\"font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.82);font-style:italic;line-height:1.6\">No dream journaled yet today</div>
+        </div>
+      </div>
+      <button class=\"reveal-btn\" id=\"btn-c\" onclick=\"doCombinedReading()\">◈ COMBINE ◈</button>
+      <div class=\"result-box\" id=\"res-c\"></div>
     </div>
-    <div><span class="lbl">LAST NIGHT'S DREAM (optional)</span>
-      <textarea class="dream-ta" id="combined-dream" placeholder="Describe what you dreamed, or leave empty for a pure star reading..." rows="4"></textarea>
-    </div>
-    <button class="reveal-btn" id="btn-c" disabled onclick="doReading('c')">◈ SEE MY MOMENT ◈</button>
-    <div class="result-box" id="res-c"></div>
   </div>
 
   <!-- JOURNAL -->
@@ -843,14 +848,15 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div class="pw-stat"><div class="pw-stat-num" id="pw-stat-dreams">0</div><div class="pw-stat-lbl">DREAMS</div></div>
     <div class="pw-stat"><div class="pw-stat-num" id="pw-stat-days">0</div><div class="pw-stat-lbl">DAYS</div></div>
   </div>
-  <div class="pw-price">$4.99<span> / month</span></div>
+  <div class="pw-price">$5.99 USD<span> / month</span></div>
   <div class="pw-feats">
-    <div class="pw-feat">Unlimited cosmic readings — daily, weekly, monthly</div>
+    <div class="pw-feat">Daily horoscope — personalised to your natal chart</div>
     <div class="pw-feat">Full birth chart — sun, moon & rising, precisely calculated</div>
-    <div class="pw-feat">Readings personalised to your exact natal placements</div>
-    <div class="pw-feat">Discover recurring symbols hidden across months of dreams</div>
-    <div class="pw-feat">Build a private archive of your subconscious journey</div>
-    <div class="pw-feat">Connect dream symbols with cosmic patterns — Combined mode</div>
+    <div class="pw-feat">1 dream interpretation per day, journaled & archived</div>
+    <div class="pw-feat">Combined reading — your stars & dreams woven into one insight</div>
+    <div class="pw-feat">People in My Sky — weekly compatibility readings per person</div>
+    <div class="pw-feat">Pattern analysis — symbols recurring across your dream journal</div>
+    <div class="pw-feat">Full reading history — revisit any past horoscope or combined reading</div>
     <div class="pw-feat">Export your journal — your story, always yours to keep</div>
   </div>
   <button class="pw-cta" onclick="activatePro()">✦ UNLOCK MY FULL STORY ✦</button>
@@ -866,7 +872,7 @@ const ENV_AUDIO={ctx:null,master:null,nodes:[],currentEnv:null};
 
 const APP={
   isPro:localStorage.getItem('k_pro')==='true',
-  free:parseInt(localStorage.getItem('k_free')??'3'),
+  free:parseInt(localStorage.getItem('k_free')??'5'),
   sh:'',sc:'',period:'today',
   sndOn:false,
   chart:{sun:'',moon:'',rising:'',sunDeg:0,moonDeg:0,riseDeg:0,city:''},
@@ -956,7 +962,7 @@ const TRANSLATIONS={
   English:{
     ambientOff:'♫ ambient off',ambientOn:'♫ ambient on',
     freeReadings:'free readings remaining',
-    freeTier:'◈ FREE',proTier:'✦ PRO — $4.99/mo',proUnlimited:'✦ PRO — unlimited readings',
+    freeTier:'◈ FREE',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — unlimited readings',
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Dream',tabCombined:'⊕ Combined',tabJournal:'📖 Journal',
     yourSign:'YOUR SIGN',period:'PERIOD',
     periodToday:'Today',periodWeek:'This Week',periodMonth:'This Month',
@@ -1008,7 +1014,7 @@ const TRANSLATIONS={
   French:{
     ambientOff:'♫ ambiance désactivée',ambientOn:'♫ ambiance activée',
     freeReadings:'lectures gratuites restantes',
-    freeTier:'◈ GRATUIT',proTier:'✦ PRO — 4,99$/mois',proUnlimited:'✦ PRO — lectures illimitées',
+    freeTier:'◈ GRATUIT',proTier:'✦ PRO — $5.99 USD/mois',proUnlimited:'✦ PRO — lectures illimitées',
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Rêve',tabCombined:'⊕ Combiné',tabJournal:'📖 Journal',
     yourSign:'VOTRE SIGNE',period:'PÉRIODE',
     periodToday:"Aujourd'hui",periodWeek:'Cette semaine',periodMonth:'Ce mois-ci',
@@ -1060,7 +1066,7 @@ const TRANSLATIONS={
   Spanish:{
     ambientOff:'♫ ambiente desactivado',ambientOn:'♫ ambiente activado',
     freeReadings:'lecturas gratuitas restantes',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — $4.99/mes',proUnlimited:'✦ PRO — lecturas ilimitadas',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mes',proUnlimited:'✦ PRO — lecturas ilimitadas',
     tabHoroscope:'◈ Horóscopo',tabDream:'◇ Sueño',tabCombined:'⊕ Combinado',tabJournal:'📖 Diario',
     yourSign:'TU SIGNO',period:'PERÍODO',
     periodToday:'Hoy',periodWeek:'Esta semana',periodMonth:'Este mes',
@@ -1112,7 +1118,7 @@ const TRANSLATIONS={
   Portuguese:{
     ambientOff:'♫ ambiente desligado',ambientOn:'♫ ambiente ligado',
     freeReadings:'leituras gratuitas restantes',
-    freeTier:'◈ GRÁTIS',proTier:'✦ PRO — R$4,99/mês',proUnlimited:'✦ PRO — leituras ilimitadas',
+    freeTier:'◈ GRÁTIS',proTier:'✦ PRO — $5.99 USD/mês',proUnlimited:'✦ PRO — leituras ilimitadas',
     tabHoroscope:'◈ Horóscopo',tabDream:'◇ Sonho',tabCombined:'⊕ Combinado',tabJournal:'📖 Diário',
     yourSign:'SEU SIGNO',period:'PERÍODO',
     periodToday:'Hoje',periodWeek:'Esta semana',periodMonth:'Este mês',
@@ -1164,7 +1170,7 @@ const TRANSLATIONS={
   German:{
     ambientOff:'♫ Ambiente aus',ambientOn:'♫ Ambiente an',
     freeReadings:'kostenlose Lesungen verbleibend',
-    freeTier:'◈ KOSTENLOS',proTier:'✦ PRO — 4,99€/Monat',proUnlimited:'✦ PRO — unbegrenzte Lesungen',
+    freeTier:'◈ KOSTENLOS',proTier:'✦ PRO — 5,99 USD/Monat',proUnlimited:'✦ PRO — unbegrenzte Lesungen',
     tabHoroscope:'◈ Horoskop',tabDream:'◇ Traum',tabCombined:'⊕ Kombiniert',tabJournal:'📖 Tagebuch',
     yourSign:'DEIN ZEICHEN',period:'ZEITRAUM',
     periodToday:'Heute',periodWeek:'Diese Woche',periodMonth:'Diesen Monat',
@@ -1216,7 +1222,7 @@ const TRANSLATIONS={
   Italian:{
     ambientOff:'♫ ambiente disattivato',ambientOn:'♫ ambiente attivato',
     freeReadings:'letture gratuite rimanenti',
-    freeTier:'◈ GRATUITO',proTier:'✦ PRO — 4,99€/mese',proUnlimited:'✦ PRO — letture illimitate',
+    freeTier:'◈ GRATUITO',proTier:'✦ PRO — 5,99 USD/mese',proUnlimited:'✦ PRO — letture illimitate',
     tabHoroscope:'◈ Oroscopo',tabDream:'◇ Sogno',tabCombined:'⊕ Combinato',tabJournal:'📖 Diario',
     yourSign:'IL TUO SEGNO',period:'PERIODO',
     periodToday:'Oggi',periodWeek:'Questa settimana',periodMonth:'Questo mese',
@@ -1268,7 +1274,7 @@ const TRANSLATIONS={
   Greek:{
     ambientOff:'♫ περιβάλλον απενεργοποιημένο',ambientOn:'♫ περιβάλλον ενεργοποιημένο',
     freeReadings:'δωρεάν αναγνώσεις που απομένουν',
-    freeTier:'◈ ΔΩΡΕΑΝ',proTier:'✦ PRO — 4,99€/μήνα',proUnlimited:'✦ PRO — απεριόριστες αναγνώσεις',
+    freeTier:'◈ ΔΩΡΕΑΝ',proTier:'✦ PRO — 5,99 USD/μήνα',proUnlimited:'✦ PRO — απεριόριστες αναγνώσεις',
     tabHoroscope:'◈ Ωροσκόπιο',tabDream:'◇ Όνειρο',tabCombined:'⊕ Συνδυασμένο',tabJournal:'📖 Ημερολόγιο',
     yourSign:'ΤΟ ΖΩΔΙΟ ΣΟΥ',period:'ΠΕΡΙΟΔΟΣ',
     periodToday:'Σήμερα',periodWeek:'Αυτή την εβδομάδα',periodMonth:'Αυτόν τον μήνα',
@@ -1568,7 +1574,7 @@ const TRANSLATIONS={
   Dutch:{
     ambientOff:'♫ sfeergeluid uit',ambientOn:'♫ sfeergeluid aan',
     freeReadings:'gratis lezingen resterend',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — €4,99/maand',proUnlimited:'✦ PRO — onbeperkte lezingen',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — 5,99 USD/maand',proUnlimited:'✦ PRO — onbeperkte lezingen',
     tabHoroscope:'◈ Horoscoop',tabDream:'◇ Droom',tabCombined:'⊕ Gecombineerd',tabJournal:'📖 Dagboek',
     yourSign:'JOUW TEKEN',period:'PERIODE',
     periodToday:'Vandaag',periodWeek:'Deze week',periodMonth:'Deze maand',
@@ -2444,12 +2450,20 @@ function calcCompatibilityScore(chartA, chartB){
   return Math.min(99,Math.max(35,score));
 }
 
-function canDoCompatibility(){
-  if(APP.isPro) return true;
-  const lastComp=localStorage.getItem('k_last_compat');
-  if(!lastComp) return true;
-  const daysSince=(Date.now()-parseInt(lastComp))/(1000*60*60*24);
-  return daysSince>=30;
+function getCompatWeekKey(personId){
+  const now=new Date();
+  const week=Math.floor((now-new Date(now.getFullYear(),0,1))/(7*24*60*60*1000));
+  return `k_compat_${personId}_w${week}_${now.getFullYear()}`;
+}
+function canDoCompatibility(personId){
+  if(!APP.isPro){
+    const lastComp=localStorage.getItem('k_last_compat');
+    if(!lastComp) return true;
+    const daysSince=(Date.now()-parseInt(lastComp))/(1000*60*60*24);
+    return daysSince>=30;
+  }
+  // Pro: once per week per person, cached
+  return !localStorage.getItem(getCompatWeekKey(personId));
 }
 
 async function getCompatibility(person){
@@ -2469,10 +2483,25 @@ async function getCompatibility(person){
     return;
   }
 
-  if(!canDoCompatibility()){
-    const lastComp=localStorage.getItem('k_last_compat');
-    const daysLeft=30-Math.floor((Date.now()-parseInt(lastComp))/(1000*60*60*24));
-    txt.textContent=`You have used your free compatibility reading this month. Upgrade to Pro for unlimited readings, or return in ${daysLeft} day${daysLeft!==1?'s':''}.`;
+  // Check per-person weekly cache for Pro, monthly for free
+  const weekKey=getCompatWeekKey(person.id||person.name);
+  const cached=APP.isPro?localStorage.getItem(weekKey):null;
+  if(cached){
+    const data=JSON.parse(cached);
+    title.textContent=`YOU & ${person.name.toUpperCase()}`;
+    txt.textContent=data.text;
+    if(data.score!==null){scoreEl.style.display='flex';scoreNum.textContent=data.score+'%';}
+    freeNote.textContent='This week\'s reading — refreshes next week ✦';
+    return;
+  }
+  if(!canDoCompatibility(person.id||person.name)){
+    if(!APP.isPro){
+      const lastComp=localStorage.getItem('k_last_compat');
+      const daysLeft=30-Math.floor((Date.now()-parseInt(lastComp))/(1000*60*60*24));
+      txt.textContent=`You have used your free compatibility reading this month. Upgrade to Pro for weekly readings per person, or return in ${daysLeft} day${daysLeft!==1?'s':''}.`;
+    } else {
+      txt.textContent=`Your reading with ${person.name} refreshes next week — the cosmic connection is still unfolding. ✦`;
+    }
     scoreEl.style.display='none';
     freeNote.textContent='';
     return;
@@ -2540,10 +2569,13 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
     const text=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
     txt.textContent=text;
 
-    // Mark free reading used
-    if(!APP.isPro){
+    // Cache result
+    if(APP.isPro){
+      localStorage.setItem(weekKey,JSON.stringify({text,score}));
+      freeNote.textContent='This week\'s reading — refreshes next week ✦';
+    } else {
       localStorage.setItem('k_last_compat',Date.now());
-      freeNote.textContent='Free compatibility reading used. Upgrade to Pro for unlimited readings.';
+      freeNote.textContent='Free compatibility reading used. Upgrade to Pro for weekly readings per person.';
     }
   } catch(e){
     txt.textContent='The connection slipped away. Try again.';
@@ -3922,7 +3954,84 @@ function switchTab(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on');document.getElementById('panel-'+id).classList.add('on');
   if(id==='j')refreshJournal();
+  if(id==='c')initCombinedPanel();
 }
+
+function initCombinedPanel(){
+  const teaser=document.getElementById('combined-teaser');
+  const pro=document.getElementById('combined-pro');
+  if(!APP.isPro){
+    if(teaser)teaser.style.display='block';
+    if(pro)pro.style.display='none';
+    return;
+  }
+  if(teaser)teaser.style.display='none';
+  if(pro)pro.style.display='block';
+  // Auto-pull sign
+  const signDisplay=document.getElementById('combined-sign-display');
+  if(signDisplay)signDisplay.textContent=APP.sh||'Select your sign in the Horoscope tab first';
+  // Auto-pull latest dream from journal
+  const dreamDisplay=document.getElementById('combined-dream-display');
+  if(dreamDisplay){
+    const dreams=getDreams();
+    if(dreams&&dreams.length>0){
+      const latest=dreams[0];
+      dreamDisplay.textContent='"'+(latest.dream||latest.text||'').slice(0,120)+'..."';
+    } else {
+      dreamDisplay.textContent='No dream journaled yet — add one in the Journal tab';
+    }
+  }
+  // Check if already done today
+  const todayKey='k_combined_'+new Date().toLocaleDateString('en-CA');
+  const cached=localStorage.getItem(todayKey);
+  const btn=document.getElementById('btn-c');
+  const box=document.getElementById('res-c');
+  if(cached){
+    if(btn)btn.disabled=true;
+    const data=JSON.parse(cached);
+    showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),data.text,'Returns tomorrow at midnight');
+  } else {
+    if(btn)btn.disabled=!(APP.sh);
+  }
+}
+
+async function doCombinedReading(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
+  // Check daily cap
+  const todayKey='k_combined_'+new Date().toLocaleDateString('en-CA');
+  if(localStorage.getItem(todayKey)){
+    const box=document.getElementById('res-c');
+    const data=JSON.parse(localStorage.getItem(todayKey));
+    showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),data.text,'Returns tomorrow at midnight');
+    return;
+  }
+  if(!APP.sh){alert('Please select your sign in the Horoscope tab first.');return;}
+  const btn=document.getElementById('btn-c');
+  const box=document.getElementById('res-c');
+  btn.disabled=true;
+  showLoading(box);
+  // Get latest dream
+  const dreams=getDreams();
+  const dreamText=dreams&&dreams.length>0?(dreams[0].dream||dreams[0].text||'no dream recorded'):'no dream recorded';
+  // Get cached horoscope if available
+  const cacheKey=getCacheKey('h',APP.sh,'today');
+  const cachedHoro=cacheKey?loadReading(cacheKey):null;
+  const horoContext=cachedHoro?`Today's horoscope for ${APP.sh}: ${cachedHoro.text.slice(0,400)}`:`Sign: ${APP.sh}`;
+  const astroCtx=buildAstroContext(APP.sh,'today');
+  const fullAstroPrompt=astroContextToPrompt(astroCtx);
+  const chartCtx=buildChartCtx();
+  const prompt=`${fullAstroPrompt}${chartCtx}\n\nLAST DREAM JOURNALED: "${dreamText}"\n\nToday is ${TODAY}. Weave the current planetary transits and this dream into one unified insight. Show how the cosmos and the unconscious are delivering the same message right now.`;
+  try{
+    const text=await callAI(prompt,SYSTEMS['c']);
+    showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),text,'Returns tomorrow at midnight');
+    localStorage.setItem(todayKey,JSON.stringify({text,date:TODAY}));
+    btn.disabled=true;
+  }catch(e){
+    box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
+    btn.disabled=false;
+  }
+}
+
 function selSign(el,grid,key){
   document.querySelectorAll('#'+grid+' .zb').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');APP[key]=el.dataset.s;
@@ -4073,7 +4182,15 @@ async function doReading(type){
   const btn=document.getElementById('btn-'+type),box=document.getElementById('res-'+type);
   const c=APP.chart;
 
-  // CHECK CACHE — horoscope and combined only, never dreams
+  // DAILY DREAM CAP — Pro users get 1 dream interpretation per day
+  if(type==='d'&&APP.isPro){
+    const dreamDayKey='k_dream_used_'+new Date().toLocaleDateString('en-CA');
+    if(localStorage.getItem(dreamDayKey)){
+      box.style.display='flex';box.style.flexDirection='column';
+      box.innerHTML=`<div class="rbody" style="font-style:italic;color:var(--muted)">You've received your dream interpretation for today. Return tomorrow — your subconscious continues to speak as you sleep. ✦</div>`;
+      return;
+    }
+  }
   if(type!=='d'){
     const sign=type==='h'?APP.sh:APP.sc;
     const cacheKey=getCacheKey(type,sign,APP.period);
@@ -4120,7 +4237,7 @@ async function doReading(type){
       if(cacheKey)saveReading(cacheKey,{text,heads:HEADS[type],period:APP.period});
     }
 
-    if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=text;document.getElementById('save-dream-wrap').style.display='block';saveDreamToday(APP.lastDreamText);}
+    if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=text;document.getElementById('save-dream-wrap').style.display='block';saveDreamToday(APP.lastDreamText);if(APP.isPro)localStorage.setItem('k_dream_used_'+new Date().toLocaleDateString('en-CA'),'1');}
   }catch(e){
     box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
   }
@@ -4731,7 +4848,7 @@ setTimeout(loadBirthData,100);
     <div class="modal-divider"></div>
     <div class="modal-section"><h3>THE SERVICE</h3><p>Kairoscope provides personalised horoscope readings and dream interpretations for entertainment, reflection, and personal insight. Readings are not a substitute for professional medical, psychological, financial, or legal advice. Trust your own judgment in all important life decisions.</p></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><h3>SUBSCRIPTIONS</h3><ul><li>Pro subscriptions are billed at $4.99 per month</li><li>Cancel any time. Access continues until the end of your paid period</li><li>Refunds are considered within 7 days of purchase on a case by case basis</li><li>We will give 30 days notice before any price changes</li></ul></div>
+    <div class="modal-section"><h3>SUBSCRIPTIONS</h3><ul><li>Pro subscriptions are billed at $5.99 USD per month</li><li>Cancel any time. Access continues until the end of your paid period</li><li>Refunds are considered within 7 days of purchase on a case by case basis</li><li>We will give 30 days notice before any price changes</li></ul></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><h3>FAIR USE</h3><ul><li>You must be 13 or older to use Kairoscope</li><li>One account per person</li><li>Do not attempt to bypass usage limits or exploit the free tier</li><li>Do not use the service for any unlawful purpose</li></ul></div>
     <div class="modal-divider"></div>
@@ -4753,7 +4870,7 @@ setTimeout(loadBirthData,100);
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">IS MY DATA PRIVATE?</div><div class="faq-a">Your dream journal and birth chart live only on your device. Nothing personal is stored on our servers. We are Canadian, we operate under PIPEDA, and privacy is something we take seriously. No ads, no data selling, no exceptions.</div></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><div class="faq-q">WHAT DOES PRO INCLUDE?</div><div class="faq-a">Pro gives you unlimited readings across all three modes, your complete birth chart with sun, moon and rising sign calculated using professional-grade astronomical precision, readings personalised to your natal placements, an unlimited dream journal, pattern analysis across your entries, and weekly cosmic forecasts. $4.99 a month. Cancel any time.</div></div>
+    <div class="modal-section"><div class="faq-q">WHAT DOES PRO INCLUDE?</div><div class="faq-a">Pro gives you unlimited readings across all three modes, your complete birth chart with sun, moon and rising sign calculated using professional-grade astronomical precision, readings personalised to your natal placements, an unlimited dream journal, pattern analysis across your entries, and weekly cosmic forecasts. $5.99 USD a month. Cancel any time.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">HOW ACCURATE IS THE BIRTH CHART?</div><div class="faq-a">We calculate your chart using Jean Meeus astronomical algorithms, which are the same mathematical foundations used by professional astrology software worldwide. Your sun sign is exact. Your moon sign is accurate to the day. Your rising sign requires your birth time and city for full precision.</div></div>
     <div class="modal-divider"></div>
