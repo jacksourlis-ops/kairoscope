@@ -2559,7 +2559,7 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6-20250514',
         max_tokens:800,
         system:'You are Kairoscope — a master astrologer specialising in synastry and relationship astrology. Write compatibility readings that are technically grounded, deeply insightful, and poetically expressed. Never generic. Reference specific aspects and what they mean for this connection.',
         messages:[{role:'user',content:prompt}]
@@ -2645,7 +2645,7 @@ Write a ${period} joint reading for this connection. How do the current planetar
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6-20250514',
         max_tokens:700,
         system:`You are Kairoscope — a master astrologer specialising in relationship astrology and synastry. Write joint readings that illuminate what a period means for two people's connection — grounded in real transits, poetically expressed. Never predict outcomes or encourage pursuit. Focus on growth, reflection, and what each person is called to bring.${isCrush?' For crush connections: be honest about real cosmic chemistry where it exists, frame challenges as growth not incompatibility, leave the person feeling hopeful and seen — never crushed.':''}`,
         messages:[{role:'user',content:prompt}]
@@ -2694,7 +2694,7 @@ Write a daily horoscope for ${person.name} (${theirSign}). This is being read by
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6-20250514',
         max_tokens:600,
         system:`You are Kairoscope — writing a daily reading for someone else, seen through the eyes of a person who cares about them. Help the reader understand what their person may be experiencing astrologically. Poetic, empathetic, technically grounded. Never encourage pursuit or manipulation.`,
         messages:[{role:'user',content:prompt}]
@@ -3147,7 +3147,7 @@ async function saveDreamEntry(action){
     const res=await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6-20250514',max_tokens:700,system,messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
     const txt=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
@@ -3341,7 +3341,7 @@ async function analysePatterns(){
     const res=await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:'You are Kairoscope — a dream pattern analyst and astrologer. Analyse recurring dream patterns with Jungian depth and astrological insight. Poetic, personal, never generic.',messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6-20250514',max_tokens:700,system:'You are Kairoscope — a dream pattern analyst and astrologer. Analyse recurring dream patterns with Jungian depth and astrological insight. Poetic, personal, never generic.',messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
     const txt=data.content?.find(b=>b.type==='text')?.text||'Try again.';
@@ -4272,7 +4272,7 @@ async function callAI(prompt,system){
   const res=await fetch('/api/chat',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:system+(APP.language&&APP.language!=='English'?`\n\nCRITICAL: Write your ENTIRE response in ${APP.language}. Every single word must be in ${APP.language}.`:''),messages:[{role:'user',content:prompt}]})
+    body:JSON.stringify({model:'claude-sonnet-4-6-20250514',max_tokens:1000,system:system+(APP.language&&APP.language!=='English'?`\n\nCRITICAL: Write your ENTIRE response in ${APP.language}. Every single word must be in ${APP.language}.`:''),messages:[{role:'user',content:prompt}]})
   });
   const data=await res.json();
   if(data.error)throw new Error(data.error.message);
