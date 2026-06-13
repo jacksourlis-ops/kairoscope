@@ -710,7 +710,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <!-- CALENDAR -->
   <!-- CALENDAR TOGGLE -->
   <button onclick="toggleCalendar()" id="cal-toggle-btn" style="width:100%;padding:13px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.18);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(210,195,255,0.78);cursor:pointer;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:8px">
-    <span>📅</span><span>DREAM CALENDAR</span><span id="cal-toggle-arrow" style="opacity:.5">▾</span>
+    <span>✦</span><span>your Kairos</span><span id="cal-toggle-arrow" style="opacity:.5">▾</span>
   </button>
 
   <div id="dream-calendar" style="display:none;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem;margin-bottom:.75rem">
@@ -720,9 +720,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <button onclick="calMonth(1)" style="background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.2);border-radius:8px;color:rgba(200,175,255,0.8);font-size:16px;cursor:pointer;padding:4px 12px">›</button>
     </div>
     <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center"></div>
-    <div style="display:flex;gap:12px;margin-top:.5rem;justify-content:center">
-      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(160,130,255,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.55)">DREAM LOGGED</div></div>
-      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(220,180,80,0.6)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.55)">INTERPRETED</div></div>
+    <div style="display:flex;gap:10px;margin-top:.5rem;justify-content:center;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(160,130,255,0.8)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">DREAM</div></div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(220,180,80,0.9)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">HOROSCOPE</div></div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:2px;background:rgba(180,220,255,0.8)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">COMBINED</div></div>
     </div>
   </div>
 
@@ -3174,13 +3175,17 @@ function renderCalendar(){
   const lbl=document.getElementById('cal-month-lbl');
   if(!grid) return;
 
+  // Collect dream dates
   const dreams=getDreams();
   const dreamDates={};
   dreams.forEach(d=>{
     const dt=new Date(d.date);
     const key=dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
-    dreamDates[key]={has:true,interpreted:!!(d.interpretation||d.combined)};
+    dreamDates[key]=true;
   });
+
+  // Collect kairos dates (horoscope + combined)
+  const kairosDates=getKairosDateRange();
 
   const now=new Date();
   const y=calCurrentDate.getFullYear();
@@ -3212,12 +3217,34 @@ function renderCalendar(){
     const isToday=now.getFullYear()===y&&now.getMonth()===m&&now.getDate()===day;
     if(isToday) el.classList.add('today');
     el.innerHTML='<div>'+day+'</div>';
-    if(dreamDates[key]){
+
+    const hasDream=dreamDates[key];
+    const kairosEntry=kairosDates[key];
+    const hasHoro=kairosEntry?.horoscope;
+    const hasCombined=kairosEntry?.combined;
+    const hasAnything=hasDream||hasHoro||hasCombined;
+
+    if(hasAnything){
       el.classList.add('has-dream');
-      const dot=document.createElement('div');
-      dot.className='cal-dot'+(dreamDates[key].interpreted?' gold':'');
-      el.appendChild(dot);
-      el.onclick=()=>showDreamForDate(key);
+      const dots=document.createElement('div');
+      dots.style.cssText='display:flex;gap:2px;justify-content:center;flex-wrap:wrap;margin-top:2px';
+      if(hasDream){
+        const dot=document.createElement('div');
+        dot.className='cal-dot';
+        dots.appendChild(dot);
+      }
+      if(hasHoro){
+        const dot=document.createElement('div');
+        dot.className='cal-dot gold';
+        dots.appendChild(dot);
+      }
+      if(hasCombined){
+        const dot=document.createElement('div');
+        dot.style.cssText='width:5px;height:5px;border-radius:2px;background:rgba(180,220,255,0.9)';
+        dots.appendChild(dot);
+      }
+      el.appendChild(dots);
+      el.onclick=()=>showKairosForDate(key);
     }
     grid.appendChild(el);
   }
@@ -3238,14 +3265,56 @@ function calMonth(dir){
   renderCalendar();
 }
 
-function showDreamForDate(key){
+function showKairosForDate(dateKey){
+  const kairos=loadKairos(dateKey);
   const dreams=getDreams();
-  const [y,m,d]=key.split('-').map(Number);
+  const [y,m,d]=dateKey.split('-').map(Number);
   const dream=dreams.find(dr=>{
     const dt=new Date(dr.date);
     return dt.getFullYear()===y&&(dt.getMonth()+1)===m&&dt.getDate()===d;
   });
-  if(dream) openDreamEntry(dream.id);
+
+  // Build a popup showing everything for that day
+  let existing=document.getElementById('kairos-day-modal');
+  if(existing)existing.remove();
+
+  const dateLabel=new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  let html=`<div id="kairos-day-modal" style="position:fixed;inset:0;background:rgba(4,2,16,0.97);z-index:10000;overflow-y:auto;padding:1.5rem 1.25rem 3rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;position:sticky;top:0;background:#03020d;padding:.5rem 0;z-index:10">
+      <button onclick="document.getElementById('kairos-day-modal').remove()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.7);cursor:pointer;padding:8px 0">← BACK</button>
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:var(--gold)">your Kairos</div>
+      <div style="width:50px"></div>
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,210,255,0.75);text-align:center;margin-bottom:1.5rem">${dateLabel.toUpperCase()}</div>`;
+
+  if(kairos?.horoscope){
+    html+=`<div style="margin-bottom:1.25rem">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:var(--gold);margin-bottom:.6rem">◈ HOROSCOPE · ${(kairos.horoscope.sign||'').toUpperCase()} · ${(kairos.horoscope.period||'today').toUpperCase()}</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.88);line-height:1.85;font-style:italic">${kairos.horoscope.text}</div>
+    </div>`;
+  }
+
+  if(dream){
+    html+=`<div style="margin-bottom:1.25rem;border-top:.5px solid rgba(200,175,255,0.1);padding-top:1.25rem">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(160,130,255,0.9);margin-bottom:.6rem">◎ DREAM JOURNAL</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(230,220,255,0.85);line-height:1.8;font-style:italic;margin-bottom:.75rem">${dream.dream||dream.text||''}</div>
+      ${dream.interpretation?`<div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(210,195,255,0.72);line-height:1.75;font-style:italic;border-top:.5px solid rgba(200,175,255,0.08);padding-top:.75rem">${dream.interpretation}</div>`:''}
+    </div>`;
+  }
+
+  if(kairos?.combined){
+    html+=`<div style="margin-bottom:1.25rem;border-top:.5px solid rgba(200,175,255,0.1);padding-top:1.25rem">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(180,220,255,0.9);margin-bottom:.6rem">✦ STARS & DREAMS COMBINED</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.88);line-height:1.85;font-style:italic">${kairos.combined.text}</div>
+    </div>`;
+  }
+
+  if(!kairos&&!dream){
+    html+=`<div style="text-align:center;padding:2rem;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.3);font-style:italic">Nothing was recorded this day.</div>`;
+  }
+
+  html+=`</div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
 }
 
 // ============================================================
@@ -4028,6 +4097,7 @@ async function doCombinedReading(){
     const text=await callAI(prompt,SYSTEMS['c']);
     showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),text,'Returns tomorrow at midnight');
     localStorage.setItem(todayKey,JSON.stringify({text,date:TODAY}));
+    saveToKairos('combined',{text,date:TODAY});
     btn.disabled=true;
   }catch(e){
     box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
@@ -4136,6 +4206,35 @@ function loadReading(key){
   try{const d=localStorage.getItem(key);return d?JSON.parse(d):null;}catch(e){return null;}
 }
 
+// YOUR KAIROS — permanent history by date
+function getKairosKey(dateStr){
+  return 'k_kairos_'+(dateStr||new Date().toLocaleDateString('en-CA'));
+}
+function saveToKairos(type, data){
+  // type: 'horoscope', 'combined', 'dream'
+  const key=getKairosKey();
+  let entry={};
+  try{const existing=localStorage.getItem(key);if(existing)entry=JSON.parse(existing);}catch(e){}
+  entry[type]=data;
+  entry.date=new Date().toLocaleDateString('en-CA');
+  try{localStorage.setItem(key,JSON.stringify(entry));}catch(e){}
+}
+function loadKairos(dateStr){
+  try{const d=localStorage.getItem(getKairosKey(dateStr));return d?JSON.parse(d):null;}catch(e){return null;}
+}
+function getKairosDateRange(){
+  // Return all dates that have kairos entries
+  const dates={};
+  Object.keys(localStorage).filter(k=>k.startsWith('k_kairos_')).forEach(k=>{
+    try{
+      const data=JSON.parse(localStorage.getItem(k));
+      const date=k.replace('k_kairos_','');
+      dates[date]=data;
+    }catch(e){}
+  });
+  return dates;
+}
+
 function buildChartCtx(){
   if(!APP.isPro||!APP.chart.sun)return'';
   const c=APP.chart;
@@ -4233,12 +4332,16 @@ async function doReading(type){
     const lockMsg=type!=='d'?getNextRefreshMsg(APP.period):null;
     if(type==='h'||type==='c'){showStructuredResult(box,icon,title,sub,text,lockMsg);}else{showResult(box,icon,title,sub,text,lockMsg);}
 
-    // SAVE TO CACHE — horoscope and combined only
+    // SAVE TO CACHE — horoscope only (for quick re-read today)
     if(type!=='d'){
       const sign=type==='h'?APP.sh:APP.sc;
       const cacheKey=getCacheKey(type,sign,APP.period);
       if(cacheKey)saveReading(cacheKey,{text,heads:HEADS[type],period:APP.period});
     }
+
+    // SAVE TO YOUR KAIROS — permanent history
+    if(type==='h') saveToKairos('horoscope',{text,sign:APP.sh,period:APP.period,date:TODAY});
+    if(type==='d') saveToKairos('dream_interp',{text,date:TODAY});
 
     if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=text;document.getElementById('save-dream-wrap').style.display='block';saveDreamToday(APP.lastDreamText);if(APP.isPro)localStorage.setItem('k_dream_used_'+new Date().toLocaleDateString('en-CA'),'1');}
   }catch(e){
