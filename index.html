@@ -626,44 +626,43 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
   <!-- COMBINED -->
-  <div class=\"panel\" id=\"panel-c\">
-    <!-- FREE TEASER (shown to non-Pro) -->
-    <div id=\"combined-teaser\" style=\"display:none;text-align:center;padding:1.5rem 1rem\">
-      <div style=\"font-size:36px;margin-bottom:.75rem\">✦</div>
-      <div style=\"font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);margin-bottom:.75rem\">STARS & DREAMS COMBINED</div>
-      <div style=\"font-family:'Crimson Pro',serif;font-size:15px;color:rgba(220,210,255,0.82);line-height:1.75;margin-bottom:1.25rem;font-style:italic\">Your horoscope reads the sky.<br>Your dream journal reads your soul.<br>Combined, they reveal what neither can alone.</div>
-      <div style=\"background:rgba(210,175,80,0.06);border:.5px solid rgba(210,175,80,0.2);border-radius:12px;padding:1rem;margin-bottom:1.25rem\">
-        <div style=\"font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.14em;color:var(--gold);margin-bottom:.6rem\">PRO EXCLUSIVE</div>
-        <div style=\"font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.78);line-height:1.65\">Unlock the Combined reading to see how today's planetary energy and last night's dream symbols are delivering the same message.</div>
+  <div class="panel" id="panel-c">
+    <!-- FREE TEASER -->
+    <div id="combined-teaser" style="display:none;text-align:center;padding:1.5rem 1rem">
+      <div style="font-size:36px;margin-bottom:.75rem">✦</div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);margin-bottom:.75rem">STARS & DREAMS COMBINED</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(220,210,255,0.82);line-height:1.75;margin-bottom:1.25rem;font-style:italic">Your horoscope reads the sky.<br>Your dream journal reads your soul.<br>Combined, they reveal what neither can alone.</div>
+      <div style="background:rgba(210,175,80,0.06);border:.5px solid rgba(210,175,80,0.2);border-radius:12px;padding:1rem;margin-bottom:1.25rem">
+        <div style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.14em;color:var(--gold);margin-bottom:.6rem">PRO EXCLUSIVE</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.78);line-height:1.65">Unlock Combined to see how today's planetary energy and last night's dream symbols are delivering the same message.</div>
       </div>
-      <button onclick=\"updatePaywallStats();document.getElementById('paywall').classList.add('on')\" style=\"width:100%;padding:14px;background:rgba(210,175,80,0.08);border:.5px solid rgba(210,175,80,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;color:var(--gold);cursor:pointer\">✦ UNLOCK COMBINED ✦</button>
+      <button onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')" style="width:100%;padding:14px;background:rgba(210,175,80,0.08);border:.5px solid rgba(210,175,80,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;color:var(--gold);cursor:pointer">✦ UNLOCK COMBINED ✦</button>
     </div>
-    <!-- PRO COMBINED (shown to Pro users) -->
-    <div id=\"combined-pro\" style=\"display:none\">
-      <div class=\"combined-explainer\">
-        <div style=\"font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--gold);margin-bottom:.5rem\">STARS & DREAMS — COMBINED</div>
-        <div class=\"combined-flow\">
-          <div class=\"cf-item\"><div class=\"cf-icon\">🌙</div><div class=\"cf-lbl\">TODAY'S SKY</div></div>
-          <div class=\"cf-arrow\">+</div>
-          <div class=\"cf-item\"><div class=\"cf-icon\">💭</div><div class=\"cf-lbl\">LAST DREAM</div></div>
-          <div class=\"cf-arrow\">=</div>
-          <div class=\"cf-item\"><div class=\"cf-icon\">✨</div><div class=\"cf-lbl\">COMBINED INSIGHT</div></div>
+    <!-- PRO VIEW -->
+    <div id="combined-pro" style="display:none">
+      <div class="combined-explainer">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--gold);margin-bottom:.5rem">STARS & DREAMS — COMBINED</div>
+        <div class="combined-flow">
+          <div class="cf-item"><div class="cf-icon">🌙</div><div class="cf-lbl">TODAY'S SKY</div></div>
+          <div class="cf-arrow">+</div>
+          <div class="cf-item"><div class="cf-icon">💭</div><div class="cf-lbl">LAST DREAM</div></div>
+          <div class="cf-arrow">=</div>
+          <div class="cf-item"><div class="cf-icon">✨</div><div class="cf-lbl">COMBINED INSIGHT</div></div>
         </div>
-        <div class=\"combined-desc\">Your horoscope and dream journal are automatically woven together.</div>
+        <div class="combined-desc">Your horoscope and dream journal, automatically woven together.</div>
       </div>
-      <!-- Auto-pulled context display -->
-      <div id=\"combined-context\" style=\"display:flex;flex-direction:column;gap:8px;margin-bottom:1rem\">
-        <div style=\"background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem\">
-          <div style=\"font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px\">TODAY'S SIGN</div>
-          <div id=\"combined-sign-display\" style=\"font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.9)\">—</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
+        <div style="background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem">
+          <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px">YOUR SIGN</div>
+          <div id="combined-sign-display" style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.9)">—</div>
         </div>
-        <div style=\"background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem\">
-          <div style=\"font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px\">LAST DREAM JOURNALED</div>
-          <div id=\"combined-dream-display\" style=\"font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.82);font-style:italic;line-height:1.6\">No dream journaled yet today</div>
+        <div style="background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem">
+          <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px">LAST DREAM JOURNALED</div>
+          <div id="combined-dream-display" style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.82);font-style:italic;line-height:1.6">No dream journaled yet — add one in the Journal tab</div>
         </div>
       </div>
-      <button class=\"reveal-btn\" id=\"btn-c\" onclick=\"doCombinedReading()\">◈ COMBINE ◈</button>
-      <div class=\"result-box\" id=\"res-c\"></div>
+      <button class="reveal-btn" id="btn-c" onclick="doCombinedReading()">◈ COMBINE ◈</button>
+      <div class="result-box" id="res-c"></div>
     </div>
   </div>
 
@@ -3924,6 +3923,7 @@ function setTier(t){
     ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
   refreshJournal();
+  initCombinedPanel();
 }
 async function activatePro(){
   const btn=document.querySelector('.pw-cta');
@@ -3960,13 +3960,14 @@ function switchTab(id,el){
 function initCombinedPanel(){
   const teaser=document.getElementById('combined-teaser');
   const pro=document.getElementById('combined-pro');
+  if(!teaser||!pro)return;
   if(!APP.isPro){
-    if(teaser)teaser.style.display='block';
-    if(pro)pro.style.display='none';
+    teaser.style.display='block';
+    pro.style.display='none';
     return;
   }
-  if(teaser)teaser.style.display='none';
-  if(pro)pro.style.display='block';
+  teaser.style.display='none';
+  pro.style.display='block';
   // Auto-pull sign
   const signDisplay=document.getElementById('combined-sign-display');
   if(signDisplay)signDisplay.textContent=APP.sh||'Select your sign in the Horoscope tab first';
@@ -3976,22 +3977,24 @@ function initCombinedPanel(){
     const dreams=getDreams();
     if(dreams&&dreams.length>0){
       const latest=dreams[0];
-      dreamDisplay.textContent='"'+(latest.dream||latest.text||'').slice(0,120)+'..."';
+      const text=(latest.dream||latest.text||'').slice(0,120);
+      dreamDisplay.textContent=text?'"'+text+'..."':'No dream text found';
     } else {
       dreamDisplay.textContent='No dream journaled yet — add one in the Journal tab';
     }
   }
-  // Check if already done today
+  // Check if already done today — show cached result
   const todayKey='k_combined_'+new Date().toLocaleDateString('en-CA');
   const cached=localStorage.getItem(todayKey);
   const btn=document.getElementById('btn-c');
   const box=document.getElementById('res-c');
   if(cached){
-    if(btn)btn.disabled=true;
+    if(btn){btn.textContent='◈ ALREADY COMBINED TODAY ◈';btn.disabled=true;}
     const data=JSON.parse(cached);
     showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),data.text,'Returns tomorrow at midnight');
   } else {
-    if(btn)btn.disabled=!(APP.sh);
+    if(btn){btn.textContent='◈ COMBINE ◈';btn.disabled=!APP.sh;}
+    if(box){box.style.display='none';}
   }
 }
 
