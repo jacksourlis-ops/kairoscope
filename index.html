@@ -4260,6 +4260,18 @@ async function activatePro(){
     alert('Something went wrong: '+e.message);
   }
 }
+// Clear old cache entries that contain HTML (from previous bug)
+(function(){
+  Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')).forEach(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k));
+      if(d&&d.text&&(d.text.includes('<div')||d.text.includes('##'))){
+        localStorage.removeItem(k);
+      }
+    }catch(e){localStorage.removeItem(k);}
+  });
+})();
+
 if(APP.isPro)setTier('pro');
 
 function switchTab(id,el){
@@ -4388,10 +4400,11 @@ function showResult(box,icon,title,sub,text,lockMsg){
 }
 
 function showCachedResult(box,icon,title,sub,text,lockMsg){
-  box.classList.add('on');
-  const lockHtml=lockMsg?`<div class="reading-lock">${lockMsg}</div>`:'';
-  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div><div class="rbody">${text}</div><div class="divider"></div>${lockHtml}`;
-  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+  // text might be old cached HTML — strip it
+  const tmp=document.createElement('div');
+  tmp.innerHTML=text;
+  const cleanText=stripMarkdown(tmp.textContent||tmp.innerText||text);
+  showStructuredResult(box,icon,title,sub,cleanText,lockMsg);
 }
 
 // ============================================================
@@ -4564,14 +4577,21 @@ async function doReading(type){
   }
   if(type!=='d'){
     const sign=type==='h'?APP.sh:APP.sc;
-    const cacheKey=getCacheKey(type,sign,APP.period);
-    const cached=cacheKey?loadReading(cacheKey):null;
+    const englishKey=getCacheKey(type,sign,APP.period,'English');
+    const cached=englishKey?loadReading(englishKey):null;
     if(cached){
       const[icon,title,sub]=cached.heads;
       const lockMsg=getNextRefreshMsg(APP.period);
-      showCachedResult(box,icon,title,sub,cached.text,lockMsg);
+      if(APP.language&&APP.language!=='English'){
+        showLoading(box);
+        translateText(cached.text,APP.language).then(translated=>{
+          showCachedResult(box,icon,title,sub,translated,lockMsg);
+        });
+      } else {
+        showCachedResult(box,icon,title,sub,cached.text,lockMsg);
+      }
       btn.disabled=false;
-      return; // no API call, no credit used
+      return;
     }
   }
 
