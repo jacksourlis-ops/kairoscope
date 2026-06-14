@@ -929,23 +929,24 @@ function updateMoonEnergy(){
   const phase=APP.currentPhase;
   const idx=['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'].indexOf(phase);
   const emoji=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][idx]||'🌙';
-  const name=phase.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  const desc=MOON_ENERGY[phase]||'';
+  const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
+  // Use translated phase name if available, otherwise English
+  const phaseNames={
+    'new-moon':'New Moon','waxing-crescent':'Waxing Crescent','first-quarter':'First Quarter',
+    'waxing-gibbous':'Waxing Gibbous','full-moon':'Full Moon','waning-gibbous':'Waning Gibbous',
+    'last-quarter':'Last Quarter','waning-crescent':'Waning Crescent'
+  };
+  const translatedNames=T.moonPhaseNames||{};
+  const name=(translatedNames[phase]||phaseNames[phase]||phase.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()));
+  const energyLabel=T.energyLabel||'ENERGY';
+  const translatedDescs=T.moonEnergyDescs||{};
+  const desc=translatedDescs[phase]||MOON_ENERGY[phase]||'';
   const phEl=document.getElementById('me-phase-h');
   const nameEl=document.getElementById('me-name-h');
   const descEl=document.getElementById('me-desc-h');
   if(phEl)phEl.textContent=emoji;
-  if(nameEl)nameEl.textContent=name.toUpperCase()+' ENERGY';
+  if(nameEl)nameEl.textContent=name.toUpperCase()+' '+energyLabel;
   if(descEl)descEl.textContent=desc;
-  // Translate if needed
-  if(APP.language&&APP.language!=='English'){
-    if(nameEl){
-      translateText(name.toUpperCase()+' ENERGY',APP.language).then(t=>{if(nameEl)nameEl.textContent=stripMarkdown(t);});
-    }
-    if(descEl){
-      translateText(desc,APP.language).then(t=>{if(descEl)descEl.textContent=stripMarkdown(t);});
-    }
-  }
 }
 
 function saveDreamToday(text){APP.savedDreamToday=text;localStorage.setItem('k_dream_today',text);updateDreamPersistBar();}
@@ -1471,6 +1472,9 @@ const TRANSLATIONS={
     cyclePhases:'位相を切り替え',
     cosTheme:'宇宙のテーマ',focus:'フォーカス',guidance:'ガイダンス',
     readFull:'↓ 完全な読みを読む',collapse:'↑ 折りたたむ',
+    energyLabel:'エネルギー',
+    moonPhaseNames:{'new-moon':'新月','waxing-crescent':'三日月','first-quarter':'上弦の月','waxing-gibbous':'十三夜月','full-moon':'満月','waning-gibbous':'十六夜月','last-quarter':'下弦の月','waning-crescent':'有明月'},
+    moonEnergyDescs:{'new-moon':'新たな始まり。意図の種を蒔きましょう。あなたは何を呼び寄せていますか?','waxing-crescent':'勢いが増す。望むものへの第一歩を踏み出しましょう。','first-quarter':'決断の時。抵抗を押し進め。行動を起こしましょう。','waxing-gibbous':'洗練の時。もう少し。道を微調整しましょう。','full-moon':'最高の明晰さ。完成と啓示。何が照らし出されていますか?','waning-gibbous':'統合の時。学んだことを分かち合いましょう。感謝の気持ちを。','last-quarter':'もはや役に立たないものを手放しましょう。意図を持って。','waning-crescent':'休息と振り返り。降伏。新たな始まりの準備を。'},
   },
   Chinese:{
     ambientOff:'♫ 环境音关闭',ambientOn:'♫ 环境音开启',
