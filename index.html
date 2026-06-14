@@ -957,7 +957,18 @@ function updateDreamPersistBar(){
   else{bar.classList.remove('on');}
 }
 function useDreamExample(text){const ta=document.getElementById('dream-input');if(ta){ta.value=text;ta.focus();document.getElementById('btn-d').disabled=false;}}
+function stripMarkdown(text){
+  return text
+    .replace(/#{1,6}\s*/g,'')        // remove ## headings
+    .replace(/\*\*([^*]+)\*\*/g,'$1') // remove **bold**
+    .replace(/\*([^*]+)\*/g,'$1')     // remove *italic*
+    .replace(/^[-•]\s+/gm,'')         // remove bullet points
+    .replace(/\n{3,}/g,'\n\n')        // max 2 newlines
+    .trim();
+}
+
 function parseStructuredReading(text){
+  text=stripMarkdown(text);
   const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
   const paragraphs=text.split(/\n\n+/).filter(p=>p.trim().length>20);
   if(paragraphs.length<2)return null;
@@ -3207,7 +3218,7 @@ Write 2-3 rich paragraphs. Poetic, personal, intelligent. Never generic. Never c
       })
     });
     const data=await res.json();
-    const text=data.content?.find(b=>b.type==='text')?.text||'The symbol slipped away. Try again.';
+    const text=stripMarkdown(data.content?.find(b=>b.type==='text')?.text||'The symbol slipped away. Try again.');
     resultText.textContent=text;
     resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
   }catch(e){
@@ -4368,6 +4379,7 @@ function revealWords(el,text){
   const iv=setInterval(()=>{if(i>=words.length){clearInterval(iv);return;}el.textContent+=(i>0?' ':'')+words[i++];},38);
 }
 function showResult(box,icon,title,sub,text,lockMsg){
+  text=stripMarkdown(text);
   box.classList.add('on');
   const lockHtml=lockMsg?`<div class="reading-lock">${lockMsg}</div>`:'';
   box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div><div class="rbody"></div><div class="divider"></div>${lockHtml}`;
