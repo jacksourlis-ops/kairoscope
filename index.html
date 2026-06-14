@@ -4276,19 +4276,10 @@ async function activatePro(){
 }
 // Clear old cache entries that contain HTML or markdown (from previous bug)
 // Also force clear on this deploy version
-const CACHE_VERSION='v3';
+const CACHE_VERSION='v4';
 if(localStorage.getItem('k_cache_version')!==CACHE_VERSION){
   Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')||k.startsWith('k_trans_')).forEach(k=>localStorage.removeItem(k));
   localStorage.setItem('k_cache_version',CACHE_VERSION);
-}else{
-  Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')).forEach(k=>{
-    try{
-      const d=JSON.parse(localStorage.getItem(k));
-      if(d&&d.text&&(d.text.includes('<div')||d.text.includes('##'))){
-        localStorage.removeItem(k);
-      }
-    }catch(e){localStorage.removeItem(k);}
-  });
 }
 
 if(APP.isPro)setTier('pro');
@@ -4557,7 +4548,9 @@ FULL READING: [4-5 rich paragraphs weaving all planetary influences into a full 
 async function translateText(text,targetLang){
   if(!targetLang||targetLang==='English')return text;
   try{
-    const cacheKey='k_trans_'+targetLang.replace(/\s/g,'')+'_'+text.slice(0,30).replace(/\W/g,'');
+    // Use length + first 40 chars + last 10 chars for a more unique key
+    const keyBase=(text.slice(0,40)+text.slice(-10)+text.length).replace(/\W/g,'').slice(0,40);
+    const cacheKey='k_trans_'+targetLang.replace(/\s/g,'')+'_'+keyBase;
     const cached=localStorage.getItem(cacheKey);
     if(cached)return cached;
     const res=await fetch('/api/chat',{
