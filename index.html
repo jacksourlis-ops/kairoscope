@@ -1018,18 +1018,22 @@ function setLanguage(lang){
 
 async function retranslateDisplayedReadings(){
   const lang=APP.language;
-  const boxes=['res-h','res-d','res-c'];
-  for(const id of boxes){
-    const box=document.getElementById(id);
-    if(!box||!box.classList.contains('on'))continue;
-    const type=id.replace('res-','');
-    if(type==='d')continue; // dreams not cached
-    const sign=type==='h'?APP.sh:APP.sc;
-    const englishKey=getCacheKey(type,sign,APP.period,'English');
+  const configs=[
+    {id:'res-h',type:'h',sign:()=>APP.sh},
+    {id:'res-c',type:'c',sign:()=>APP.sc}
+  ];
+  for(const cfg of configs){
+    const box=document.getElementById(cfg.id);
+    if(!box)continue;
+    const sign=cfg.sign();
+    if(!sign)continue;
+    const englishKey=getCacheKey(cfg.type,sign,APP.period,'English');
     const englishCached=englishKey?loadReading(englishKey):null;
     if(!englishCached)continue;
+    // Show the box regardless of whether it was already visible
     showLoading(box);
-    const displayText=await translateText(englishCached.text,lang);
+    box.classList.add('on');
+    const displayText=lang==='English'?englishCached.text:await translateText(englishCached.text,lang);
     const lockMsg=getNextRefreshMsg(APP.period);
     showStructuredResult(box,englishCached.heads[0],englishCached.heads[1],englishCached.heads[2],displayText,lockMsg);
   }
