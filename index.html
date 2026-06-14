@@ -940,10 +940,10 @@ function updateMoonEnergy(){
   // Translate if needed
   if(APP.language&&APP.language!=='English'){
     if(nameEl){
-      translateText(name.toUpperCase()+' ENERGY',APP.language).then(t=>{if(nameEl)nameEl.textContent=t;});
+      translateText(name.toUpperCase()+' ENERGY',APP.language).then(t=>{if(nameEl)nameEl.textContent=stripMarkdown(t);});
     }
     if(descEl){
-      translateText(desc,APP.language).then(t=>{if(descEl)descEl.textContent=t;});
+      translateText(desc,APP.language).then(t=>{if(descEl)descEl.textContent=stripMarkdown(t);});
     }
   }
 }
@@ -4566,12 +4566,12 @@ async function translateText(text,targetLang){
       body:JSON.stringify({
         model:'claude-sonnet-4-5',
         max_tokens:1500,
-        system:`You are a translator. Translate the following text to ${targetLang}. Preserve all formatting, section labels like COSMIC THEME / FOCUS / GUIDANCE / FULL READING, and the mystical poetic tone. Return ONLY the translated text, nothing else.`,
+        system:`You are a translator. Translate the following text to ${targetLang}. Preserve all formatting, section labels like COSMIC THEME / FOCUS / GUIDANCE / FULL READING, and the mystical poetic tone. Return ONLY the translated text, nothing else. NO markdown — no ##, no **, no bullet points. Plain text only.`,
         messages:[{role:'user',content:text}]
       })
     });
     const data=await res.json();
-    const translated=data.content?.find(b=>b.type==='text')?.text||text;
+    const translated=stripMarkdown(data.content?.find(b=>b.type==='text')?.text||text);
     try{localStorage.setItem(cacheKey,translated);}catch(e){}
     return translated;
   }catch(e){return text;}
@@ -4618,7 +4618,7 @@ async function doReading(type){
         showCachedResult(box,icon,title,sub,cached.text,lockMsg);
       }
       btn.disabled=false;
-      return;
+      return; // ALWAYS return if English cache exists — never regenerate
     }
   }
 
