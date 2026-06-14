@@ -482,7 +482,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 <div class="moon-banner" id="moon-banner">
   <span id="moon-display">🌙 detecting moon phase...</span>
-  <button class="theme-toggle" onclick="cycleTheme()">cycle phases</button>
+  <button id="cycle-btn" class="theme-toggle" onclick="cycleTheme()">cycle phases</button>
   <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)"><option value="English">🇬🇧 English</option><option value="French">🇫🇷 Français</option><option value="Spanish">🇪🇸 Español</option><option value="Portuguese">🇧🇷 Português</option><option value="German">🇩🇪 Deutsch</option><option value="Italian">🇮🇹 Italiano</option><option value="Greek">🇬🇷 Ελληνικά</option><option value="Japanese">🇯🇵 日本語</option><option value="Korean">🇰🇷 한국어</option><option value="Chinese">🇨🇳 中文</option><option value="Hindi">🇮🇳 हिन्दी</option><option value="Arabic">🇸🇦 العربية</option><option value="Dutch">🇳🇱 Nederlands</option><option value="Polish">🇵🇱 Polski</option><option value="Turkish">🇹🇷 Türkçe</option><option value="Swedish">🇸🇪 Svenska</option></select>
 </div>
 
@@ -803,28 +803,28 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1.5rem 0 1.75rem">
     <button onclick="openSleep()" id="sleep-mode-btn" style="background:linear-gradient(135deg,rgba(100,70,200,0.2),rgba(140,100,230,0.12));border:1px solid rgba(180,150,255,0.35);border-radius:18px;padding:22px 10px 18px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 0 20px rgba(140,100,230,0.12)">
       <div style="font-size:28px;color:#f0d870;margin-bottom:10px;font-family:'Cinzel',serif;line-height:1">☽</div>
-      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px">SLEEP MODE</div>
-      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic">Sounds · Timer · Alarm</div>
+      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px" id="sleep-mode-lbl">SLEEP MODE</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic" id="sleep-mode-sub">Sounds · Timer · Alarm</div>
     </button>
     <button onclick="openConnections()" id="connections-btn" style="background:linear-gradient(135deg,rgba(100,70,200,0.2),rgba(140,100,230,0.12));border:1px solid rgba(180,150,255,0.35);border-radius:18px;padding:22px 10px 18px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 0 20px rgba(140,100,230,0.12)">
       <div style="font-size:28px;color:#f0d870;margin-bottom:10px;font-family:'Cinzel',serif;line-height:1">✦</div>
-      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px">PEOPLE IN MY SKY</div>
-      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic">Charts · Compatibility</div>
+      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px" id="people-sky-lbl">PEOPLE IN MY SKY</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic" id="people-sky-sub">Charts · Compatibility</div>
     </button>
   </div>
 
   <!-- JOURNEY -->
   <div style="border-top:.5px solid var(--border);padding-top:1.25rem">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;text-align:center">
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 1</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Read your horoscope</div></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)" id="tl-day1">DAY 1</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)" id="tl-day1-text">Read your horoscope</div></div>
       <div style="color:var(--border2);font-size:10px;margin-top:6px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 7</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Interpret dreams</div></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)" id="tl-day7">DAY 7</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)" id="tl-day7-text">Interpret dreams</div></div>
       <div style="color:var(--border2);font-size:10px;margin-top:6px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 30</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Build your journal</div></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)" id="tl-day30">DAY 30</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)" id="tl-day30-text">Build your journal</div></div>
       <div style="color:var(--border2);font-size:10px;margin-top:6px">→</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)">DAY 90</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)">Discover your patterns</div></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--gold)" id="tl-day90">DAY 90</div><div style="width:1px;height:16px;background:var(--border)"></div><div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--text2)" id="tl-day90-text">Discover your patterns</div></div>
     </div>
-    <div style="text-align:center;margin-top:.75rem;font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">A personal archive of your inner life.</div>
+    <div style="text-align:center;margin-top:.75rem;font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic" id="archive-text">A personal archive of your inner life.</div>
   </div>
 
   <!-- PRIVACY ONE-LINER -->
@@ -930,12 +930,22 @@ function updateMoonEnergy(){
   const idx=['new-moon','waxing-crescent','first-quarter','waxing-gibbous','full-moon','waning-gibbous','last-quarter','waning-crescent'].indexOf(phase);
   const emoji=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'][idx]||'🌙';
   const name=phase.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const desc=MOON_ENERGY[phase]||'';
   const phEl=document.getElementById('me-phase-h');
   const nameEl=document.getElementById('me-name-h');
   const descEl=document.getElementById('me-desc-h');
   if(phEl)phEl.textContent=emoji;
   if(nameEl)nameEl.textContent=name.toUpperCase()+' ENERGY';
-  if(descEl)descEl.textContent=MOON_ENERGY[phase]||'';
+  if(descEl)descEl.textContent=desc;
+  // Translate if needed
+  if(APP.language&&APP.language!=='English'){
+    if(nameEl){
+      translateText(name.toUpperCase()+' ENERGY',APP.language).then(t=>{if(nameEl)nameEl.textContent=t;});
+    }
+    if(descEl){
+      translateText(desc,APP.language).then(t=>{if(descEl)descEl.textContent=t;});
+    }
+  }
 }
 
 function saveDreamToday(text){APP.savedDreamToday=text;localStorage.setItem('k_dream_today',text);updateDreamPersistBar();}
@@ -948,23 +958,27 @@ function updateDreamPersistBar(){
 }
 function useDreamExample(text){const ta=document.getElementById('dream-input');if(ta){ta.value=text;ta.focus();document.getElementById('btn-d').disabled=false;}}
 function parseStructuredReading(text){
+  const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
   const paragraphs=text.split(/\n\n+/).filter(p=>p.trim().length>20);
   if(paragraphs.length<2)return null;
   const sections=[];
   const m=paragraphs[0].match(/^([^.!?]+[.!?])/);
-  if(m)sections.push({label:'COSMIC THEME',text:m[1].trim()});
-  if(paragraphs.length>1)sections.push({label:'FOCUS',text:paragraphs[1].trim().slice(0,180)+(paragraphs[1].length>180?'...':'')});
-  if(paragraphs.length>2)sections.push({label:'GUIDANCE',text:paragraphs[2].trim().slice(0,180)+(paragraphs[2].length>180?'...':'')});
+  if(m)sections.push({label:T.cosmicTheme||'COSMIC THEME',text:m[1].trim()});
+  if(paragraphs.length>1)sections.push({label:T.focus||'FOCUS',text:paragraphs[1].trim().slice(0,180)+(paragraphs[1].length>180?'...':'')});
+  if(paragraphs.length>2)sections.push({label:T.guidance||'GUIDANCE',text:paragraphs[2].trim().slice(0,180)+(paragraphs[2].length>180?'...':'')});
   return{sections,full:text};
 }
 function showStructuredResult(box,icon,title,sub,text,lockMsg){
   box.classList.add('on');
+  const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
   const lockHtml=lockMsg?`<div class="reading-lock">${lockMsg}</div>`:'';
   const s=parseStructuredReading(text);
   let bodyHtml;
   if(s&&s.sections.length>=2){
     const sh=s.sections.map(sec=>`<div class="rs-section"><div class="rs-label">${sec.label}</div><div class="rs-text">${sec.text}</div></div>`).join('');
-    bodyHtml=`<div class="reading-sections">${sh}</div><button class="rs-expand" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'↑ COLLAPSE':'↓ READ FULL READING'">↓ READ FULL READING</button><div class="rs-full"></div>`;
+    const expandLbl=T.readFullReading||'↓ READ FULL READING';
+    const collapseLbl=T.collapse||'↑ COLLAPSE';
+    bodyHtml=`<div class="reading-sections">${sh}</div><button class="rs-expand" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'${collapseLbl}':'${expandLbl}'">${expandLbl}</button><div class="rs-full"></div>`;
   }else{bodyHtml=`<div class="rbody"></div>`;}
   box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div>${bodyHtml}<div class="divider"></div>${lockHtml}`;
   chimeSound();
@@ -982,11 +996,31 @@ function updatePaywallStats(){
 }
 function setLanguage(lang){
   APP.language=lang;localStorage.setItem('k_lang',lang);
-  Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')).forEach(k=>localStorage.removeItem(k));
   const sel=document.getElementById('lang-select');
   if(sel){sel.style.borderColor='var(--gold)';setTimeout(()=>sel.style.borderColor='',800);}
   applyLanguage();
   applyLanguageToSleep();
+  // Re-translate any currently displayed readings
+  retranslateDisplayedReadings();
+}
+
+async function retranslateDisplayedReadings(){
+  const lang=APP.language;
+  const boxes=['res-h','res-d','res-c'];
+  for(const id of boxes){
+    const box=document.getElementById(id);
+    if(!box||!box.classList.contains('on'))continue;
+    const type=id.replace('res-','');
+    if(type==='d')continue; // dreams not cached
+    const sign=type==='h'?APP.sh:APP.sc;
+    const englishKey=getCacheKey(type,sign,APP.period,'English');
+    const englishCached=englishKey?loadReading(englishKey):null;
+    if(!englishCached)continue;
+    showLoading(box);
+    const displayText=await translateText(englishCached.text,lang);
+    const lockMsg=getNextRefreshMsg(APP.period);
+    showStructuredResult(box,englishCached.heads[0],englishCached.heads[1],englishCached.heads[2],displayText,lockMsg);
+  }
 }
 (function(){
   const saved=localStorage.getItem('k_lang')||'English';
@@ -1048,6 +1082,18 @@ const TRANSLATIONS={
     privacyItem2:'🚫 No ads. No tracking. No data brokers. Ever.',
     privacyItem3:'🇨🇦 Built in Canada · PIPEDA compliant',
     cyclePhases:'cycle phases',
+    sleepMode:'SLEEP MODE',sleepSub:'Sounds · Timer · Alarm',
+    peopleInMySky:'PEOPLE IN MY SKY',peopleSub:'Charts · Compatibility',
+    privateByDesignFooter:'🔒 PRIVATE BY DESIGN · NO ADS · NO TRACKING',
+    newMoonEnergy:'NEW MOON ENERGY',fullMoonEnergy:'FULL MOON ENERGY',
+    waxingCrescentEnergy:'WAXING CRESCENT ENERGY',waningCrescentEnergy:'WANING CRESCENT ENERGY',
+    firstQuarterEnergy:'FIRST QUARTER ENERGY',lastQuarterEnergy:'LAST QUARTER ENERGY',
+    waxingGibbousEnergy:'WAXING GIBBOUS ENERGY',waningGibbousEnergy:'WANING GIBBOUS ENERGY',
+    fullBirthChart:'FULL BIRTH CHART',dateOfBirth:'DATE OF BIRTH',timeOfBirth:'TIME OF BIRTH',cityOfBirth:'CITY OF BIRTH',
+    dreamDictionary:'DREAM DICTIONARY',
+    yourKairos:'your Kairos',
+    combineBtn:'◈ COMBINE ◈',
+    needBirthTime:'Need birth time',enterBirthCity:'Enter birth city',
     cosTheme:'COSMIC THEME',focus:'FOCUS',guidance:'GUIDANCE',
     readFull:'↓ READ FULL READING',collapse:'↑ COLLAPSE',
   },
@@ -1841,6 +1887,68 @@ function applyLanguage(){
     if(allT.some(tr=>tr.footerTerms===txt)||txt==='Terms of Service')a.textContent=T.footerTerms;
     if(txt==='FAQ')a.textContent=T.footerFaq;
   });
+  // Always sync moon energy bar with current phase
+  updateMoonEnergy();
+
+  // Sleep mode + People in My Sky cards
+  const sleepLbl=document.getElementById('sleep-mode-lbl');if(sleepLbl)sleepLbl.textContent=T.sleepMode||'SLEEP MODE';
+  const sleepSub=document.getElementById('sleep-mode-sub');if(sleepSub)sleepSub.textContent=T.sleepSub||'Sounds · Timer · Alarm';
+  const peopleLbl=document.getElementById('people-sky-lbl');if(peopleLbl)peopleLbl.textContent=T.peopleInMySky||'PEOPLE IN MY SKY';
+  const peopleSub=document.getElementById('people-sky-sub');if(peopleSub)peopleSub.textContent=T.peopleSub||'Charts · Compatibility';
+
+  // Timeline
+  const tl1=document.getElementById('tl-day1');if(tl1)tl1.textContent=T.day1||'DAY 1';
+  const tl1t=document.getElementById('tl-day1-text');if(tl1t)tl1t.textContent=T.day1Text||'Read your horoscope';
+  const tl7=document.getElementById('tl-day7');if(tl7)tl7.textContent=T.day7||'DAY 7';
+  const tl7t=document.getElementById('tl-day7-text');if(tl7t)tl7t.textContent=T.day7Text||'Interpret dreams';
+  const tl30=document.getElementById('tl-day30');if(tl30)tl30.textContent=T.day30||'DAY 30';
+  const tl30t=document.getElementById('tl-day30-text');if(tl30t)tl30t.textContent=T.day30Text||'Build your journal';
+  const tl90=document.getElementById('tl-day90');if(tl90)tl90.textContent=T.day90||'DAY 90';
+  const tl90t=document.getElementById('tl-day90-text');if(tl90t)tl90t.textContent=T.day90Text||'Discover your patterns';
+  const archiveEl=document.getElementById('archive-text');if(archiveEl)archiveEl.textContent=T.archiveText||'A personal archive of your inner life.';
+
+  // SUN / MOON / RISING — translate sign values too
+  document.querySelectorAll('.cc-lbl').forEach(el=>{
+    if(el.dataset.lbl==='sun'||el.textContent==='SUN'){el.textContent=T.sunLbl||'SUN';el.dataset.lbl='sun';}
+    else if(el.dataset.lbl==='moon'||el.textContent==='MOON'){el.textContent=T.moonLbl||'MOON';el.dataset.lbl='moon';}
+    else if(el.dataset.lbl==='rising'||el.textContent==='RISING'){el.textContent=T.risingLbl||'RISING';el.dataset.lbl='rising';}
+  });
+
+  // ALL .lbl elements
+  document.querySelectorAll('.lbl').forEach(el=>{
+    const txt=el.textContent.trim();
+    if(txt==='YOUR SIGN'||el.dataset.key==='yourSign'){el.textContent=T.yourSign;el.dataset.key='yourSign';}
+    if(txt==='PERIOD'||el.dataset.key==='period'){el.textContent=T.period||'PERIOD';el.dataset.key='period';}
+    if(txt==='DESCRIBE YOUR DREAM'||el.dataset.key==='describeDream'){el.textContent=T.describeDream;el.dataset.key='describeDream';}
+    if(txt==='FULL BIRTH CHART'||el.dataset.key==='fullBirthChart'){el.textContent=T.fullBirthChart||'FULL BIRTH CHART';el.dataset.key='fullBirthChart';}
+    if(txt==='DATE OF BIRTH'||el.dataset.key==='dateOfBirth'){el.textContent=T.dateOfBirth||'DATE OF BIRTH';el.dataset.key='dateOfBirth';}
+    if(txt==='TIME OF BIRTH'||el.dataset.key==='timeOfBirth'){el.textContent=T.timeOfBirth||'TIME OF BIRTH';el.dataset.key='timeOfBirth';}
+    if(txt==='CITY OF BIRTH'||el.dataset.key==='cityOfBirth'){el.textContent=T.cityOfBirth||'CITY OF BIRTH';el.dataset.key='cityOfBirth';}
+    if(txt==='QUICK START — TAP A DREAM'||el.dataset.key==='quickStart'){el.textContent=T.quickStart;el.dataset.key='quickStart';}
+  });
+
+  // Cycle phases button
+  const cycleBtn=document.getElementById('cycle-btn');if(cycleBtn)cycleBtn.textContent=T.cyclePhases||'cycle phases';
+
+  // Dream dictionary button
+  const dictBtn=document.querySelector('[onclick="openDreamDictionary()"]');
+  if(dictBtn)dictBtn.textContent='◎ '+(T.dreamDictionary||'DREAM DICTIONARY');
+
+  // your Kairos button
+  const kairosBtn=document.getElementById('cal-toggle-btn');
+  if(kairosBtn){
+    const arrow=document.getElementById('cal-toggle-arrow');
+    kairosBtn.innerHTML=`<span>✦</span><span>${T.yourKairos||'your Kairos'}</span><span id="cal-toggle-arrow" style="opacity:.5">${arrow?arrow.textContent:'▾'}</span>`;
+  }
+
+  // Combine button
+  const combineBtn=document.getElementById('btn-c');
+  if(combineBtn&&combineBtn.textContent.includes('COMBINE'))combineBtn.textContent=T.combineBtn||'◈ COMBINE ◈';
+
+  // Save to journal button
+  const saveDreamBtn=document.querySelector('[onclick="saveDreamToJournal()"]');
+  if(saveDreamBtn)saveDreamBtn.textContent=T.saveToDream||'+ SAVE TO DREAM JOURNAL';
+
   // Always sync moon energy bar with current phase
   updateMoonEnergy();
 }
@@ -4110,7 +4218,7 @@ function setTier(t){
   if(proBtn) proBtn.classList.toggle('on',APP.isPro);
   const pill=document.getElementById('main-pill');
   if(APP.isPro){
-    if(pill){pill.className='pill pro';pill.innerHTML='✦ PRO — unlimited readings';}
+    if(pill){pill.className='pill pro';const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;pill.innerHTML='✦ '+(T.proUnlimited||'PRO — unlimited readings');}
     ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
   }else{
     if(pill){pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;}
@@ -4294,11 +4402,12 @@ function getDateKey(period){
   return now.toISOString().slice(0,10);
 }
 
-function getCacheKey(type,sign,period){
+function getCacheKey(type,sign,period,lang){
   const dateKey=getDateKey(period||'today');
   const chartSuffix=APP.isPro&&APP.chart.sun?`_${APP.chart.sun}_${APP.chart.moon}`:'' ;
-  if(type==='h')return`k_reading_h_${sign}_${period}_${dateKey}${chartSuffix}`;
-  if(type==='c')return`k_reading_c_${sign}_${dateKey}${chartSuffix}`;
+  const langSuffix=lang&&lang!=='English'?`_${lang.replace(/\s/g,'')}`:'' ;
+  if(type==='h')return`k_reading_h_${sign}_${period}_${dateKey}${chartSuffix}${langSuffix}`;
+  if(type==='c')return`k_reading_c_${sign}_${dateKey}${chartSuffix}${langSuffix}`;
   return null; // dreams never cached
 }
 
@@ -4393,11 +4502,34 @@ FULL READING: [4-5 rich paragraphs weaving all planetary influences into a full 
   patterns:`You are Kairoscope — a dream pattern analyst and astrologer. The user has provided their dream journal. Find recurring symbols, emotional undercurrents, and archetypal patterns across their dreams. Connect to their astrological nature — how does their natal chart explain these recurring themes? What is their subconscious processing over time? End with one guiding insight. 4-5 paragraphs. Deeply personal, poetic.`
 };
 
+async function translateText(text,targetLang){
+  if(!targetLang||targetLang==='English')return text;
+  try{
+    const cacheKey='k_trans_'+targetLang.replace(/\s/g,'')+'_'+text.slice(0,30).replace(/\W/g,'');
+    const cached=localStorage.getItem(cacheKey);
+    if(cached)return cached;
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5',
+        max_tokens:1500,
+        system:`You are a translator. Translate the following text to ${targetLang}. Preserve all formatting, section labels like COSMIC THEME / FOCUS / GUIDANCE / FULL READING, and the mystical poetic tone. Return ONLY the translated text, nothing else.`,
+        messages:[{role:'user',content:text}]
+      })
+    });
+    const data=await res.json();
+    const translated=data.content?.find(b=>b.type==='text')?.text||text;
+    try{localStorage.setItem(cacheKey,translated);}catch(e){}
+    return translated;
+  }catch(e){return text;}
+}
+
 async function callAI(prompt,system){
   const res=await fetch('/api/chat',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system:system+(APP.language&&APP.language!=='English'?`\n\nCRITICAL: Write your ENTIRE response in ${APP.language}. Every single word must be in ${APP.language}.`:''),messages:[{role:'user',content:prompt}]})
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system,messages:[{role:'user',content:prompt}]})
   });
   const data=await res.json();
   if(data.error)throw new Error(data.error.message);
@@ -4454,23 +4586,30 @@ async function doReading(type){
     c:[(ZI[APP.sc]||'◈')+' ◈',`${APP.sc} — STARS & DREAMS`,TODAY]
   };
   try{
-    const text=await callAI(PROMPTS[type],SYSTEMS[type]);
+    // Always generate in English
+    const englishText=await callAI(PROMPTS[type],SYSTEMS[type]);
     const[icon,title,sub]=HEADS[type];
     const lockMsg=type!=='d'?getNextRefreshMsg(APP.period):null;
-    if(type==='h'||type==='c'){showStructuredResult(box,icon,title,sub,text,lockMsg);}else{showResult(box,icon,title,sub,text,lockMsg);}
 
-    // SAVE TO CACHE — horoscope only (for quick re-read today)
+    // Save English version to cache first
     if(type!=='d'){
       const sign=type==='h'?APP.sh:APP.sc;
-      const cacheKey=getCacheKey(type,sign,APP.period);
-      if(cacheKey)saveReading(cacheKey,{text,heads:HEADS[type],period:APP.period});
+      const englishKey=getCacheKey(type,sign,APP.period,'English');
+      if(englishKey)saveReading(englishKey,{text:englishText,heads:HEADS[type],period:APP.period});
     }
 
-    // SAVE TO YOUR KAIROS — permanent history
-    if(type==='h') saveToKairos('horoscope',{text,sign:APP.sh,period:APP.period,date:TODAY});
-    if(type==='d') saveToKairos('dream_interp',{text,date:TODAY});
+    // Translate if needed (free, no credit used)
+    const displayText=await translateText(englishText,APP.language);
 
-    if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=text;document.getElementById('save-dream-wrap').style.display='block';saveDreamToday(APP.lastDreamText);if(APP.isPro)localStorage.setItem('k_dream_used_'+new Date().toLocaleDateString('en-CA'),'1');}
+    // Display
+    if(type==='h'||type==='c'){showStructuredResult(box,icon,title,sub,displayText,lockMsg);}
+    else{showResult(box,icon,title,sub,displayText,lockMsg);}
+
+    // SAVE TO YOUR KAIROS — permanent history (in English)
+    if(type==='h') saveToKairos('horoscope',{text:englishText,sign:APP.sh,period:APP.period,date:TODAY});
+    if(type==='d') saveToKairos('dream_interp',{text:englishText,date:TODAY});
+
+    if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=displayText;document.getElementById('save-dream-wrap').style.display='block';saveDreamToday(APP.lastDreamText);if(APP.isPro)localStorage.setItem('k_dream_used_'+new Date().toLocaleDateString('en-CA'),'1');}
   }catch(e){
     box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
   }
