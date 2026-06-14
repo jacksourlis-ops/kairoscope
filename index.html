@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="yes">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1012,8 +1012,6 @@ function setLanguage(lang){
   if(sel){sel.style.borderColor='var(--gold)';setTimeout(()=>sel.style.borderColor='',800);}
   applyLanguage();
   applyLanguageToSleep();
-  // Re-translate any currently displayed readings
-  retranslateDisplayedReadings();
 }
 
 async function retranslateDisplayedReadings(){
@@ -1033,7 +1031,7 @@ async function retranslateDisplayedReadings(){
     // Show the box regardless of whether it was already visible
     showLoading(box);
     box.classList.add('on');
-    const displayText=lang==='English'?englishCached.text:await translateText(englishCached.text,lang);
+    const displayText=englishCached.text;
     const lockMsg=getNextRefreshMsg(APP.period);
     showStructuredResult(box,englishCached.heads[0],englishCached.heads[1],englishCached.heads[2],displayText,lockMsg);
   }
@@ -4554,28 +4552,8 @@ FULL READING: [4-5 rich paragraphs weaving all planetary influences into a full 
 };
 
 async function translateText(text,targetLang){
-  if(!targetLang||targetLang==='English')return text;
-  try{
-    // Use length + first 40 chars + last 10 chars for a more unique key
-    const keyBase=(text.slice(0,40)+text.slice(-10)+text.length).replace(/\W/g,'').slice(0,40);
-    const cacheKey='k_trans_'+targetLang.replace(/\s/g,'')+'_'+keyBase;
-    const cached=localStorage.getItem(cacheKey);
-    if(cached)return cached;
-    const res=await fetch('/api/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-5',
-        max_tokens:1500,
-        system:`You are a translator. Translate the following text to ${targetLang}. Preserve all formatting, section labels like COSMIC THEME / FOCUS / GUIDANCE / FULL READING, and the mystical poetic tone. Return ONLY the translated text, nothing else. NO markdown — no ##, no **, no bullet points. Plain text only.`,
-        messages:[{role:'user',content:text}]
-      })
-    });
-    const data=await res.json();
-    const translated=stripMarkdown(data.content?.find(b=>b.type==='text')?.text||text);
-    try{localStorage.setItem(cacheKey,translated);}catch(e){}
-    return translated;
-  }catch(e){return text;}
+  // Browser handles translation - just return the English text
+  return text;
 }
 
 async function callAI(prompt,system){
@@ -4611,10 +4589,7 @@ async function doReading(type){
       const[icon,title,sub]=cached.heads;
       const lockMsg=getNextRefreshMsg(APP.period);
       if(APP.language&&APP.language!=='English'){
-        showLoading(box);
-        translateText(cached.text,APP.language).then(translated=>{
-          showCachedResult(box,icon,title,sub,translated,lockMsg);
-        });
+        showCachedResult(box,icon,title,sub,cached.text,lockMsg);
       } else {
         showCachedResult(box,icon,title,sub,cached.text,lockMsg);
       }
@@ -4658,8 +4633,8 @@ async function doReading(type){
       if(englishKey)saveReading(englishKey,{text:englishText,heads:HEADS[type],period:APP.period});
     }
 
-    // Translate if needed (free, no credit used)
-    const displayText=await translateText(englishText,APP.language);
+    // Display in English always - browser handles translation
+    const displayText=englishText;
 
     // Display
     if(type==='h'||type==='c'){showStructuredResult(box,icon,title,sub,displayText,lockMsg);}
