@@ -516,7 +516,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <!-- CONTROLS -->
   <div class="ctrl-row">
     <button class="sound-btn" id="sound-btn" onclick="toggleSound()">♫ ambient off</button>
-    <div class="pill" id="main-pill">◈ <span id="free-count">3</span> free readings remaining</div>
+    <div class="pill" id="main-pill">◈ <span id="free-count">5</span> free readings remaining</div>
   </div>
   <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;text-align:center;margin-bottom:.75rem;display:none" id="audio-label"></div>
 
@@ -1111,7 +1111,7 @@ const TRANSLATIONS={
   French:{
     ambientOff:'♫ ambiance désactivée',ambientOn:'♫ ambiance activée',
     freeReadings:'lectures gratuites restantes',
-    freeTier:'◈ GRATUIT',proTier:'✦ PRO — $5.99 USD/mois',proUnlimited:'✦ PRO — lectures illimitées',
+    freeTier:'◈ GRATUIT',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — lectures illimitées',
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Rêve',tabCombined:'⊕ Combiné',tabJournal:'📖 Journal',
     yourSign:'VOTRE SIGNE',period:'PÉRIODE',
     periodToday:"Aujourd'hui",periodWeek:'Cette semaine',periodMonth:'Ce mois-ci',
@@ -1163,7 +1163,7 @@ const TRANSLATIONS={
   Spanish:{
     ambientOff:'♫ ambiente desactivado',ambientOn:'♫ ambiente activado',
     freeReadings:'lecturas gratuitas restantes',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mes',proUnlimited:'✦ PRO — lecturas ilimitadas',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — lecturas ilimitadas',
     tabHoroscope:'◈ Horóscopo',tabDream:'◇ Sueño',tabCombined:'⊕ Combinado',tabJournal:'📖 Diario',
     yourSign:'TU SIGNO',period:'PERÍODO',
     periodToday:'Hoy',periodWeek:'Esta semana',periodMonth:'Este mes',
@@ -1215,7 +1215,7 @@ const TRANSLATIONS={
   Portuguese:{
     ambientOff:'♫ ambiente desligado',ambientOn:'♫ ambiente ligado',
     freeReadings:'leituras gratuitas restantes',
-    freeTier:'◈ GRÁTIS',proTier:'✦ PRO — $5.99 USD/mês',proUnlimited:'✦ PRO — leituras ilimitadas',
+    freeTier:'◈ GRÁTIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — leituras ilimitadas',
     tabHoroscope:'◈ Horóscopo',tabDream:'◇ Sonho',tabCombined:'⊕ Combinado',tabJournal:'📖 Diário',
     yourSign:'SEU SIGNO',period:'PERÍODO',
     periodToday:'Hoje',periodWeek:'Esta semana',periodMonth:'Este mês',
@@ -1267,7 +1267,7 @@ const TRANSLATIONS={
   German:{
     ambientOff:'♫ Ambiente aus',ambientOn:'♫ Ambiente an',
     freeReadings:'kostenlose Lesungen verbleibend',
-    freeTier:'◈ KOSTENLOS',proTier:'✦ PRO — 5,99 USD/Monat',proUnlimited:'✦ PRO — unbegrenzte Lesungen',
+    freeTier:'◈ KOSTENLOS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — unbegrenzte Lesungen',
     tabHoroscope:'◈ Horoskop',tabDream:'◇ Traum',tabCombined:'⊕ Kombiniert',tabJournal:'📖 Tagebuch',
     yourSign:'DEIN ZEICHEN',period:'ZEITRAUM',
     periodToday:'Heute',periodWeek:'Diese Woche',periodMonth:'Diesen Monat',
@@ -1319,7 +1319,7 @@ const TRANSLATIONS={
   Italian:{
     ambientOff:'♫ ambiente disattivato',ambientOn:'♫ ambiente attivato',
     freeReadings:'letture gratuite rimanenti',
-    freeTier:'◈ GRATUITO',proTier:'✦ PRO — 5,99 USD/mese',proUnlimited:'✦ PRO — letture illimitate',
+    freeTier:'◈ GRATUITO',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — letture illimitate',
     tabHoroscope:'◈ Oroscopo',tabDream:'◇ Sogno',tabCombined:'⊕ Combinato',tabJournal:'📖 Diario',
     yourSign:'IL TUO SEGNO',period:'PERIODO',
     periodToday:'Oggi',periodWeek:'Questa settimana',periodMonth:'Questo mese',
@@ -1371,7 +1371,7 @@ const TRANSLATIONS={
   Greek:{
     ambientOff:'♫ περιβάλλον απενεργοποιημένο',ambientOn:'♫ περιβάλλον ενεργοποιημένο',
     freeReadings:'δωρεάν αναγνώσεις που απομένουν',
-    freeTier:'◈ ΔΩΡΕΑΝ',proTier:'✦ PRO — 5,99 USD/μήνα',proUnlimited:'✦ PRO — απεριόριστες αναγνώσεις',
+    freeTier:'◈ ΔΩΡΕΑΝ',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — απεριόριστες αναγνώσεις',
     tabHoroscope:'◈ Ωροσκόπιο',tabDream:'◇ Όνειρο',tabCombined:'⊕ Συνδυασμένο',tabJournal:'📖 Ημερολόγιο',
     yourSign:'ΤΟ ΖΩΔΙΟ ΣΟΥ',period:'ΠΕΡΙΟΔΟΣ',
     periodToday:'Σήμερα',periodWeek:'Αυτή την εβδομάδα',periodMonth:'Αυτόν τον μήνα',
@@ -1423,7 +1423,7 @@ const TRANSLATIONS={
   Japanese:{
     ambientOff:'♫ 環境音オフ',ambientOn:'♫ 環境音オン',
     freeReadings:'無料リーディング残り',
-    freeTier:'◈ 無料',proTier:'✦ PRO — ¥800/月',proUnlimited:'✦ PRO — 無制限リーディング',
+    freeTier:'◈ 無料',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — 無制限リーディング',
     tabHoroscope:'◈ 星占い',tabDream:'◇ 夢',tabCombined:'⊕ 複合',tabJournal:'📖 日記',
     yourSign:'あなたのサイン',period:'期間',
     periodToday:'今日',periodWeek:'今週',periodMonth:'今月',
@@ -1475,7 +1475,7 @@ const TRANSLATIONS={
   Chinese:{
     ambientOff:'♫ 环境音关闭',ambientOn:'♫ 环境音开启',
     freeReadings:'剩余免费占卜次数',
-    freeTier:'◈ 免费',proTier:'✦ PRO — ¥35/月',proUnlimited:'✦ PRO — 无限占卜',
+    freeTier:'◈ 免费',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — 无限占卜',
     tabHoroscope:'◈ 星座',tabDream:'◇ 梦境',tabCombined:'⊕ 综合',tabJournal:'📖 日记',
     yourSign:'你的星座',period:'时间段',
     periodToday:'今天',periodWeek:'本周',periodMonth:'本月',
@@ -1527,7 +1527,7 @@ const TRANSLATIONS={
   Korean:{
     ambientOff:'♫ 배경음 꺼짐',ambientOn:'♫ 배경음 켜짐',
     freeReadings:'무료 리딩 남음',
-    freeTier:'◈ 무료',proTier:'✦ PRO — ₩6,500/월',proUnlimited:'✦ PRO — 무제한 리딩',
+    freeTier:'◈ 무료',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — 무제한 리딩',
     tabHoroscope:'◈ 별자리',tabDream:'◇ 꿈',tabCombined:'⊕ 복합',tabJournal:'📖 일기',
     yourSign:'당신의 별자리',period:'기간',
     periodToday:'오늘',periodWeek:'이번 주',periodMonth:'이번 달',
@@ -1579,7 +1579,7 @@ const TRANSLATIONS={
   Hindi:{
     ambientOff:'♫ परिवेश बंद',ambientOn:'♫ परिवेश चालू',
     freeReadings:'शेष निःशुल्क रीडिंग',
-    freeTier:'◈ निःशुल्क',proTier:'✦ PRO — ₹420/माह',proUnlimited:'✦ PRO — असीमित रीडिंग',
+    freeTier:'◈ निःशुल्क',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — असीमित रीडिंग',
     tabHoroscope:'◈ राशिफल',tabDream:'◇ स्वप्न',tabCombined:'⊕ संयुक्त',tabJournal:'📖 डायरी',
     yourSign:'आपकी राशि',period:'अवधि',
     periodToday:'आज',periodWeek:'इस सप्ताह',periodMonth:'इस महीने',
@@ -1625,7 +1625,7 @@ const TRANSLATIONS={
   Arabic:{
     ambientOff:'♫ الصوت البيئي مغلق',ambientOn:'♫ الصوت البيئي مفتوح',
     freeReadings:'قراءات مجانية متبقية',
-    freeTier:'◈ مجاني',proTier:'✦ PRO — 19 ر.س/شهر',proUnlimited:'✦ PRO — قراءات غير محدودة',
+    freeTier:'◈ مجاني',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — قراءات غير محدودة',
     tabHoroscope:'◈ الأبراج',tabDream:'◇ الأحلام',tabCombined:'⊕ مدمج',tabJournal:'📖 مجلة',
     yourSign:'برجك',period:'الفترة',
     periodToday:'اليوم',periodWeek:'هذا الأسبوع',periodMonth:'هذا الشهر',
@@ -1671,7 +1671,7 @@ const TRANSLATIONS={
   Dutch:{
     ambientOff:'♫ sfeergeluid uit',ambientOn:'♫ sfeergeluid aan',
     freeReadings:'gratis lezingen resterend',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — 5,99 USD/maand',proUnlimited:'✦ PRO — onbeperkte lezingen',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — onbeperkte lezingen',
     tabHoroscope:'◈ Horoscoop',tabDream:'◇ Droom',tabCombined:'⊕ Gecombineerd',tabJournal:'📖 Dagboek',
     yourSign:'JOUW TEKEN',period:'PERIODE',
     periodToday:'Vandaag',periodWeek:'Deze week',periodMonth:'Deze maand',
@@ -1717,7 +1717,7 @@ const TRANSLATIONS={
   Polish:{
     ambientOff:'♫ dźwięk otoczenia wyłączony',ambientOn:'♫ dźwięk otoczenia włączony',
     freeReadings:'pozostałe bezpłatne odczyty',
-    freeTier:'◈ BEZPŁATNY',proTier:'✦ PRO — 20 zł/mies.',proUnlimited:'✦ PRO — nieograniczone odczyty',
+    freeTier:'◈ BEZPŁATNY',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — nieograniczone odczyty',
     tabHoroscope:'◈ Horoskop',tabDream:'◇ Sen',tabCombined:'⊕ Kombinowany',tabJournal:'📖 Dziennik',
     yourSign:'TWÓJ ZNAK',period:'OKRES',
     periodToday:'Dziś',periodWeek:'Ten tydzień',periodMonth:'Ten miesiąc',
@@ -1763,7 +1763,7 @@ const TRANSLATIONS={
   Turkish:{
     ambientOff:'♫ ortam sesi kapalı',ambientOn:'♫ ortam sesi açık',
     freeReadings:'kalan ücretsiz okuma',
-    freeTier:'◈ ÜCRETSİZ',proTier:'✦ PRO — 150₺/ay',proUnlimited:'✦ PRO — sınırsız okuma',
+    freeTier:'◈ ÜCRETSİZ',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — sınırsız okuma',
     tabHoroscope:'◈ Burç',tabDream:'◇ Rüya',tabCombined:'⊕ Birleşik',tabJournal:'📖 Günlük',
     yourSign:'BURÇUN',period:'DÖNEM',
     periodToday:'Bugün',periodWeek:'Bu hafta',periodMonth:'Bu ay',
@@ -1809,7 +1809,7 @@ const TRANSLATIONS={
   Swedish:{
     ambientOff:'♫ ambient av',ambientOn:'♫ ambient på',
     freeReadings:'gratis läsningar kvar',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — 55 kr/mån',proUnlimited:'✦ PRO — obegränsade läsningar',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — obegränsade läsningar',
     tabHoroscope:'◈ Horoskop',tabDream:'◇ Dröm',tabCombined:'⊕ Kombinerad',tabJournal:'📖 Dagbok',
     yourSign:'DITT TECKEN',period:'PERIOD',
     periodToday:'Idag',periodWeek:'Denna vecka',periodMonth:'Denna månad',
@@ -4274,8 +4274,13 @@ async function activatePro(){
     alert('Something went wrong: '+e.message);
   }
 }
-// Clear old cache entries that contain HTML (from previous bug)
-(function(){
+// Clear old cache entries that contain HTML or markdown (from previous bug)
+// Also force clear on this deploy version
+const CACHE_VERSION='v3';
+if(localStorage.getItem('k_cache_version')!==CACHE_VERSION){
+  Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')||k.startsWith('k_trans_')).forEach(k=>localStorage.removeItem(k));
+  localStorage.setItem('k_cache_version',CACHE_VERSION);
+}else{
   Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')).forEach(k=>{
     try{
       const d=JSON.parse(localStorage.getItem(k));
@@ -4284,7 +4289,7 @@ async function activatePro(){
       }
     }catch(e){localStorage.removeItem(k);}
   });
-})();
+}
 
 if(APP.isPro)setTier('pro');
 
