@@ -1,0 +1,11 @@
+{
+  "appId": "app.kairoscope.ios",
+  "appName": "Kairoscope",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "automatic"
+  }
+}
