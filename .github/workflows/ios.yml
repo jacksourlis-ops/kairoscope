@@ -30,6 +30,27 @@ jobs:
       - name: Copy web assets
         run: npx cap copy ios
 
+      - name: Create ExportOptions.plist
+        run: |
+          cat > ios/App/ExportOptions.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>3QK76574S3</string>
+              <key>uploadBitcode</key>
+              <false/>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>compileBitcode</key>
+              <false/>
+          </dict>
+          </plist>
+          EOF
+
       - name: Install CocoaPods
         run: |
           cd ios/App
@@ -51,7 +72,7 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath ios/App/App.xcarchive \
             -exportPath ios/App/output \
-            -exportOptionsPlist $GITHUB_WORKSPACE/ios/App/ExportOptions.plist
+            -exportOptionsPlist ios/App/ExportOptions.plist
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
