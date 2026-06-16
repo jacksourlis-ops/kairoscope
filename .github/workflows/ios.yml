@@ -23,27 +23,21 @@ jobs:
         run: npx cap copy ios
       - name: Install CocoaPods
         run: cd ios/App && pod install
-      - name: Import Certificate
+      - name: Setup signing
         env:
           CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
-          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
-        run: |
-          echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.cer
-          security create-keychain -p "" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "" build.keychain
-          security import certificate.cer -k build.keychain -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
-      - name: Import Private Key
-        env:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key.pem
-          security import private_key.pem -k build.keychain -T /usr/bin/codesign
-      - name: Import Provisioning Profile
-        env:
           PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
         run: |
+          echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.cer
+          echo "$PRIVATE_KEY" > private_key.pem
+          openssl x509 -inform DER -in certificate.cer -out certificate.pem
+          openssl pkcs12 -export -out certificate.p12 -inkey private_key.pem -in certificate.pem -passout pass:kairoscope123
+          security create-keychain -p "build123" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "build123" build.keychain
+          security import certificate.p12 -k build.keychain -P kairoscope123 -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "build123" build.keychain
           echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
