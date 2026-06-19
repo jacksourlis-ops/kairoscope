@@ -615,17 +615,30 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
         <button class="dream-example" onclick="useDreamExample('I was back at school completely unprepared for an exam I didn\'t know about')">Unprepared exam</button>
       </div>
     </div>
-    <div><span class="lbl">DESCRIBE YOUR DREAM</span>
+    <div><span class="lbl">DESCRIBE LAST NIGHT'S DREAM</span>
       <textarea class="dream-ta" id="dream-input" placeholder="I stood at the edge of an obsidian sea, when a figure made of starlight spoke my name..." rows="6" oninput="document.getElementById('btn-d').disabled=this.value.trim().length<8"></textarea>
     </div>
-    <button class="reveal-btn" id="btn-d" disabled onclick="doReading('d')">◈ INTERPRET THIS DREAM ◈</button>
-    <div class="result-box" id="res-d"></div>
-    <div id="save-dream-wrap" style="display:none">
-      <button class="reveal-btn" style="margin-top:-4px;opacity:.7;font-size:9px;letter-spacing:.12em" onclick="saveDreamToJournal()">+ SAVE TO DREAM JOURNAL</button>
-    </div>
-    <!-- DREAM DICTIONARY -->
+    <button class="reveal-btn" id="btn-d" disabled onclick="saveTodayDream()">+ SAVE TO TODAY'S JOURNAL</button>
+    <div id="dream-save-confirm" style="display:none;text-align:center;font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic;margin-top:.5rem">Saved ✦ Edit anytime today, or open the Kairos calendar to combine it with your stars.</div>
+    <!-- FREE SYMBOL GUIDE -->
     <div style="margin-top:1.25rem;border-top:.5px solid var(--border);padding-top:1.25rem">
-      <button onclick="openDreamDictionary()" style="width:100%;padding:14px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.2);border-radius:12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(215,200,255,0.82);cursor:pointer;transition:all .2s">◎ DREAM DICTIONARY</button>
+      <span class="lbl">DREAM SYMBOL GUIDE — FREE</span>
+      <div style="margin:.5rem 0 .6rem">
+        <select id="free-dict-select" onchange="if(this.value){showFreeSymbol(this.value);}" style="width:100%;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.25);border-radius:12px;padding:12px 14px;color:rgba(235,225,255,0.85);font-family:'Crimson Pro',serif;font-size:14px;outline:none;box-sizing:border-box;cursor:pointer">
+          <option value="">▾ Browse all symbols A–Z...</option>
+          <option value="animals attacking">Animals Attacking</option><option value="baby">Baby</option><option value="being chased">Being Chased</option><option value="being chased by an animal">Being Chased By An Animal</option><option value="being fired">Being Fired</option><option value="being followed">Being Followed</option><option value="being invisible">Being Invisible</option><option value="being late">Being Late</option><option value="being lost">Being Lost</option><option value="being underwater">Being Underwater</option><option value="bird">Bird</option><option value="blood">Blood</option><option value="boss">Boss</option><option value="bridge">Bridge</option><option value="broken glass">Broken Glass</option><option value="burning house">Burning House</option><option value="butterfly">Butterfly</option><option value="car crash">Car Crash</option><option value="cat">Cat</option><option value="clock">Clock</option><option value="darkness">Darkness</option><option value="dead relative">Dead Relative</option><option value="death">Death</option><option value="desert">Desert</option><option value="dog">Dog</option><option value="door">Door</option><option value="drowning">Drowning</option><option value="earthquake">Earthquake</option><option value="elevator">Elevator</option><option value="ex-partner">Ex-Partner</option><option value="exam">Exam</option><option value="falling">Falling</option><option value="falling teeth in hand">Falling Teeth In Hand</option><option value="fighting">Fighting</option><option value="fire">Fire</option><option value="flood">Flood</option><option value="flying">Flying</option><option value="forest">Forest</option><option value="ghost">Ghost</option><option value="haunted house">Haunted House</option><option value="house">House</option><option value="key">Key</option><option value="kissing">Kissing</option><option value="light">Light</option><option value="losing something">Losing Something</option><option value="maze">Maze</option><option value="mirror">Mirror</option><option value="mirror maze">Mirror Maze</option><option value="missing flight">Missing Flight</option><option value="money">Money</option><option value="moon">Moon</option><option value="mountains">Mountains</option><option value="naked in public">Naked In Public</option><option value="ocean">Ocean</option><option value="old friend">Old Friend</option><option value="phone not working">Phone Not Working</option><option value="pregnancy">Pregnancy</option><option value="pregnant test">Pregnant Test</option><option value="rain">Rain</option><option value="rainbow">Rainbow</option><option value="school">School</option><option value="shadow figure">Shadow Figure</option><option value="snakes">Snakes</option><option value="snow">Snow</option><option value="spider web">Spider Web</option><option value="spiders">Spiders</option><option value="stairs">Stairs</option><option value="stars">Stars</option><option value="storm">Storm</option><option value="stranger">Stranger</option><option value="sun">Sun</option><option value="teeth">Teeth</option><option value="tidal wave">Tidal Wave</option><option value="tornado">Tornado</option><option value="trapped">Trapped</option><option value="twin">Twin</option><option value="volcano">Volcano</option><option value="water">Water</option><option value="wedding">Wedding</option><option value="wedding dress">Wedding Dress</option><option value="wedding ring">Wedding Ring</option><option value="window">Window</option><option value="wolf">Wolf</option>
+        </select>
+      </div>
+      <div id="free-dict-result" style="display:none;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;font-family:'Crimson Pro',serif;font-size:14px;color:rgba(235,225,255,0.85);line-height:1.75;font-style:italic"></div>
+    </div>
+
+    <!-- DREAM DICTIONARY (PRO) -->
+    <div style="margin-top:1.25rem;border-top:.5px solid var(--border);padding-top:1.25rem;position:relative">
+      <button id="dict-btn-tab" onclick="openDreamDictionary()" style="width:100%;padding:14px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.2);border-radius:12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(215,200,255,0.82);cursor:pointer;transition:all .2s">◎ DREAM DICTIONARY — UNLIMITED</button>
+      <div id="dict-btn-lock" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.32);border-radius:12px;align-items:center;justify-content:center;cursor:pointer" onclick="document.getElementById('paywall').classList.add('on')">
+        <span style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.2em;color:rgba(255,255,255,0.7);text-shadow:0 1px 4px rgba(0,0,0,0.6)">PRO ONLY</span>
+      </div>
+      <div style="margin-top:.5rem;font-family:'Crimson Pro',serif;font-size:12px;color:rgba(215,200,255,0.5);text-align:center;font-style:italic">Unlimited dream interpretations</div>
     </div>
   </div>
 
@@ -876,6 +889,20 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div id="dict-recent-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
   </div>
 
+  <!-- PERSONALIZED INTERPRETATION (PRO) -->
+  <div id="dict-personal-wrap" style="margin-top:1.75rem;position:relative;border-radius:14px;overflow:hidden">
+    <div id="dict-personal-card" style="background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.18);border-radius:14px;padding:1.25rem;text-align:center">
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.78);margin-bottom:.5rem">PERSONALIZED INTERPRETATION</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(215,200,255,0.6);font-style:italic;line-height:1.6;margin-bottom:.9rem">Go deeper — a reading woven specifically for your birth chart, not just the symbol's general meaning.</div>
+      <button onclick="getPersonalDreamReading()" id="dict-personal-btn" style="width:100%;padding:12px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(225,210,255,0.9);cursor:pointer">◈ REVEAL MY PERSONAL MEANING</button>
+      <div id="dict-personal-result" style="display:none;margin-top:1rem;text-align:left;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.88);line-height:1.85;font-style:italic"></div>
+    </div>
+    <div id="dict-personal-lock" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.78);backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" onclick="document.getElementById('paywall').classList.add('on')">
+      <span class="pro-badge" style="margin-bottom:.6rem">✦ PRO</span>
+      <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(220,205,255,0.85);font-style:italic">Unlock personalized dream readings</div>
+    </div>
+  </div>
+
 </div>
 
 <!-- PAYWALL -->
@@ -1054,7 +1081,7 @@ const TRANSLATIONS={
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Dream',tabCombined:'⊕ Combined',tabJournal:'📖 Journal',
     yourSign:'YOUR SIGN',period:'PERIOD',
     periodToday:'Today',periodWeek:'This Week',periodMonth:'This Month',
-    revealBtn:'◈ REVEAL MY MOMENT ◈',interpretBtn:'◈ INTERPRET THIS DREAM ◈',seeBtn:'◈ SEE MY MOMENT ◈',
+    revealBtn:'◈ REVEAL MY MOMENT ◈',interpretBtn:'◈ INTERPRET THIS DREAM ◈',saveDreamBtn:"+ SAVE TO TODAY'S JOURNAL",seeBtn:'◈ SEE MY MOMENT ◈',
     fullBirthChart:'FULL BIRTH CHART',dateOfBirth:'DATE OF BIRTH',timeOfBirth:'TIME OF BIRTH',cityOfBirth:'CITY OF BIRTH',
     cityPlaceholder:'e.g. Toronto, London, New York...',
     describeDream:'DESCRIBE YOUR DREAM',
@@ -1881,7 +1908,7 @@ function applyLanguage(){
     if(btn.dataset.p==='this month')btn.textContent=T.periodMonth;
   });
   const btnH=document.getElementById('btn-h');if(btnH)btnH.textContent=T.revealBtn;
-  const btnD=document.getElementById('btn-d');if(btnD)btnD.textContent=T.interpretBtn;
+  const btnD=document.getElementById('btn-d');if(btnD)btnD.textContent=T.saveDreamBtn||T.interpretBtn;
   const btnC=document.getElementById('btn-c');if(btnC)btnC.textContent=T.seeBtn;
   const btnJ=document.getElementById('btn-j');if(btnJ)btnJ.textContent=T.logBtn;
   document.querySelectorAll('.zb .zn').forEach((el,i)=>{if(T.signs&&T.signs[i%12])el.textContent=T.signs[i%12];});
@@ -3141,6 +3168,7 @@ function canInterpretDream(){
 }
 
 function openDreamDictionary(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
   document.getElementById('dream-dictionary-screen').style.display='block';
   document.body.style.overflow='hidden';
   setTimeout(()=>document.getElementById('dict-input').focus(),300);
@@ -3170,7 +3198,37 @@ function renderDictRecent(){
   }
 }
 
-async function lookupDream(){
+const DREAM_SYMBOLS = {"teeth": "Teeth falling out is one of the most universal dreams, usually tied to anxiety about appearance, aging, or a fear of losing power and control in a situation. Loose teeth often point to a transition you're nervous about. Crumbling or rotting teeth can reflect worry over how others see you, or guilt about something left unsaid. If they're knocked out violently, it may reflect a recent loss of confidence or a conflict that left you feeling diminished.", "flying": "Flying dreams are almost always about freedom, perspective, or rising above a situation that's been weighing on you. Effortless flight suggests confidence and control returning to your life. Struggling to stay airborne, or flying low and clumsily, often reflects real-world doubts about whether you can sustain your current momentum or success.", "falling": "Falling dreams usually surface when you feel a loss of control — in a relationship, a job, or your own sense of stability. The moment just before you hit the ground (which dreams rarely show) often represents unresolved fear about consequences you haven't yet faced.", "being chased": "Being chased reflects something you're avoiding in waking life — a conversation, a decision, or an emotion you haven't let yourself feel. The identity of the chaser matters: a stranger often represents an unknown fear, while a known person may point to unresolved tension with them specifically.", "drowning": "Drowning dreams point to feeling overwhelmed — by responsibilities, emotions, or a situation that feels bigger than your ability to cope. The water itself matters: calm water you're sinking in suggests quiet overwhelm, while turbulent water suggests external chaos pulling you under.", "naked in public": "Being naked in public taps into vulnerability and fear of judgment. It often appears when you feel exposed — perhaps you've shared something personal, made a mistake publicly, or worry people will see a side of you that you keep hidden.", "death": "Dreaming of death rarely predicts anything literal. It almost always symbolizes an ending and a beginning — the death of an old identity, habit, relationship, or chapter, making room for transformation. Who dies in the dream often points to which part of your life is shifting.", "snakes": "Snakes are deeply tied to transformation, hidden fears, and sometimes deception. A snake that bites may represent a betrayal or a fear finally confronting you. A snake shedding its skin nearby can symbolize your own personal growth and renewal.", "spiders": "Spiders often represent feeling trapped, manipulated, or caught in something intricate — a web of obligations, gossip, or a tangled situation you can't easily escape. They can also represent feminine creative power, especially in dreams that feel more awe-inspiring than frightening.", "water": "Water represents emotion itself — its state in the dream mirrors your inner emotional state. Calm, clear water suggests peace; turbulent or murky water suggests unresolved or unclear feelings churning beneath the surface.", "fire": "Fire is dual-natured in dreams: destruction and purification at once. It can represent anger or a situation burning out of control, or it can represent passion, transformation, and burning away what no longer serves you.", "house": "A house almost always represents the self — its different rooms reflect different parts of your psyche. A basement often holds the subconscious or repressed memories; an attic often holds memories or ideals; finding a new, unknown room suggests untapped potential you haven't yet explored.", "car crash": "A car crash dream usually reflects a fear of losing control over the direction of your life, or anxiety that a current path is unsustainable. Who's driving in the dream — you or someone else — often shows who you feel actually holds the control.", "pregnancy": "Pregnancy in a dream, regardless of your real-life circumstances, usually symbolizes the early stages of a new idea, project, relationship, or version of yourself that's developing but not yet ready to be revealed.", "baby": "A baby often represents a new beginning, a fresh responsibility, or a vulnerable new part of yourself or your life that needs care and protection. A baby in distress may reflect anxiety about your readiness to nurture something new.", "wedding": "Weddings in dreams symbolize union — not necessarily romantic. It can represent integrating two parts of your life or identity, committing fully to a decision, or merging different aspects of yourself into one coherent whole.", "ex-partner": "Dreaming of an ex usually isn't about wanting them back — it's about unfinished emotional business. They often represent a quality, lesson, or feeling associated with that relationship that's resurfacing in your current life.", "being late": "Being late, or missing a flight or important event, reflects anxiety about missed opportunities or a fear that you're falling behind in some area of your life compared to where you think you should be.", "losing something": "Losing an object — keys, your phone, a wallet — often mirrors a fear of losing control, identity, or access to something important. Keys specifically can represent access to opportunities or to a part of yourself you feel locked out of.", "mirror": "Mirrors in dreams represent self-reflection, identity, and how you see yourself versus how you fear others see you. A cracked or distorted mirror often points to a disconnect between your self-image and reality.", "ocean": "The vastness of the ocean represents the unconscious mind — its depth, mystery, and power. Calm ocean dreams suggest emotional peace; storms or rough seas suggest you're navigating something emotionally turbulent.", "moon": "The moon represents intuition, emotion, and the parts of yourself that exist beneath the surface — cyclical, ever-changing, and deeply tied to your inner rhythms rather than your outward, conscious life.", "stars": "Stars often symbolize guidance, hope, or a sense of destiny — something steady and reassuring even in darkness. Dreaming of a clear, starry sky can reflect a feeling of being on the right path.", "tornado": "A tornado represents a chaotic force in your life that feels beyond your control — overwhelming change happening rapidly. How you respond in the dream (running, hiding, watching) often reflects your real coping style under pressure.", "earthquake": "An earthquake symbolizes a foundational shake-up — something fundamental in your life, identity, or security feels unstable or is being shaken loose entirely.", "flood": "A flood represents emotions that have built up and are now overflowing beyond your ability to contain them — often grief, stress, or feelings you've been suppressing for too long.", "school": "Dreaming of school, especially as an adult, often reflects anxiety about being tested, judged, or evaluated in waking life — performance pressure that echoes the academic pressure of youth.", "exam": "An exam dream, especially one you feel unprepared for, reflects a fear of being inadequately prepared for a real-life challenge or judgment that's approaching.", "being lost": "Being lost reflects uncertainty about direction in life — a feeling that you don't currently know your next step or purpose.", "darkness": "Darkness represents the unknown, fear, or aspects of yourself or a situation that haven't yet been illuminated or understood.", "light": "Light typically represents clarity, insight, hope, or a moment of understanding breaking through confusion.", "stranger": "A stranger in a dream often represents an unfamiliar or unacknowledged part of yourself — a quality you haven't yet recognized or integrated.", "dead relative": "Dreaming of a deceased loved one usually reflects ongoing grief, unfinished emotional business, or your mind processing their continued influence on your life and values.", "animals attacking": "Being attacked by an animal often represents a primal fear or instinct you're suppressing, or a person/situation in your life that feels threatening on a gut, instinctive level.", "dog": "Dogs typically represent loyalty, friendship, and protection. A friendly dog suggests supportive relationships; an aggressive dog may reflect fear of betrayal from someone you trust.", "cat": "Cats often symbolize independence, intuition, or the feminine, mysterious aspects of yourself. A cat's mood in the dream often mirrors your own relationship with autonomy.", "spider web": "A spider web represents intricate situations you feel caught in — plans, obligations, or relationships that feel entangling and hard to escape cleanly.", "blood": "Blood often symbolizes life force, vitality, or a wound — emotional or otherwise — that needs attention. The amount and context shape whether it reflects loss, sacrifice, or vitality.", "fighting": "Dreaming of fighting or arguing reflects internal or external conflict you're navigating — sometimes literally with that person, sometimes symbolically with what they represent to you.", "kissing": "Kissing in dreams often relates to acceptance, connection, or merging with a quality the other person represents — not always romantic desire.", "money": "Money in dreams usually symbolizes self-worth, value, or resources — finding money suggests untapped potential; losing it suggests fear around security or worth.", "elevator": "An elevator represents movement through different levels of consciousness or status — rising suggests ambition or progress; a stuck or falling elevator suggests stalled growth or anxiety.", "stairs": "Stairs symbolize progress and personal development. Climbing represents growth and effort; descending can represent introspection or regression into the past.", "mountains": "Mountains represent challenges, goals, or obstacles you're working to overcome — the climb itself often mirrors your real effort toward an ambition.", "forest": "A forest represents the unconscious, the unknown, or a period of exploration and uncertainty. Getting lost in one often reflects feeling directionless in waking life.", "desert": "A desert symbolizes emotional depletion, isolation, or a barren period in life where growth feels stalled or resources feel scarce.", "storm": "A storm represents emotional turbulence — anger, conflict, or upheaval that feels powerful and somewhat out of your control.", "rainbow": "A rainbow symbolizes hope, resolution, or the promise of better times following a difficult period.", "key": "A key represents access, opportunity, or a solution to a problem. Losing a key suggests fear of losing access to something important.", "door": "Doors represent opportunities, transitions, or choices. A locked door often reflects a path currently unavailable to you; an open door suggests new possibility.", "window": "A window represents perspective and how you view a situation — looking out suggests longing or hope; a broken window may suggest a violated sense of safety.", "bridge": "A bridge symbolizes transition — moving from one phase of life to another, or connecting two parts of yourself or your relationships.", "mirror maze": "Getting lost among reflections suggests confusion about your own identity or feeling unable to find your true self amid conflicting versions of who you are.", "phone not working": "A phone that won't work, or that you can't dial correctly, often reflects anxiety about being unable to communicate something important, or fear of not being heard.", "missing flight": "Missing a flight represents anxiety about missed opportunities or feeling unprepared for a transition that's already underway.", "trapped": "Feeling trapped in a dream reflects a real waking sense of being stuck — in a job, relationship, or circumstance that feels inescapable.", "being invisible": "Being invisible in a dream often reflects feeling overlooked, unheard, or unseen in some part of your waking life.", "shadow figure": "A dark, faceless figure typically represents the unconscious or a repressed part of yourself — the 'shadow self' that holds qualities you haven't yet acknowledged.", "snow": "Snow represents stillness, emotional numbness, or a pause — a quiet period before change, or a need to slow down and rest.", "rain": "Gentle rain often symbolizes emotional release or cleansing; heavy, harsh rain may reflect being overwhelmed by sadness or stress.", "sun": "The sun represents clarity, vitality, and conscious awareness — warmth and energy returning to a situation in your life.", "wolf": "A wolf often represents instinct, danger, or a fierce protective quality — either a threat you sense, or a wild, untamed part of yourself.", "bird": "Birds frequently symbolize freedom, perspective, or messages — a bird in flight suggests liberation; a caged bird suggests restriction.", "butterfly": "A butterfly represents transformation and the emergence of a new self after a period of internal change.", "wedding ring": "A wedding ring symbolizes commitment, bonds, or promises — losing one in a dream may reflect anxiety about a relationship's stability.", "old friend": "Dreaming of an old friend often reflects nostalgia, or a quality they embodied that you're missing or needing to reconnect with in your current life.", "boss": "Dreaming of your boss usually reflects authority dynamics — anxiety about performance, approval, or control in your waking professional life.", "being fired": "Being fired in a dream reflects fear of inadequacy or rejection — worry that your effort or worth isn't being recognized.", "pregnant test": "A pregnancy test dream often symbolizes anticipation or anxiety about an outcome in any area of life that feels uncertain and out of your hands.", "tidal wave": "A tidal wave represents being overwhelmed by powerful emotions that arrive suddenly and feel impossible to outrun.", "being underwater": "Being underwater and breathing normally suggests comfort navigating your emotions; struggling to breathe suggests being overwhelmed by them.", "maze": "A maze represents confusion, indecision, or feeling unable to find a clear path forward in a complicated situation.", "clock": "A clock or watch often symbolizes time pressure, mortality awareness, or anxiety about deadlines and how time is being spent.", "broken glass": "Broken glass represents a fractured situation, a damaged relationship, or fragility in something you assumed was solid.", "volcano": "A volcano symbolizes suppressed anger or emotion building toward an eruption — feelings you've been holding in that are nearing a breaking point.", "being followed": "Being followed reflects a lingering, unresolved worry or unfinished situation that continues to trail you in waking life.", "twin": "Dreaming of a twin or double of yourself often represents an internal conflict between two parts of your identity, or a decision between two paths.", "ghost": "A ghost often represents unfinished business, lingering grief, or a part of your past that hasn't been fully laid to rest.", "haunted house": "A haunted house symbolizes unresolved memories or trauma residing in a part of your psyche you rarely visit.", "falling teeth in hand": "Catching teeth as they fall out, rather than losing them entirely, can reflect a sense that you still have some control over a change you're anxious about.", "burning house": "A burning house often represents a major life upheaval centered on your sense of self or home — something foundational undergoing painful but necessary change.", "being chased by an animal": "Being chased by a specific animal often points to a fear or instinct tied to that animal's symbolic meaning — for example a wolf may represent danger, while a dog may represent fear of betrayal.", "wedding dress": "A wedding dress represents readiness (or anxiety about readiness) for commitment — its condition in the dream often reflects your confidence about the step you're taking."};
+
+function findDreamSymbol(query){
+  const q = query.toLowerCase().trim();
+  if(DREAM_SYMBOLS[q]) return {key:q, text:DREAM_SYMBOLS[q]};
+  // Try to find a symbol key contained within the query, or the query contained within a key
+  let bestMatch = null, bestScore = 0;
+  for(const key in DREAM_SYMBOLS){
+    if(q.includes(key) || key.includes(q)){
+      const score = key.length;
+      if(score > bestScore){ bestScore = score; bestMatch = key; }
+    }
+  }
+  if(bestMatch) return {key:bestMatch, text:DREAM_SYMBOLS[bestMatch]};
+  // Fallback: word-by-word overlap
+  const qWords = q.split(/\s+/).filter(w=>w.length>2);
+  for(const key in DREAM_SYMBOLS){
+    const keyWords = key.split(/\s+/);
+    if(keyWords.some(kw=>qWords.includes(kw))) return {key, text:DREAM_SYMBOLS[key]};
+  }
+  return null;
+}
+
+function showFreeSymbol(key){
+  const resultDiv=document.getElementById('free-dict-result');
+  resultDiv.style.display='block';
+  resultDiv.textContent=DREAM_SYMBOLS[key]||'';
+}
+
+function lookupDream(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
   const input=document.getElementById('dict-input');
   const word=input.value.trim();
   if(!word)return;
@@ -3181,13 +3239,42 @@ async function lookupDream(){
 
   resultBox.style.display='block';
   resultWord.textContent=word.toUpperCase();
-  resultText.textContent='Reading the symbols...';
 
   // Save to recent
   const recent=JSON.parse(localStorage.getItem('k_dict_recent')||'[]');
   const updated=[word,...recent.filter(w=>w.toLowerCase()!==word.toLowerCase())].slice(0,10);
   localStorage.setItem('k_dict_recent',JSON.stringify(updated));
   renderDictRecent();
+
+  const match = findDreamSymbol(word);
+  if(match){
+    resultText.textContent = match.text;
+  } else {
+    resultText.textContent = "This symbol isn't in our dictionary yet — we're always adding more. Try a related word, like the object, animal, or feeling at the heart of it.";
+  }
+  resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+async function getPersonalDreamReading(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
+  const word=document.getElementById('dict-input').value.trim();
+  if(!word){
+    document.getElementById('dict-input').focus();
+    return;
+  }
+  const btn=document.getElementById('dict-personal-btn');
+  const resultDiv=document.getElementById('dict-personal-result');
+
+  const dayKey='k_dict_personal_used_'+new Date().toLocaleDateString('en-CA');
+  if(localStorage.getItem(dayKey)){
+    resultDiv.style.display='block';
+    resultDiv.textContent="You've used your personalized dream reading for today. Return tomorrow — your subconscious continues to speak as you sleep. ✦";
+    return;
+  }
+
+  btn.disabled=true;btn.textContent='◈ READING...';
+  resultDiv.style.display='block';
+  resultDiv.textContent='Reading the symbols...';
 
   const sign=APP.sh||APP.sc||'';
   const chartCtx=sign?` The dreamer is a ${sign}.`:'';
@@ -3196,7 +3283,6 @@ async function lookupDream(){
 
 Provide a deep, archetypal interpretation of this dream element. Draw on Jungian symbolism, mythology, and the unconscious. Cover:
 - What this symbol represents at its core
-- Common variations and what they mean (e.g. if teeth: loose, falling out, broken, missing)
 - The emotional and psychological undercurrent
 - What the dreamer may be processing in waking life
 - Any spiritual or cosmic significance${chartCtx}
@@ -3218,10 +3304,12 @@ Write 2-3 rich paragraphs. Poetic, personal, intelligent. Never generic. Never c
     });
     const data=await res.json();
     const text=stripMarkdown(data.content?.find(b=>b.type==='text')?.text||'The symbol slipped away. Try again.');
-    resultText.textContent=text;
-    resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+    resultDiv.textContent=text;
+    localStorage.setItem(dayKey,'1');
   }catch(e){
-    resultText.textContent='Something slipped away. Try again.';
+    resultDiv.textContent='Something slipped away. Try again.';
+  }finally{
+    btn.disabled=false;btn.textContent='◈ REVEAL MY PERSONAL MEANING';
   }
 }
 
@@ -4236,6 +4324,8 @@ function setTier(t){
   }
   refreshJournal();
   initCombinedPanel();
+  const dictLock=document.getElementById('dict-btn-lock');
+  if(dictLock) dictLock.style.display = APP.isPro ? 'none' : 'flex';
 }
 async function activatePro(){
   const btn=document.querySelector('.pw-cta');
@@ -4268,6 +4358,10 @@ if(localStorage.getItem('k_cache_version')!==CACHE_VERSION){
 }
 
 if(APP.isPro)setTier('pro');
+const __dictLockInit=document.getElementById('dict-btn-lock');
+if(__dictLockInit) __dictLockInit.style.display = APP.isPro ? 'none' : 'flex';
+document.addEventListener('DOMContentLoaded',loadTodayDream);
+if(document.readyState==='complete'||document.readyState==='interactive')setTimeout(loadTodayDream,0);
 
 function switchTab(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -4655,6 +4749,39 @@ function addJournalEntry(){
   saveJournal(entries);
   document.getElementById('journal-input').value='';
   renderJournal();checkJournalLimit();
+}
+
+function getTodayKey(){return new Date().toLocaleDateString('en-CA');}
+
+function saveTodayDream(){
+  const text=document.getElementById('dream-input').value.trim();
+  if(!text)return;
+  if(!APP.isPro&&getJournal().filter(e=>e.dateKey!==getTodayKey()).length+1>5&&!getJournal().find(e=>e.dateKey===getTodayKey())){
+    document.getElementById('paywall').classList.add('on');return;
+  }
+  const entries=getJournal();
+  const todayKey=getTodayKey();
+  const existing=entries.find(e=>e.dateKey===todayKey);
+  if(existing){
+    existing.dream=text;
+  }else{
+    entries.unshift({id:Date.now(),dateKey:todayKey,date:new Date().toLocaleDateString('en-CA',{weekday:'short',year:'numeric',month:'short',day:'numeric'}),moon:moonData.emoji+' '+moonData.name,dream:text,interpretation:null});
+  }
+  saveJournal(entries);
+  const confirm=document.getElementById('dream-save-confirm');
+  if(confirm)confirm.style.display='block';
+}
+
+function loadTodayDream(){
+  const todayKey=getTodayKey();
+  const existing=getJournal().find(e=>e.dateKey===todayKey);
+  const input=document.getElementById('dream-input');
+  if(existing&&input){
+    input.value=existing.dream;
+    document.getElementById('btn-d').disabled=false;
+    const confirm=document.getElementById('dream-save-confirm');
+    if(confirm)confirm.style.display='block';
+  }
 }
 
 function saveDreamToJournal(){
