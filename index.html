@@ -1980,7 +1980,7 @@ const SLEEP_STATE={
   wakeVolume:0.9,
   alarmTimeout:null,
   previewNodes:[],
-  sleepSound:'holy',
+  sleepSound:'fanhum',
   wakeSound:'bowl',
   timerMins:60,
   sleeping:false,
@@ -2270,36 +2270,15 @@ function startSleepAudio(){
     src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(master);
     src.start();wl1.start();wl2.start();ns.push(src,wl1,wl2);
   }
-  else { // holy light
-    const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,6);src.loop=true;
-    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
-    const bg=sleepGain(.055);
-    const glfo=sleepOsc(.035);const gg=sleepGain(.025);glfo.connect(gg);gg.connect(bg.gain);
-    src.connect(lpf);lpf.connect(bg);bg.connect(master);src.start();glfo.start();ns.push(src,glfo);
-    const pingFreqs=[1047,1175,1319,1568,1760,2093];
-    let alive=true;
-    function ping(){
-      if(!alive)return;
-      const f=pingFreqs[Math.floor(Math.random()*pingFreqs.length)]*(0.97+Math.random()*.06);
-      const now=ctx.currentTime;
-      const o1=sleepOsc(f);const o2=sleepOsc(f*1.003);const cg=sleepGain(0);
-      cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(.07,now+.005);
-      cg.gain.exponentialRampToValueAtTime(.001,now+4);
-      o1.connect(cg);o2.connect(cg);cg.connect(master);
-      o1.start(now);o2.start(now);o1.stop(now+4.5);o2.stop(now+4.5);
-      const sc=Math.floor(8+Math.random()*15);
-      for(let i=0;i<sc;i++){
-        const delay=.05+Math.random()*.7;const sf=2500+Math.random()*8000;
-        const so=sleepOsc(sf);const sg=sleepGain(0);const st=now+delay;
-        sg.gain.setValueAtTime(0,st);sg.gain.linearRampToValueAtTime(.006+Math.random()*.012,st+.003);
-        sg.gain.exponentialRampToValueAtTime(.001,st+.1+Math.random()*.25);
-        so.connect(sg);sg.connect(master);so.start(st);so.stop(st+.4);ns.push(so);
-      }
-      ns.push(o1,o2);
-      setTimeout(ping,3000+Math.random()*7000);
-    }
-    setTimeout(ping,2000);
-    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  else { // fan hum
+    const src=ctx.createBufferSource();
+    const buf=ctx.createBuffer(1,ctx.sampleRate*6,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    src.buffer=buf;src.loop=true;
+    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=1200;
+    const g=sleepGain(.16);
+    src.connect(lpf);lpf.connect(g);g.connect(master);src.start();ns.push(src);
   }
 }
 
@@ -2309,7 +2288,7 @@ function startSleepAudio(){
 function applyLanguageToSleep(){
   const lang=APP.language||'English';
   const ST={
-    English:{back:'← back',phase:'MOON PHASE',promptLbl:"TONIGHT'S DREAM PROMPT",soundLbl:'SLEEP SOUND',timerLbl:'SLEEP TIMER',wakeLbl:'WAKE-UP SOUND',cta:'✦ BEGIN SLEEP MODE ✦',startDay:'✦ START YOUR DAY ✦',proNote:'SLEEP TIMER · WAKE-UP ALARM · DREAM PROMPT — PRO',holy:'Holy Light',pink:'Pink noise',brown:'Brown noise',ocean:'Ocean',bowl:'Sunrise bowl',oceanW:'Ocean tide',holyW:'Holy Light',cosmic:'Cosmic dawn'},
+    English:{back:'← back',phase:'MOON PHASE',promptLbl:"TONIGHT'S DREAM PROMPT",soundLbl:'SLEEP SOUND',timerLbl:'SLEEP TIMER',wakeLbl:'WAKE-UP SOUND',cta:'✦ BEGIN SLEEP MODE ✦',startDay:'✦ START YOUR DAY ✦',proNote:'SLEEP TIMER · WAKE-UP ALARM · DREAM PROMPT — PRO',holy:'Fan Hum',pink:'Pink noise',brown:'Brown noise',ocean:'Ocean',bowl:'Sunrise bowl',oceanW:'Ocean tide',holyW:'Holy Light',cosmic:'Cosmic dawn'},
     French:{back:'← retour',phase:'PHASE LUNAIRE',promptLbl:"INVITATION DE RÊVE DE CE SOIR",soundLbl:'SON DE SOMMEIL',timerLbl:'MINUTERIE DE SOMMEIL',wakeLbl:'SON DE RÉVEIL',cta:'✦ COMMENCER LE MODE SOMMEIL ✦',startDay:'✦ COMMENCER VOTRE JOURNÉE ✦',proNote:'MINUTERIE · RÉVEIL · INVITATION — PRO',holy:'Lumière Sacrée',pink:'Bruit rose',brown:'Bruit brun',ocean:'Océan',bowl:'Bol du lever',oceanW:'Marée océanique',holyW:'Lumière Sacrée',cosmic:'Aube cosmique'},
     Spanish:{back:'← atrás',phase:'FASE LUNAR',promptLbl:"INVITACIÓN DE SUEÑO DE HOY",soundLbl:'SONIDO DE SUEÑO',timerLbl:'TEMPORIZADOR',wakeLbl:'SONIDO DE DESPERTAR',cta:'✦ INICIAR MODO SUEÑO ✦',startDay:'✦ COMENZAR TU DÍA ✦',proNote:'TEMPORIZADOR · ALARMA · INVITACIÓN — PRO',holy:'Luz Sagrada',pink:'Ruido rosa',brown:'Ruido marrón',ocean:'Océano',bowl:'Cuenco amanecer',oceanW:'Marea oceánica',holyW:'Luz Sagrada',cosmic:'Alba cósmica'},
     Portuguese:{back:'← voltar',phase:'FASE LUNAR',promptLbl:"CONVITE DE SONHO DE HOJE",soundLbl:'SOM DE SONO',timerLbl:'TEMPORIZADOR',wakeLbl:'SOM DE DESPERTAR',cta:'✦ INICIAR MODO SONO ✦',startDay:'✦ COMEÇAR SEU DIA ✦',proNote:'TEMPORIZADOR · ALARME · CONVITE — PRO',holy:'Luz Sagrada',pink:'Ruído rosa',brown:'Ruído marrom',ocean:'Oceano',bowl:'Tigela do amanhecer',oceanW:'Maré oceânica',holyW:'Luz Sagrada',cosmic:'Amanhecer cósmico'},
@@ -5348,7 +5327,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
     <!-- 1. SLEEP SOUND -->
     <div class="sleep-lbl" id="sleep-sound-lbl">SLEEP SOUND</div>
     <div class="sleep-pills" id="sleep-sound-pills" style="margin-bottom:.6rem">
-      <button class="sleep-pill on" data-sound="holy"  onclick="selectSleepSound(this,'holy')">Holy Light</button>
+      <button class="sleep-pill on" data-sound="fanhum"  onclick="selectSleepSound(this,'fanhum')">Fan Hum</button>
       <button class="sleep-pill"    data-sound="pink"  onclick="selectSleepSound(this,'pink')">Pink Noise</button>
       <button class="sleep-pill"    data-sound="brown" onclick="selectSleepSound(this,'brown')">Brown Noise</button>
       <button class="sleep-pill"    data-sound="ocean" onclick="selectSleepSound(this,'ocean')">Ocean</button>
