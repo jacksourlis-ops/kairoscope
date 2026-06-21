@@ -539,7 +539,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <div class="tabs">
     <button class="tab on" onclick="switchTab('h',this)"><span class="tab-icon">☽</span><span class="tab-lbl">HOROSCOPE</span></button>
     <button class="tab" onclick="switchTab('d',this)"><span class="tab-icon">💭</span><span class="tab-lbl">DREAM</span></button>
-    <button class="tab" onclick="switchTab('c',this)"><span class="tab-icon">✦</span><span class="tab-lbl">COMBINED</span></button>
     <button class="tab" onclick="switchTab('j',this)"><span class="tab-icon">◎</span><span class="tab-lbl">JOURNAL</span></button>
   </div>
 
@@ -559,6 +558,9 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
         <button class="zb" data-s="Capricorn" onclick="selSign(this,'zg-h','sh')"><span class="zs">♑</span><span class="zn">Capricorn</span></button>
         <button class="zb" data-s="Aquarius" onclick="selSign(this,'zg-h','sh')"><span class="zs">♒</span><span class="zn">Aquarius</span></button>
         <button class="zb" data-s="Pisces" onclick="selSign(this,'zg-h','sh')"><span class="zs">♓</span><span class="zn">Pisces</span></button>
+      </div>
+      <div id="sign-reset-wrap" style="display:none;text-align:center;margin-top:.5rem">
+        <button onclick="resetSignLock()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.1em;color:rgba(200,175,255,0.35);cursor:pointer;text-decoration:underline">reset my sign</button>
       </div>
     </div>
     <div id="birth-h" style="display:none">
@@ -642,47 +644,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     </div>
   </div>
 
-  <!-- COMBINED -->
-  <div class="panel" id="panel-c">
-    <!-- FREE TEASER -->
-    <div id="combined-teaser" style="display:none;text-align:center;padding:1.5rem 1rem">
-      <div style="font-size:36px;margin-bottom:.75rem">✦</div>
-      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold);margin-bottom:.75rem">STARS & DREAMS COMBINED</div>
-      <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(220,210,255,0.82);line-height:1.75;margin-bottom:1.25rem;font-style:italic">Your horoscope reads the sky.<br>Your dream journal reads your soul.<br>Combined, they reveal what neither can alone.</div>
-      <div style="background:rgba(210,175,80,0.06);border:.5px solid rgba(210,175,80,0.2);border-radius:12px;padding:1rem;margin-bottom:1.25rem">
-        <div style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.14em;color:var(--gold);margin-bottom:.6rem">PRO EXCLUSIVE</div>
-        <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.78);line-height:1.65">Unlock Combined to see how today's planetary energy and last night's dream symbols are delivering the same message.</div>
-      </div>
-      <button onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')" style="width:100%;padding:14px;background:rgba(210,175,80,0.08);border:.5px solid rgba(210,175,80,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;color:var(--gold);cursor:pointer">✦ UNLOCK COMBINED ✦</button>
-    </div>
-    <!-- PRO VIEW -->
-    <div id="combined-pro" style="display:none">
-      <div class="combined-explainer">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--gold);margin-bottom:.5rem">STARS & DREAMS — COMBINED</div>
-        <div class="combined-flow">
-          <div class="cf-item"><div class="cf-icon">🌙</div><div class="cf-lbl">TODAY'S SKY</div></div>
-          <div class="cf-arrow">+</div>
-          <div class="cf-item"><div class="cf-icon">💭</div><div class="cf-lbl">LAST DREAM</div></div>
-          <div class="cf-arrow">=</div>
-          <div class="cf-item"><div class="cf-icon">✨</div><div class="cf-lbl">COMBINED INSIGHT</div></div>
-        </div>
-        <div class="combined-desc">Your horoscope and dream journal, automatically woven together.</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
-        <div style="background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem">
-          <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px">YOUR SIGN</div>
-          <div id="combined-sign-display" style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.9)">—</div>
-        </div>
-        <div style="background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:10px;padding:.75rem 1rem">
-          <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:var(--gold);margin-bottom:4px">LAST DREAM JOURNALED</div>
-          <div id="combined-dream-display" style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(220,210,255,0.82);font-style:italic;line-height:1.6">No dream journaled yet — add one in the Journal tab</div>
-        </div>
-      </div>
-      <button class="reveal-btn" id="btn-c" onclick="doCombinedReading()">◈ COMBINE ◈</button>
-      <div class="result-box" id="res-c"></div>
-    </div>
-  </div>
-
   <!-- JOURNAL -->
   <div class="panel" id="panel-j" style="text-align:center;padding:2rem 1rem">
     <div style="font-size:40px;margin-bottom:.75rem">◎</div>
@@ -745,7 +706,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
   <!-- RECORD BUTTON -->
-  <button onclick="openDreamEntry()" id="dream-entry-btn" style="width:100%;padding:16px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.88);cursor:pointer;margin-bottom:.5rem">✦ RECORD TONIGHT'S DREAM</button>
+  <button onclick="openTodaysDreamEntry()" id="dream-entry-btn" style="width:100%;padding:16px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.88);cursor:pointer;margin-bottom:.5rem">✦ RECORD TONIGHT'S DREAM</button>
   <div id="journal-limit-note" style="display:none;font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,175,255,0.45);font-style:italic;text-align:center;margin-bottom:.5rem"></div>
 
   <!-- DREAM LIST -->
@@ -767,6 +728,9 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
     <!-- DATE -->
     <div id="dream-entry-date" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.35);margin-bottom:.35rem;text-align:center"></div>
+
+    <!-- CONTINUING NOTE -->
+    <div id="dream-entry-continuing" style="display:none;font-family:'Crimson Pro',serif;font-size:12px;color:rgba(200,175,255,0.5);font-style:italic;text-align:center;margin-bottom:.5rem">✎ Continuing today's entry — pick up where you left off</div>
 
     <!-- MOON -->
     <div id="dream-entry-moon" style="font-size:22px;margin-bottom:.5rem;text-align:center"></div>
@@ -3156,6 +3120,14 @@ function getDreams(){
 }
 function saveDreams(d){ localStorage.setItem('k_dreams',JSON.stringify(d)); }
 
+function getTodaysDreamEntry(){
+  const today=new Date();
+  return getDreams().find(d=>{
+    const dt=new Date(d.date);
+    return dt.getFullYear()===today.getFullYear()&&dt.getMonth()===today.getMonth()&&dt.getDate()===today.getDate();
+  })||null;
+}
+
 function getDreamInterpCount(){
   return parseInt(localStorage.getItem('k_dream_interps')||'0');
 }
@@ -3313,6 +3285,11 @@ Write 2-3 rich paragraphs. Poetic, personal, intelligent. Never generic. Never c
   }
 }
 
+function openTodaysDreamEntry(){
+  const existing=getTodaysDreamEntry();
+  openDreamEntry(existing?existing.id:null);
+}
+
 function openDreamEntry(dreamId){
   editingDreamId = dreamId||null;
   selectedTags = [];
@@ -3337,6 +3314,7 @@ function openDreamEntry(dreamId){
 
   // If editing — prefill
   const ta = document.getElementById('dream-entry-input');
+  const continuingNote = document.getElementById('dream-entry-continuing');
   if(editingDreamId){
     const dreams = getDreams();
     const dream = dreams.find(d=>d.id===editingDreamId);
@@ -3344,9 +3322,13 @@ function openDreamEntry(dreamId){
       ta.value = dream.text;
       selectedTags = dream.tags||[];
       renderSelectedTags();
+      const dt=new Date(dream.date);
+      const isToday=dt.getFullYear()===now.getFullYear()&&dt.getMonth()===now.getMonth()&&dt.getDate()===now.getDate();
+      if(continuingNote) continuingNote.style.display=isToday?'block':'none';
     }
   } else {
     ta.value='';
+    if(continuingNote) continuingNote.style.display='none';
   }
 
   // Free limit note
@@ -3457,6 +3439,28 @@ async function saveDreamEntry(action){
   const resultBox=document.getElementById('dream-entry-result');
   const resultTitle=document.getElementById('dream-entry-result-title');
   const resultText=document.getElementById('dream-entry-result-text');
+
+  // COMBINE: requires today's horoscope already pulled, and caps at once per day
+  if(action==='combine'){
+    const todayHoroKey=getCacheKey('h',APP.sh,'today','English');
+    const todayHoro=todayHoroKey?loadReading(todayHoroKey):null;
+    if(!todayHoro){
+      resultBox.style.display='block';
+      resultTitle.textContent='YOUR HOROSCOPE FIRST';
+      resultText.textContent='Pull your daily horoscope in the Horoscope tab before combining it with your dream — that way today\'s combined reading reflects today\'s actual stars, not yesterday\'s.';
+      resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+      return;
+    }
+    const existingKairos=loadKairos();
+    if(existingKairos&&existingKairos.combined){
+      resultBox.style.display='block';
+      resultTitle.textContent='DREAM + STARS';
+      resultText.textContent=existingKairos.combined.text+'\n\n✦ Clicked too soon? Missed an important detail in your dream? Don\'t forget to add it to tomorrow\'s reading.';
+      resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+      return;
+    }
+  }
+
   resultBox.style.display='block';
   resultTitle.textContent = action==='interpret'?'DREAM INTERPRETATION':'DREAM + STARS';
   resultText.textContent='Reading the symbols...';
@@ -3491,6 +3495,7 @@ async function saveDreamEntry(action){
       else dreams[idx].combined=txt;
       saveDreams(dreams);
     }
+    if(action==='combine') saveToKairos('combined',{text:txt,date:TODAY});
 
     if(!APP.isPro) incrementDreamInterp();
   } catch(e){
@@ -3511,7 +3516,7 @@ function renderCalendar(){
   const dreamDates={};
   dreams.forEach(d=>{
     const dt=new Date(d.date);
-    const key=dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
+    const key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
     dreamDates[key]=true;
   });
 
@@ -3544,7 +3549,7 @@ function renderCalendar(){
   for(let day=1;day<=daysInMonth;day++){
     const el=document.createElement('div');
     el.className='cal-day';
-    const key=y+'-'+(m+1)+'-'+day;
+    const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
     const isToday=now.getFullYear()===y&&now.getMonth()===m&&now.getDate()===day;
     if(isToday) el.classList.add('today');
     el.innerHTML='<div>'+day+'</div>';
@@ -3722,14 +3727,16 @@ function refreshJournal(){
   // Calendar
   renderCalendar();
 
-  // Entry button — free limit
+  // Entry button — free limit (continuing today's existing entry is always allowed, even at the cap)
   const totalFree=3; // max free dreams logged
-  if(!APP.isPro&&dreams.length>=totalFree){
+  const todaysEntry=getTodaysDreamEntry();
+  if(entryBtn) entryBtn.textContent = todaysEntry?"✎ CONTINUE TODAY'S DREAM":"✦ RECORD TONIGHT'S DREAM";
+  if(!todaysEntry&&!APP.isPro&&dreams.length>=totalFree){
     if(limitNote){ limitNote.style.display='block'; limitNote.textContent='Upgrade to Pro to log unlimited dreams and unlock pattern analysis.'; }
     if(entryBtn){ entryBtn.style.opacity='.4'; entryBtn.onclick=()=>document.getElementById('paywall').classList.add('on'); }
   } else {
     if(limitNote) limitNote.style.display='none';
-    if(entryBtn){ entryBtn.style.opacity='1'; entryBtn.onclick=()=>openDreamEntry(); }
+    if(entryBtn){ entryBtn.style.opacity='1'; entryBtn.onclick=()=>openTodaysDreamEntry(); }
   }
 
   // Pattern teaser
@@ -4082,6 +4089,14 @@ function calcChart(){
     document.getElementById('cd-rise').textContent='';
   }
   document.getElementById('chart-cards').classList.add('on');
+  // Pro: once birth data resolves a Sun sign, that becomes the designated sign — overrides manual grid pick
+  if(APP.isPro&&APP.chart.sun){
+    APP.sh=APP.chart.sun;
+    document.querySelectorAll('#zg-h .zb').forEach(b=>b.classList.toggle('on',b.dataset.s===APP.chart.sun));
+    const btnH=document.getElementById('btn-h');if(btnH)btnH.disabled=false;
+    localStorage.setItem('k_last_sign_h',APP.sh);
+    updateSignLockUI();
+  }
 }
 
 
@@ -4323,7 +4338,6 @@ function setTier(t){
     ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
   refreshJournal();
-  initCombinedPanel();
   const dictLock=document.getElementById('dict-btn-lock');
   if(dictLock) dictLock.style.display = APP.isPro ? 'none' : 'flex';
 }
@@ -4358,6 +4372,7 @@ if(localStorage.getItem('k_cache_version')!==CACHE_VERSION){
 }
 
 if(APP.isPro)setTier('pro');
+updateSignLockUI();
 const __dictLockInit=document.getElementById('dict-btn-lock');
 if(__dictLockInit) __dictLockInit.style.display = APP.isPro ? 'none' : 'flex';
 document.addEventListener('DOMContentLoaded',loadTodayDream);
@@ -4368,94 +4383,54 @@ function switchTab(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on');document.getElementById('panel-'+id).classList.add('on');
   if(id==='j')refreshJournal();
-  if(id==='c')initCombinedPanel();
 }
 
-function initCombinedPanel(){
-  const teaser=document.getElementById('combined-teaser');
-  const pro=document.getElementById('combined-pro');
-  if(!teaser||!pro)return;
-  if(!APP.isPro){
-    teaser.style.display='block';
-    pro.style.display='none';
-    return;
-  }
-  teaser.style.display='none';
-  pro.style.display='block';
-  // Auto-pull sign
-  const signDisplay=document.getElementById('combined-sign-display');
-  if(signDisplay)signDisplay.textContent=APP.sh||'Select your sign in the Horoscope tab first';
-  // Auto-pull latest dream from journal
-  const dreamDisplay=document.getElementById('combined-dream-display');
-  if(dreamDisplay){
-    const dreams=getDreams();
-    if(dreams&&dreams.length>0){
-      const latest=dreams[0];
-      const text=(latest.dream||latest.text||'').slice(0,120);
-      dreamDisplay.textContent=text?'"'+text+'..."':'No dream text found';
-    } else {
-      dreamDisplay.textContent='No dream journaled yet — add one in the Journal tab';
-    }
-  }
-  // Check if already done today — show cached result
-  const todayKey='k_combined_'+new Date().toLocaleDateString('en-CA');
-  const cached=localStorage.getItem(todayKey);
-  const btn=document.getElementById('btn-c');
-  const box=document.getElementById('res-c');
-  if(cached){
-    if(btn){btn.textContent='◈ ALREADY COMBINED TODAY ◈';btn.disabled=true;}
-    const data=JSON.parse(cached);
-    showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),data.text,'Returns tomorrow at midnight');
-  } else {
-    if(btn){btn.textContent='◈ COMBINE ◈';btn.disabled=!APP.sh;}
-    if(box){box.style.display='none';}
-  }
+function getLockedSign(){
+  // Pro: locked to calculated natal Sun once birth data resolves it
+  if(APP.isPro&&APP.chart.sun)return APP.chart.sun;
+  // Free: locks the moment their first horoscope reveal has been pulled
+  if(!APP.isPro&&localStorage.getItem('k_sign_locked')==='1')return APP.sh||null;
+  return null;
 }
 
-async function doCombinedReading(){
-  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
-  // Check daily cap
-  const todayKey='k_combined_'+new Date().toLocaleDateString('en-CA');
-  if(localStorage.getItem(todayKey)){
-    const box=document.getElementById('res-c');
-    const data=JSON.parse(localStorage.getItem(todayKey));
-    showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),data.text,'Returns tomorrow at midnight');
-    return;
-  }
-  if(!APP.sh){alert('Please select your sign in the Horoscope tab first.');return;}
-  const btn=document.getElementById('btn-c');
-  const box=document.getElementById('res-c');
-  btn.disabled=true;
-  showLoading(box);
-  // Get latest dream
-  const dreams=getDreams();
-  const dreamText=dreams&&dreams.length>0?(dreams[0].dream||dreams[0].text||'no dream recorded'):'no dream recorded';
-  // Get cached horoscope if available
-  const cacheKey=getCacheKey('h',APP.sh,'today');
-  const cachedHoro=cacheKey?loadReading(cacheKey):null;
-  const horoContext=cachedHoro?`Today's horoscope for ${APP.sh}: ${cachedHoro.text.slice(0,400)}`:`Sign: ${APP.sh}`;
-  const astroCtx=buildAstroContext(APP.sh,'today');
-  const fullAstroPrompt=astroContextToPrompt(astroCtx);
-  const chartCtx=buildChartCtx();
-  const prompt=`${fullAstroPrompt}${chartCtx}\n\nLAST DREAM JOURNALED: "${dreamText}"\n\nToday is ${TODAY}. Weave the current planetary transits and this dream into one unified insight. Show how the cosmos and the unconscious are delivering the same message right now.`;
-  try{
-    const text=await callAI(prompt,SYSTEMS['c']);
-    showStructuredResult(box,'✨ ◈','STARS & DREAMS COMBINED',new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),text,'Returns tomorrow at midnight');
-    localStorage.setItem(todayKey,JSON.stringify({text,date:TODAY}));
-    saveToKairos('combined',{text,date:TODAY});
-    btn.disabled=true;
-  }catch(e){
-    box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">The moment slipped away: ${e.message}</div>`;
-    btn.disabled=false;
-  }
+function showSignLockMessage(){
+  let msg=document.getElementById('sign-lock-toast');
+  if(msg)msg.remove();
+  msg=document.createElement('div');
+  msg.id='sign-lock-toast';
+  msg.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(4,2,16,0.97);border:.5px solid rgba(200,175,255,0.35);border-radius:12px;padding:1.5rem 1.75rem;text-align:center;z-index:500;font-family:Cinzel,serif;color:var(--gold);letter-spacing:.1em;font-size:11px;line-height:2;max-width:280px';
+  msg.innerHTML=`✦ THAT'S NOT YOUR SIGN ✦<br><span style="font-size:12px;color:var(--muted);font-family:'Crimson Pro',serif;font-style:italic;letter-spacing:.03em;display:block;margin-top:.5rem">Your sign is set. Want someone else's stars? Open People in My Sky from the Journal tab.</span>`;
+  document.body.appendChild(msg);
+  setTimeout(()=>{if(msg)msg.remove();},3800);
+}
+
+function updateSignLockUI(){
+  const wrap=document.getElementById('sign-reset-wrap');
+  if(!wrap)return;
+  // Reset link only makes sense for free-tier's lock — Pro's lock is driven by birth data, not this flag
+  wrap.style.display=(!APP.isPro&&localStorage.getItem('k_sign_locked')==='1')?'block':'none';
+}
+
+function resetSignLock(){
+  if(!confirm('This resets your designated sign so you can pick a different one. Are you sure?'))return;
+  localStorage.removeItem('k_sign_locked');
+  updateSignLockUI();
 }
 
 function selSign(el,grid,key){
+  if(key==='sh'){
+    const locked=getLockedSign();
+    if(locked&&el.dataset.s!==locked){
+      showSignLockMessage();
+      return;
+    }
+  }
   document.querySelectorAll('#'+grid+' .zb').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');APP[key]=el.dataset.s;
-  document.getElementById(key==='sh'?'btn-h':'btn-c').disabled=false;
-  if(key==='sh') localStorage.setItem('k_last_sign_h', APP.sh);
-  if(key==='sc') localStorage.setItem('k_last_sign_c', APP.sc);
+  if(key==='sh'){
+    document.getElementById('btn-h').disabled=false;
+    localStorage.setItem('k_last_sign_h', APP.sh);
+  }
 }
 function selPeriod(el){
   document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
@@ -4714,7 +4689,10 @@ async function doReading(type){
     else{showResult(box,icon,title,sub,displayText,lockMsg);}
 
     // SAVE TO YOUR KAIROS — permanent history (in English)
-    if(type==='h') saveToKairos('horoscope',{text:englishText,sign:APP.sh,period:APP.period,date:TODAY});
+    if(type==='h'){
+      saveToKairos('horoscope',{text:englishText,sign:APP.sh,period:APP.period,date:TODAY});
+      if(!APP.isPro){localStorage.setItem('k_sign_locked','1');updateSignLockUI();}
+    }
     if(type==='d') saveToKairos('dream_interp',{text:englishText,date:TODAY});
 
     if(type==='d'){APP.lastDreamText=document.getElementById('dream-input').value.trim();APP.lastDreamInterp=displayText;document.getElementById('save-dream-wrap').style.display='block';saveDreamToday(APP.lastDreamText);if(APP.isPro)localStorage.setItem('k_dream_used_'+new Date().toLocaleDateString('en-CA'),'1');}
