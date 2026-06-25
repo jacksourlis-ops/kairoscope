@@ -1864,7 +1864,7 @@ function applyLanguage(){
   const freeBtn=document.getElementById('free-btn');if(freeBtn)freeBtn.textContent=T.freeTier;
   const proBtn=document.getElementById('pro-btn');if(proBtn&&!APP.isPro)proBtn.textContent=T.proTier;
   const tabs=document.querySelectorAll('.tab');
-  const tabKeys=['tabHoroscope','tabDream','tabCombined','tabJournal'];
+  const tabKeys=['tabHoroscope','tabDream','tabJournal'];
   tabs.forEach((tab,i)=>{if(T[tabKeys[i]])tab.textContent=T[tabKeys[i]];});
   document.querySelectorAll('.pb').forEach(btn=>{
     if(btn.dataset.p==='today')btn.textContent=T.periodToday;
