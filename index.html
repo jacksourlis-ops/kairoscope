@@ -1124,7 +1124,7 @@ const TRANSLATIONS={
     paywallTitle:'YOUR STORY IS UNFOLDING',
     paywallSub:"You've begun something. Continue discovering the patterns beneath the surface.",
     paywallCta:'✦ UNLOCK MY FULL STORY ✦',paywallPreparing:'✦ PREPARING YOUR MOMENT ✦',paywallDismiss:'maybe later',
-    feat1:'Unlimited cosmic readings — daily, weekly, monthly',
+    feat1:'No lifetime reading cap — return for fresh insight every day',
     feat2:'Full birth chart — sun, moon & rising, precisely calculated',
     feat3:'Readings personalised to your exact natal placements',
     feat4:'Discover recurring symbols hidden across months of dreams',
@@ -3845,49 +3845,46 @@ function refreshJournal(){
     }
   }
 
-  // Dream list
+  // Dream list — TODAY ONLY. Past dreams live in the calendar, not a rolling list here.
   if(!list) return;
   list.innerHTML='';
-  if(dreams.length===0){
-    if(empty) empty.style.display='block';
+  const todaysDream=getTodaysDreamEntry();
+  if(!todaysDream){
+    if(empty){
+      empty.style.display='block';
+      empty.innerHTML = dreams.length
+        ? `No dream logged today yet.<br><span style="font-size:13px;opacity:.7">Tap above to record tonight's — or open the calendar above to revisit a past one.</span>`
+        : `Your dream journal is empty.<br><span style="font-size:13px;opacity:.7">Tap above to record your first dream.</span>`;
+    }
     return;
   }
   if(empty) empty.style.display='none';
 
-  dreams.slice(0,APP.isPro?999:3).forEach(dream=>{
-    const d=document.createElement('div');
-    d.className='journal-entry';
-    const dt=new Date(dream.date);
-    const dateStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    const tagsHtml=(dream.tags||[]).map(t=>`<span class="journal-entry-tag">${t}</span>`).join('');
-    const hasInterp=!!(dream.interpretation||dream.combined);
+  const dream=todaysDream;
+  const d=document.createElement('div');
+  d.className='journal-entry';
+  const dt=new Date(dream.date);
+  const dateStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const tagsHtml=(dream.tags||[]).map(t=>`<span class="journal-entry-tag">${t}</span>`).join('');
+  const hasInterp=!!(dream.interpretation||dream.combined);
 
-    d.innerHTML=`
-      <div class="journal-entry-top">
-        <div class="journal-entry-date">${dateStr.toUpperCase()} · ${dream.moon||''}</div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span class="journal-entry-moon">${dream.moonEmoji||''}</span>
-          <button class="je-action" onclick="openDreamEntry(${dream.id})">✎ EDIT</button>
-        </div>
+  d.innerHTML=`
+    <div class="journal-entry-top">
+      <div class="journal-entry-date">${dateStr.toUpperCase()} · ${dream.moon||''}</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="journal-entry-moon">${dream.moonEmoji||''}</span>
+        <button class="je-action" onclick="openDreamEntry(${dream.id})">✎ EDIT</button>
       </div>
-      ${tagsHtml?`<div class="journal-entry-tags">${tagsHtml}</div>`:''}
-      <div class="journal-entry-text" id="jt-${dream.id}">${dream.text}</div>
-      <div class="journal-entry-actions">
-        <button class="je-action" onclick="toggleExpandDream(${dream.id})">↓ READ</button>
-        ${hasInterp?`<button class="je-action" onclick="toggleInterpDream(${dream.id})">◈ INTERPRETATION</button>`:''}
-      </div>
-      ${hasInterp?`<div class="journal-entry-interp" id="ji-${dream.id}">${dream.interpretation||dream.combined||''}</div>`:''}
-    `;
-    list.appendChild(d);
-  });
-
-  // Upgrade prompt if free and has more
-  if(!APP.isPro&&dreams.length>3){
-    const upgrade=document.createElement('div');
-    upgrade.style.cssText='text-align:center;padding:.75rem;font-family:"Cinzel",serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.35)';
-    upgrade.innerHTML=`+${dreams.length-3} more dreams · <button onclick="document.getElementById('paywall').classList.add('on')" style="background:none;border:none;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.6);cursor:pointer;text-decoration:underline">UPGRADE TO SEE ALL</button>`;
-    list.appendChild(upgrade);
-  }
+    </div>
+    ${tagsHtml?`<div class="journal-entry-tags">${tagsHtml}</div>`:''}
+    <div class="journal-entry-text" id="jt-${dream.id}">${dream.text}</div>
+    <div class="journal-entry-actions">
+      <button class="je-action" onclick="toggleExpandDream(${dream.id})">↓ READ</button>
+      ${hasInterp?`<button class="je-action" onclick="toggleInterpDream(${dream.id})">◈ INTERPRETATION</button>`:''}
+    </div>
+    ${hasInterp?`<div class="journal-entry-interp" id="ji-${dream.id}">${dream.interpretation||dream.combined||''}</div>`:''}
+  `;
+  list.appendChild(d);
 }
 
 function toggleExpandDream(id){
@@ -4403,6 +4400,137 @@ function astroContextToPrompt(ctx){
 // ============================================================
 // UI HELPERS
 // ============================================================
+// SEEK YOUR KAIROS — wish ritual, Pro-only, 3/month
+// ============================================================
+const WISH_DOMAINS={
+  career:{label:'Career & Ambition',hint:"10th house (career, public reputation), Midheaven, Saturn (structure, achievement), Capricorn, and how the Sun relates to ambition right now"},
+  love:{label:'Love & Romance',hint:"Venus (attraction, values), 7th house (partnership), Libra, and the Moon's current emotional terrain"},
+  money:{label:'Money & Abundance',hint:"2nd house (resources, self-worth), Taurus, Jupiter (expansion, luck), and Venus (what is valued)"},
+  travel:{label:'Travel & Escape',hint:"9th house (journeys, expansion), Sagittarius, Jupiter, and Mercury (movement, plans)"},
+  home:{label:'Home & Relocation',hint:"4th house (home, roots), Cancer, the Moon, and Saturn (stability, foundations)"},
+  other:{label:'General Life Direction',hint:"the Sun (core identity) and whichever transits are currently most dominant"}
+};
+let selectedWishCat='career';
+const WISH_MONTHLY_LIMIT=3;
+
+function getWishMonthKey(){
+  const now=new Date();
+  return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+}
+function getWishCountThisMonth(){
+  return parseInt(localStorage.getItem('k_wish_count_'+getWishMonthKey())||'0');
+}
+function incrementWishCount(){
+  localStorage.setItem('k_wish_count_'+getWishMonthKey(),getWishCountThisMonth()+1);
+}
+function canMakeWish(){
+  return APP.isPro&&getWishCountThisMonth()<WISH_MONTHLY_LIMIT;
+}
+
+function selectWishCat(el){
+  document.querySelectorAll('.wish-cat-pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  selectedWishCat=el.dataset.cat;
+}
+
+function openWishScreen(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
+  document.getElementById('wish-screen').style.display='block';
+  document.body.style.overflow='hidden';
+  updateWishCounterUI();
+  const result=document.getElementById('wish-result');
+  if(result) result.style.display='none';
+  const ta=document.getElementById('wish-text-input');
+  if(ta) ta.value='';
+}
+function closeWishScreen(){
+  document.getElementById('wish-screen').style.display='none';
+  document.body.style.overflow='';
+  renderCalendar();
+}
+
+function updateWishCounterUI(){
+  const remaining=Math.max(0,WISH_MONTHLY_LIMIT-getWishCountThisMonth());
+  const counterEl=document.getElementById('wish-counter');
+  const formWrap=document.getElementById('wish-form-wrap');
+  if(counterEl){
+    if(remaining<=0){
+      counterEl.textContent="You've sought your Kairos 3 times this month — trust what you've already set in motion. Returns next month.";
+      if(formWrap) formWrap.style.display='none';
+    }else{
+      counterEl.textContent=remaining+' wish'+(remaining!==1?'es':'')+' remaining this month';
+      if(formWrap) formWrap.style.display='block';
+    }
+  }
+  renderWishStarsIndicator();
+}
+
+function renderWishStarsIndicator(){
+  const el=document.getElementById('wish-stars-indicator');
+  if(!el)return;
+  if(!APP.isPro){
+    el.innerHTML='<span class="pro-badge" style="font-size:7px">✦ PRO</span>';
+    return;
+  }
+  const remaining=Math.max(0,WISH_MONTHLY_LIMIT-getWishCountThisMonth());
+  let stars='';
+  for(let i=0;i<WISH_MONTHLY_LIMIT;i++){
+    stars+= i<remaining ? '★' : '<span style="opacity:.25">★</span>';
+  }
+  el.innerHTML=stars;
+}
+
+function saveWishToKairos(wishData){
+  const key=getKairosKey();
+  let entry={};
+  try{const existing=localStorage.getItem(key);if(existing)entry=JSON.parse(existing);}catch(e){}
+  if(!entry.wishes)entry.wishes=[];
+  entry.wishes.push(wishData);
+  entry.date=new Date().toLocaleDateString('en-CA');
+  try{localStorage.setItem(key,JSON.stringify(entry));}catch(e){}
+}
+
+async function submitWish(){
+  const text=document.getElementById('wish-text-input').value.trim();
+  if(!text){alert('Name your wish first — be specific about what it is.');return;}
+  if(!canMakeWish()){
+    if(!APP.isPro)document.getElementById('paywall').classList.add('on');
+    return;
+  }
+
+  const btn=document.getElementById('wish-submit-btn');
+  const resultBox=document.getElementById('wish-result');
+  const resultTitle=document.getElementById('wish-result-title');
+  const resultText=document.getElementById('wish-result-text');
+  const domain=WISH_DOMAINS[selectedWishCat];
+
+  btn.disabled=true;btn.textContent='★ READING THE MOMENT ★';
+  resultBox.style.display='block';
+  resultTitle.textContent=domain.label.toUpperCase();
+  resultText.textContent='The cosmos is listening...';
+  resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  const sign=APP.sh||APP.chart.sun||'Aries';
+  const astroCtx=buildAstroContext(sign,'today');
+  const astroStr=astroContextToPrompt(astroCtx);
+
+  const prompt=`${astroStr}\n\nWISH CATEGORY: ${domain.label}\nRELEVANT ASTROLOGICAL DOMAIN: ${domain.hint}\n\nTHE WISH, IN THEIR OWN WORDS: "${text}"\n\nGive an honest astrological reading on whether the current cosmic timing favors this specific wish. Reference real transits and aspects relevant to this domain. Then close with a short, poetic line that seals this wish with the cosmos — as if it has now been formally set into motion, regardless of the timing read. 3-4 paragraphs.`;
+
+  const system=`You are Kairoscope, performing a sacred kairos-seeking ritual. Someone has named a specific, personal wish and wants to know if right now is the moment for it. Give an honest, technically grounded astrological assessment using the real current transits and domain-specific influences provided — never vague, never generic. Be truthful if timing looks difficult; do not promise outcomes. But always end with one short, poetic sealing line that gives the moment ritual weight — as though the wish has now been spoken into motion with the cosmos, whatever the timing read says. Gender-neutral. No markdown.`;
+
+  try{
+    const txt=await callAI(prompt,system);
+    resultText.textContent=txt;
+    saveWishToKairos({category:selectedWishCat,label:domain.label,text,reading:txt,date:new Date().toLocaleDateString('en-CA')});
+    incrementWishCount();
+    updateWishCounterUI();
+    renderCalendar();
+  }catch(e){
+    resultText.textContent='The moment slipped away: '+e.message;
+  }
+  btn.disabled=false;btn.textContent='★ SEEK YOUR KAIROS ★';
+}
+
 function setTier(t){
   APP.isPro=t==='pro';localStorage.setItem('k_pro',APP.isPro);
   const freeBtn=document.getElementById('free-btn');
@@ -4643,136 +4771,6 @@ function getKairosDateRange(){
 }
 
 // ============================================================
-// SEEK YOUR KAIROS — wish ritual, Pro-only, 3/month
-// ============================================================
-const WISH_DOMAINS={
-  career:{label:'Career & Ambition',hint:"10th house (career, public reputation), Midheaven, Saturn (structure, achievement), Capricorn, and how the Sun relates to ambition right now"},
-  love:{label:'Love & Romance',hint:"Venus (attraction, values), 7th house (partnership), Libra, and the Moon's current emotional terrain"},
-  money:{label:'Money & Abundance',hint:"2nd house (resources, self-worth), Taurus, Jupiter (expansion, luck), and Venus (what is valued)"},
-  travel:{label:'Travel & Escape',hint:"9th house (journeys, expansion), Sagittarius, Jupiter, and Mercury (movement, plans)"},
-  home:{label:'Home & Relocation',hint:"4th house (home, roots), Cancer, the Moon, and Saturn (stability, foundations)"},
-  other:{label:'General Life Direction',hint:"the Sun (core identity) and whichever transits are currently most dominant"}
-};
-let selectedWishCat='career';
-const WISH_MONTHLY_LIMIT=3;
-
-function getWishMonthKey(){
-  const now=new Date();
-  return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-}
-function getWishCountThisMonth(){
-  return parseInt(localStorage.getItem('k_wish_count_'+getWishMonthKey())||'0');
-}
-function incrementWishCount(){
-  localStorage.setItem('k_wish_count_'+getWishMonthKey(),getWishCountThisMonth()+1);
-}
-function canMakeWish(){
-  return APP.isPro&&getWishCountThisMonth()<WISH_MONTHLY_LIMIT;
-}
-
-function selectWishCat(el){
-  document.querySelectorAll('.wish-cat-pill').forEach(p=>p.classList.remove('on'));
-  el.classList.add('on');
-  selectedWishCat=el.dataset.cat;
-}
-
-function openWishScreen(){
-  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
-  document.getElementById('wish-screen').style.display='block';
-  document.body.style.overflow='hidden';
-  updateWishCounterUI();
-  const result=document.getElementById('wish-result');
-  if(result) result.style.display='none';
-  const ta=document.getElementById('wish-text-input');
-  if(ta) ta.value='';
-}
-function closeWishScreen(){
-  document.getElementById('wish-screen').style.display='none';
-  document.body.style.overflow='';
-  renderCalendar();
-}
-
-function updateWishCounterUI(){
-  const remaining=Math.max(0,WISH_MONTHLY_LIMIT-getWishCountThisMonth());
-  const counterEl=document.getElementById('wish-counter');
-  const formWrap=document.getElementById('wish-form-wrap');
-  if(counterEl){
-    if(remaining<=0){
-      counterEl.textContent="You've sought your Kairos 3 times this month — trust what you've already set in motion. Returns next month.";
-      if(formWrap) formWrap.style.display='none';
-    }else{
-      counterEl.textContent=remaining+' wish'+(remaining!==1?'es':'')+' remaining this month';
-      if(formWrap) formWrap.style.display='block';
-    }
-  }
-  renderWishStarsIndicator();
-}
-
-function renderWishStarsIndicator(){
-  const el=document.getElementById('wish-stars-indicator');
-  if(!el)return;
-  if(!APP.isPro){
-    el.innerHTML='<span class="pro-badge" style="font-size:7px">✦ PRO</span>';
-    return;
-  }
-  const remaining=Math.max(0,WISH_MONTHLY_LIMIT-getWishCountThisMonth());
-  let stars='';
-  for(let i=0;i<WISH_MONTHLY_LIMIT;i++){
-    stars+= i<remaining ? '★' : '<span style="opacity:.25">★</span>';
-  }
-  el.innerHTML=stars;
-}
-
-function saveWishToKairos(wishData){
-  const key=getKairosKey();
-  let entry={};
-  try{const existing=localStorage.getItem(key);if(existing)entry=JSON.parse(existing);}catch(e){}
-  if(!entry.wishes)entry.wishes=[];
-  entry.wishes.push(wishData);
-  entry.date=new Date().toLocaleDateString('en-CA');
-  try{localStorage.setItem(key,JSON.stringify(entry));}catch(e){}
-}
-
-async function submitWish(){
-  const text=document.getElementById('wish-text-input').value.trim();
-  if(!text){alert('Name your wish first — be specific about what it is.');return;}
-  if(!canMakeWish()){
-    if(!APP.isPro)document.getElementById('paywall').classList.add('on');
-    return;
-  }
-
-  const btn=document.getElementById('wish-submit-btn');
-  const resultBox=document.getElementById('wish-result');
-  const resultTitle=document.getElementById('wish-result-title');
-  const resultText=document.getElementById('wish-result-text');
-  const domain=WISH_DOMAINS[selectedWishCat];
-
-  btn.disabled=true;btn.textContent='★ READING THE MOMENT ★';
-  resultBox.style.display='block';
-  resultTitle.textContent=domain.label.toUpperCase();
-  resultText.textContent='The cosmos is listening...';
-  resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
-
-  const sign=APP.sh||APP.chart.sun||'Aries';
-  const astroCtx=buildAstroContext(sign,'today');
-  const astroStr=astroContextToPrompt(astroCtx);
-
-  const prompt=`${astroStr}\n\nWISH CATEGORY: ${domain.label}\nRELEVANT ASTROLOGICAL DOMAIN: ${domain.hint}\n\nTHE WISH, IN THEIR OWN WORDS: "${text}"\n\nGive an honest astrological reading on whether the current cosmic timing favors this specific wish. Reference real transits and aspects relevant to this domain. Then close with a short, poetic line that seals this wish with the cosmos — as if it has now been formally set into motion, regardless of the timing read. 3-4 paragraphs.`;
-
-  const system=`You are Kairoscope, performing a sacred kairos-seeking ritual. Someone has named a specific, personal wish and wants to know if right now is the moment for it. Give an honest, technically grounded astrological assessment using the real current transits and domain-specific influences provided — never vague, never generic. Be truthful if timing looks difficult; do not promise outcomes. But always end with one short, poetic sealing line that gives the moment ritual weight — as though the wish has now been spoken into motion with the cosmos, whatever the timing read says. Gender-neutral. No markdown.`;
-
-  try{
-    const txt=await callAI(prompt,system);
-    resultText.textContent=txt;
-    saveWishToKairos({category:selectedWishCat,label:domain.label,text,reading:txt,date:new Date().toLocaleDateString('en-CA')});
-    incrementWishCount();
-    updateWishCounterUI();
-    renderCalendar();
-  }catch(e){
-    resultText.textContent='The moment slipped away: '+e.message;
-  }
-  btn.disabled=false;btn.textContent='★ SEEK YOUR KAIROS ★';
-}
 
 function buildChartCtx(){
   if(!APP.isPro||!APP.chart.sun)return'';
@@ -5801,8 +5799,6 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
     <div class="conn-reading-text" id="conn-reading-text">Loading your cosmic connection...</div>
     <div class="conn-free-note" id="conn-free-note"></div>
   </div>
-
-  <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;color:rgba(200,175,255,0.5);text-align:center;margin-top:.75rem">1 FREE COMPATIBILITY READING PER MONTH · UNLIMITED WITH PRO</div>
 
 </div>
 
