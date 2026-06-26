@@ -402,7 +402,13 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .cal-day.today{color:#fff;font-weight:bold;text-shadow:0 0 8px rgba(210,175,255,0.6)}
 .cal-dot{width:5px;height:5px;border-radius:50%;background:rgba(180,150,255,0.9)}
 .cal-dot.gold{background:rgba(220,180,80,0.95)}
+.cal-wish-star{font-size:7px;color:rgba(240,210,100,0.95);line-height:1;text-shadow:0 0 4px rgba(240,210,100,0.5)}
 .cal-dow{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;color:rgba(210,195,255,0.6);text-align:center;padding:3px 0}
+.wish-cat-pill{padding:10px 6px;border-radius:12px;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.06em;color:rgba(215,195,255,0.7);border:.5px solid rgba(200,175,255,0.15);background:rgba(200,175,255,0.03);cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.2}
+.wish-cat-pill .wish-cat-icon{font-size:18px}
+.wish-cat-pill.on{color:rgba(240,210,100,0.95);border-color:rgba(220,180,80,0.4);background:rgba(220,180,80,0.08)}
+.wish-cat-pill:hover:not(.on){border-color:rgba(200,175,255,0.3);background:rgba(200,175,255,0.06)}
+.wish-counter{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(220,180,80,0.7);text-align:center;margin-bottom:.85rem}
 .journal-entry{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem 1rem;margin-bottom:8px}
 .journal-entry-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
 .journal-entry-date{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(210,195,255,0.72)}
@@ -521,7 +527,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;text-align:center;margin-bottom:.75rem;display:none" id="audio-label"></div>
 
   <!-- TIER -->
-  <div class="tier-bar">
+  <div class="tier-bar" id="tier-bar">
     <button class="tier-btn on" id="free-btn" onclick="setTier('free')">◈ FREE</button>
     <button class="tier-btn" id="pro-btn" onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')">✦ PRO — $5.99 USD/mo</button>
   </div>
@@ -620,7 +626,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div><span class="lbl">DESCRIBE LAST NIGHT'S DREAM</span>
       <textarea class="dream-ta" id="dream-input" placeholder="I stood at the edge of an obsidian sea, when a figure made of starlight spoke my name..." rows="6" oninput="document.getElementById('btn-d').disabled=this.value.trim().length<8"></textarea>
     </div>
-    <button class="reveal-btn" id="btn-d" disabled onclick="saveTodayDream()">+ SAVE TO TODAY'S JOURNAL</button>
+    <button class="reveal-btn" id="btn-d" disabled onclick="saveTodayDream()">→ ADD TO JOURNAL</button>
     <div id="dream-save-confirm" style="display:none;text-align:center;font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic;margin-top:.5rem">Saved ✦ Edit anytime today, or open the Kairos calendar to combine it with your stars.</div>
     <!-- FREE SYMBOL GUIDE -->
     <div style="margin-top:1.25rem;border-top:.5px solid var(--border);padding-top:1.25rem">
@@ -652,6 +658,30 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <button onclick="openJournal()" style="width:100%;padding:16px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.85);cursor:pointer">✦ OPEN MY DREAM JOURNAL</button>
     <div id="journal-preview" style="margin-top:1.25rem"></div>
   </div>
+
+  <!-- SLEEP MODE + CONNECTIONS + SEEK YOUR KAIROS — persistent across all three tabs -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1.25rem 0 .75rem">
+    <button onclick="openSleep()" id="sleep-mode-btn" style="background:linear-gradient(135deg,rgba(100,70,200,0.2),rgba(140,100,230,0.12));border:1px solid rgba(180,150,255,0.35);border-radius:18px;padding:22px 10px 18px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 0 20px rgba(140,100,230,0.12)">
+      <div style="font-size:28px;color:#f0d870;margin-bottom:10px;font-family:'Cinzel',serif;line-height:1">☽</div>
+      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px" id="sleep-mode-lbl">SLEEP MODE</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic" id="sleep-mode-sub">Sounds · Timer · Alarm</div>
+    </button>
+    <button onclick="openConnections()" id="connections-btn" style="background:linear-gradient(135deg,rgba(100,70,200,0.2),rgba(140,100,230,0.12));border:1px solid rgba(180,150,255,0.35);border-radius:18px;padding:22px 10px 18px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 0 20px rgba(140,100,230,0.12)">
+      <div style="font-size:28px;color:#f0d870;margin-bottom:10px;font-family:'Cinzel',serif;line-height:1">✦</div>
+      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px" id="people-sky-lbl">PEOPLE IN MY SKY</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic" id="people-sky-sub">Charts · Compatibility</div>
+    </button>
+  </div>
+  <button onclick="openWishScreen()" id="wish-entry-btn" style="width:100%;background:linear-gradient(135deg,rgba(220,180,80,0.18),rgba(240,210,100,0.08));border:1px solid rgba(220,180,80,0.4);border-radius:18px;padding:16px 16px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;box-shadow:0 0 24px rgba(220,180,80,0.15);margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px;text-align:left">
+      <div style="font-size:24px;color:#f0d870;line-height:1">✦</div>
+      <div>
+        <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:3px">SEEK YOUR KAIROS</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(230,205,140,0.75);font-style:italic">Speak a wish into the moment</div>
+      </div>
+    </div>
+    <div id="wish-stars-indicator" style="display:flex;gap:3px;font-size:14px;color:rgba(240,210,100,0.9);flex-shrink:0"></div>
+  </button>
 
   
 <!-- JOURNAL SCREEN -->
@@ -702,7 +732,9 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(160,130,255,0.8)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">DREAM</div></div>
       <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:rgba(220,180,80,0.9)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">HOROSCOPE</div></div>
       <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:2px;background:rgba(180,220,255,0.8)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">COMBINED</div></div>
+      <div style="display:flex;align-items:center;gap:4px"><div class="cal-wish-star">★</div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">WISH</div></div>
     </div>
+    <button class="export-btn" id="export-btn" onclick="exportJournal()" style="margin-top:.65rem">↓ EXPORT YOUR KAIROS AS .TXT</button>
   </div>
 
   <!-- RECORD BUTTON -->
@@ -775,20 +807,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   </div>
 
-
-  <!-- SLEEP MODE + CONNECTIONS BUTTONS -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1.5rem 0 1.75rem">
-    <button onclick="openSleep()" id="sleep-mode-btn" style="background:linear-gradient(135deg,rgba(100,70,200,0.2),rgba(140,100,230,0.12));border:1px solid rgba(180,150,255,0.35);border-radius:18px;padding:22px 10px 18px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 0 20px rgba(140,100,230,0.12)">
-      <div style="font-size:28px;color:#f0d870;margin-bottom:10px;font-family:'Cinzel',serif;line-height:1">☽</div>
-      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px" id="sleep-mode-lbl">SLEEP MODE</div>
-      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic" id="sleep-mode-sub">Sounds · Timer · Alarm</div>
-    </button>
-    <button onclick="openConnections()" id="connections-btn" style="background:linear-gradient(135deg,rgba(100,70,200,0.2),rgba(140,100,230,0.12));border:1px solid rgba(180,150,255,0.35);border-radius:18px;padding:22px 10px 18px;font-family:'Cinzel',serif;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 0 20px rgba(140,100,230,0.12)">
-      <div style="font-size:28px;color:#f0d870;margin-bottom:10px;font-family:'Cinzel',serif;line-height:1">✦</div>
-      <div style="font-size:11px;letter-spacing:.14em;color:#f0d870;font-weight:bold;margin-bottom:5px" id="people-sky-lbl">PEOPLE IN MY SKY</div>
-      <div style="font-family:'Crimson Pro',serif;font-size:12px;color:rgba(210,195,255,0.65);font-style:italic" id="people-sky-sub">Charts · Compatibility</div>
-    </button>
-  </div>
 
   <!-- JOURNEY -->
   <div style="border-top:.5px solid var(--border);padding-top:1.25rem">
@@ -865,6 +883,50 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <span class="pro-badge" style="margin-bottom:.6rem">✦ PRO</span>
       <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(220,205,255,0.85);font-style:italic">Unlock personalized dream readings</div>
     </div>
+  </div>
+
+</div>
+
+<!-- SEEK YOUR KAIROS -->
+<div id="wish-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9998;overflow-y:auto;padding:1.5rem 1.25rem 3rem">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;position:sticky;top:0;background:#03020d;padding:.5rem 0;z-index:10">
+    <button onclick="closeWishScreen()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.7);cursor:pointer;padding:8px 0">← BACK</button>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(240,210,100,0.9)">SEEK YOUR KAIROS</div>
+    <div style="width:50px"></div>
+  </div>
+
+  <div id="wish-intro" style="text-align:center;margin-bottom:1.25rem">
+    <div style="font-size:26px;margin-bottom:.5rem">★</div>
+    <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(215,200,255,0.78);line-height:1.7;font-style:italic">Speak your wish into the moment. The stars will tell you if this is the time — and seal it with the cosmos either way.</div>
+  </div>
+
+  <div class="wish-counter" id="wish-counter"></div>
+
+  <div id="wish-form-wrap">
+    <div style="margin-bottom:1rem">
+      <span class="lbl">WHAT KIND OF WISH IS THIS?</span>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:.5rem" id="wish-cat-grid">
+        <button class="wish-cat-pill on" data-cat="career" onclick="selectWishCat(this)"><span class="wish-cat-icon">💼</span><span>Career</span></button>
+        <button class="wish-cat-pill" data-cat="love" onclick="selectWishCat(this)"><span class="wish-cat-icon">♡</span><span>Love</span></button>
+        <button class="wish-cat-pill" data-cat="money" onclick="selectWishCat(this)"><span class="wish-cat-icon">✦</span><span>Money</span></button>
+        <button class="wish-cat-pill" data-cat="travel" onclick="selectWishCat(this)"><span class="wish-cat-icon">✈</span><span>Travel</span></button>
+        <button class="wish-cat-pill" data-cat="home" onclick="selectWishCat(this)"><span class="wish-cat-icon">🏠</span><span>Home</span></button>
+        <button class="wish-cat-pill" data-cat="other" onclick="selectWishCat(this)"><span class="wish-cat-icon">◇</span><span>Other</span></button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem">
+      <span class="lbl">NAME IT SPECIFICALLY</span>
+      <textarea id="wish-text-input" class="dream-ta" placeholder="The job at... Being with... Moving to... Whatever it is, say it plainly." rows="4" style="margin-top:.5rem"></textarea>
+    </div>
+
+    <button class="reveal-btn" id="wish-submit-btn" onclick="submitWish()">★ SEEK YOUR KAIROS ★</button>
+  </div>
+
+  <div id="wish-result" style="display:none;margin-top:1.25rem;background:rgba(220,180,80,0.04);border:.5px solid rgba(220,180,80,0.18);border-radius:12px;padding:1.25rem">
+    <div id="wish-result-title" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(240,210,100,0.9);margin-bottom:.75rem;text-align:center"></div>
+    <div id="wish-result-text" style="font-family:'Crimson Pro',serif;font-size:16px;color:rgba(235,228,255,0.9);line-height:1.9;font-style:italic"></div>
   </div>
 
 </div>
@@ -1045,7 +1107,7 @@ const TRANSLATIONS={
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Dream',tabCombined:'⊕ Combined',tabJournal:'📖 Journal',
     yourSign:'YOUR SIGN',period:'PERIOD',
     periodToday:'Today',periodWeek:'This Week',periodMonth:'This Month',
-    revealBtn:'◈ REVEAL MY MOMENT ◈',interpretBtn:'◈ INTERPRET THIS DREAM ◈',saveDreamBtn:"+ SAVE TO TODAY'S JOURNAL",seeBtn:'◈ SEE MY MOMENT ◈',
+    revealBtn:'◈ REVEAL MY MOMENT ◈',interpretBtn:'◈ INTERPRET THIS DREAM ◈',saveDreamBtn:"→ ADD TO JOURNAL",seeBtn:'◈ SEE MY MOMENT ◈',
     fullBirthChart:'FULL BIRTH CHART',dateOfBirth:'DATE OF BIRTH',timeOfBirth:'TIME OF BIRTH',cityOfBirth:'CITY OF BIRTH',
     cityPlaceholder:'e.g. Toronto, London, New York...',
     describeDream:'DESCRIBE YOUR DREAM',
@@ -3558,7 +3620,8 @@ function renderCalendar(){
     const kairosEntry=kairosDates[key];
     const hasHoro=kairosEntry?.horoscope;
     const hasCombined=kairosEntry?.combined;
-    const hasAnything=hasDream||hasHoro||hasCombined;
+    const hasWish=kairosEntry?.wishes&&kairosEntry.wishes.length>0;
+    const hasAnything=hasDream||hasHoro||hasCombined||hasWish;
 
     if(hasAnything){
       el.classList.add('has-dream');
@@ -3578,6 +3641,12 @@ function renderCalendar(){
         const dot=document.createElement('div');
         dot.style.cssText='width:5px;height:5px;border-radius:2px;background:rgba(180,220,255,0.9)';
         dots.appendChild(dot);
+      }
+      if(hasWish){
+        const star=document.createElement('div');
+        star.className='cal-wish-star';
+        star.textContent='★';
+        dots.appendChild(star);
       }
       el.appendChild(dots);
       el.onclick=()=>showKairosForDate(key);
@@ -3643,6 +3712,16 @@ function showKairosForDate(dateKey){
       <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(180,220,255,0.9);margin-bottom:.6rem">✦ STARS & DREAMS COMBINED</div>
       <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.88);line-height:1.85;font-style:italic">${kairos.combined.text}</div>
     </div>`;
+  }
+
+  if(kairos?.wishes&&kairos.wishes.length){
+    kairos.wishes.forEach(w=>{
+      html+=`<div style="margin-bottom:1.25rem;border-top:.5px solid rgba(220,180,80,0.12);padding-top:1.25rem">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(240,210,100,0.9);margin-bottom:.6rem">★ ${(w.label||'WISH').toUpperCase()}</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(230,220,255,0.8);line-height:1.75;font-style:italic;margin-bottom:.75rem">"${w.text}"</div>
+        <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.88);line-height:1.85;font-style:italic;border-top:.5px solid rgba(220,180,80,0.08);padding-top:.75rem">${w.reading}</div>
+      </div>`;
+    });
   }
 
   if(!kairos&&!dream){
@@ -3728,7 +3807,7 @@ function refreshJournal(){
   renderCalendar();
 
   // Entry button — free limit (continuing today's existing entry is always allowed, even at the cap)
-  const totalFree=3; // max free dreams logged
+  const totalFree=5; // max free dreams logged
   const todaysEntry=getTodaysDreamEntry();
   if(entryBtn) entryBtn.textContent = todaysEntry?"✎ CONTINUE TODAY'S DREAM":"✦ RECORD TONIGHT'S DREAM";
   if(!todaysEntry&&!APP.isPro&&dreams.length>=totalFree){
@@ -4327,11 +4406,13 @@ function setTier(t){
   APP.isPro=t==='pro';localStorage.setItem('k_pro',APP.isPro);
   const freeBtn=document.getElementById('free-btn');
   const proBtn=document.getElementById('pro-btn');
+  const tierBar=document.getElementById('tier-bar');
   if(freeBtn) freeBtn.classList.toggle('on',!APP.isPro);
   if(proBtn) proBtn.classList.toggle('on',APP.isPro);
+  if(tierBar) tierBar.style.display = APP.isPro ? 'none' : 'flex';
   const pill=document.getElementById('main-pill');
   if(APP.isPro){
-    if(pill){pill.className='pill pro';const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;pill.innerHTML='✦ '+(T.proUnlimited||'PRO — unlimited readings');}
+    if(pill){pill.className='pill pro';pill.innerHTML='✦ PRO';}
     ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
   }else{
     if(pill){pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;}
@@ -4340,6 +4421,7 @@ function setTier(t){
   refreshJournal();
   const dictLock=document.getElementById('dict-btn-lock');
   if(dictLock) dictLock.style.display = APP.isPro ? 'none' : 'flex';
+  renderWishStarsIndicator();
 }
 async function activatePro(){
   const btn=document.querySelector('.pw-cta');
@@ -4373,6 +4455,7 @@ if(localStorage.getItem('k_cache_version')!==CACHE_VERSION){
 
 if(APP.isPro)setTier('pro');
 updateSignLockUI();
+renderWishStarsIndicator();
 const __dictLockInit=document.getElementById('dict-btn-lock');
 if(__dictLockInit) __dictLockInit.style.display = APP.isPro ? 'none' : 'flex';
 document.addEventListener('DOMContentLoaded',loadTodayDream);
@@ -4558,6 +4641,138 @@ function getKairosDateRange(){
   return dates;
 }
 
+// ============================================================
+// SEEK YOUR KAIROS — wish ritual, Pro-only, 3/month
+// ============================================================
+const WISH_DOMAINS={
+  career:{label:'Career & Ambition',hint:"10th house (career, public reputation), Midheaven, Saturn (structure, achievement), Capricorn, and how the Sun relates to ambition right now"},
+  love:{label:'Love & Romance',hint:"Venus (attraction, values), 7th house (partnership), Libra, and the Moon's current emotional terrain"},
+  money:{label:'Money & Abundance',hint:"2nd house (resources, self-worth), Taurus, Jupiter (expansion, luck), and Venus (what is valued)"},
+  travel:{label:'Travel & Escape',hint:"9th house (journeys, expansion), Sagittarius, Jupiter, and Mercury (movement, plans)"},
+  home:{label:'Home & Relocation',hint:"4th house (home, roots), Cancer, the Moon, and Saturn (stability, foundations)"},
+  other:{label:'General Life Direction',hint:"the Sun (core identity) and whichever transits are currently most dominant"}
+};
+let selectedWishCat='career';
+const WISH_MONTHLY_LIMIT=3;
+
+function getWishMonthKey(){
+  const now=new Date();
+  return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+}
+function getWishCountThisMonth(){
+  return parseInt(localStorage.getItem('k_wish_count_'+getWishMonthKey())||'0');
+}
+function incrementWishCount(){
+  localStorage.setItem('k_wish_count_'+getWishMonthKey(),getWishCountThisMonth()+1);
+}
+function canMakeWish(){
+  return APP.isPro&&getWishCountThisMonth()<WISH_MONTHLY_LIMIT;
+}
+
+function selectWishCat(el){
+  document.querySelectorAll('.wish-cat-pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  selectedWishCat=el.dataset.cat;
+}
+
+function openWishScreen(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
+  document.getElementById('wish-screen').style.display='block';
+  document.body.style.overflow='hidden';
+  updateWishCounterUI();
+  const result=document.getElementById('wish-result');
+  if(result) result.style.display='none';
+  const ta=document.getElementById('wish-text-input');
+  if(ta) ta.value='';
+}
+function closeWishScreen(){
+  document.getElementById('wish-screen').style.display='none';
+  document.body.style.overflow='';
+  renderCalendar();
+}
+
+function updateWishCounterUI(){
+  const remaining=Math.max(0,WISH_MONTHLY_LIMIT-getWishCountThisMonth());
+  const counterEl=document.getElementById('wish-counter');
+  const formWrap=document.getElementById('wish-form-wrap');
+  if(counterEl){
+    if(remaining<=0){
+      counterEl.textContent="You've sought your Kairos 3 times this month — trust what you've already set in motion. Returns next month.";
+      if(formWrap) formWrap.style.display='none';
+    }else{
+      counterEl.textContent=remaining+' wish'+(remaining!==1?'es':'')+' remaining this month';
+      if(formWrap) formWrap.style.display='block';
+    }
+  }
+  renderWishStarsIndicator();
+}
+
+function renderWishStarsIndicator(){
+  const el=document.getElementById('wish-stars-indicator');
+  if(!el)return;
+  if(!APP.isPro){
+    el.innerHTML='<span class="pro-badge" style="font-size:7px">✦ PRO</span>';
+    return;
+  }
+  const remaining=Math.max(0,WISH_MONTHLY_LIMIT-getWishCountThisMonth());
+  let stars='';
+  for(let i=0;i<WISH_MONTHLY_LIMIT;i++){
+    stars+= i<remaining ? '★' : '<span style="opacity:.25">★</span>';
+  }
+  el.innerHTML=stars;
+}
+
+function saveWishToKairos(wishData){
+  const key=getKairosKey();
+  let entry={};
+  try{const existing=localStorage.getItem(key);if(existing)entry=JSON.parse(existing);}catch(e){}
+  if(!entry.wishes)entry.wishes=[];
+  entry.wishes.push(wishData);
+  entry.date=new Date().toLocaleDateString('en-CA');
+  try{localStorage.setItem(key,JSON.stringify(entry));}catch(e){}
+}
+
+async function submitWish(){
+  const text=document.getElementById('wish-text-input').value.trim();
+  if(!text){alert('Name your wish first — be specific about what it is.');return;}
+  if(!canMakeWish()){
+    if(!APP.isPro)document.getElementById('paywall').classList.add('on');
+    return;
+  }
+
+  const btn=document.getElementById('wish-submit-btn');
+  const resultBox=document.getElementById('wish-result');
+  const resultTitle=document.getElementById('wish-result-title');
+  const resultText=document.getElementById('wish-result-text');
+  const domain=WISH_DOMAINS[selectedWishCat];
+
+  btn.disabled=true;btn.textContent='★ READING THE MOMENT ★';
+  resultBox.style.display='block';
+  resultTitle.textContent=domain.label.toUpperCase();
+  resultText.textContent='The cosmos is listening...';
+  resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  const sign=APP.sh||APP.chart.sun||'Aries';
+  const astroCtx=buildAstroContext(sign,'today');
+  const astroStr=astroContextToPrompt(astroCtx);
+
+  const prompt=`${astroStr}\n\nWISH CATEGORY: ${domain.label}\nRELEVANT ASTROLOGICAL DOMAIN: ${domain.hint}\n\nTHE WISH, IN THEIR OWN WORDS: "${text}"\n\nGive an honest astrological reading on whether the current cosmic timing favors this specific wish. Reference real transits and aspects relevant to this domain. Then close with a short, poetic line that seals this wish with the cosmos — as if it has now been formally set into motion, regardless of the timing read. 3-4 paragraphs.`;
+
+  const system=`You are Kairoscope, performing a sacred kairos-seeking ritual. Someone has named a specific, personal wish and wants to know if right now is the moment for it. Give an honest, technically grounded astrological assessment using the real current transits and domain-specific influences provided — never vague, never generic. Be truthful if timing looks difficult; do not promise outcomes. But always end with one short, poetic sealing line that gives the moment ritual weight — as though the wish has now been spoken into motion with the cosmos, whatever the timing read says. Gender-neutral. No markdown.`;
+
+  try{
+    const txt=await callAI(prompt,system);
+    resultText.textContent=txt;
+    saveWishToKairos({category:selectedWishCat,label:domain.label,text,reading:txt,date:new Date().toLocaleDateString('en-CA')});
+    incrementWishCount();
+    updateWishCounterUI();
+    renderCalendar();
+  }catch(e){
+    resultText.textContent='The moment slipped away: '+e.message;
+  }
+  btn.disabled=false;btn.textContent='★ SEEK YOUR KAIROS ★';
+}
+
 function buildChartCtx(){
   if(!APP.isPro||!APP.chart.sun)return'';
   const c=APP.chart;
@@ -4734,20 +4949,15 @@ function getTodayKey(){return new Date().toLocaleDateString('en-CA');}
 function saveTodayDream(){
   const text=document.getElementById('dream-input').value.trim();
   if(!text)return;
-  if(!APP.isPro&&getJournal().filter(e=>e.dateKey!==getTodayKey()).length+1>5&&!getJournal().find(e=>e.dateKey===getTodayKey())){
-    document.getElementById('paywall').classList.add('on');return;
+  const tabBtn=document.querySelector('.tab[onclick*="\'j\'"]');
+  if(tabBtn) switchTab('j',tabBtn);
+  openTodaysDreamEntry();
+  if(!editingDreamId){
+    const ta=document.getElementById('dream-entry-input');
+    if(ta) ta.value=text;
   }
-  const entries=getJournal();
-  const todayKey=getTodayKey();
-  const existing=entries.find(e=>e.dateKey===todayKey);
-  if(existing){
-    existing.dream=text;
-  }else{
-    entries.unshift({id:Date.now(),dateKey:todayKey,date:new Date().toLocaleDateString('en-CA',{weekday:'short',year:'numeric',month:'short',day:'numeric'}),moon:moonData.emoji+' '+moonData.name,dream:text,interpretation:null});
-  }
-  saveJournal(entries);
-  const confirm=document.getElementById('dream-save-confirm');
-  if(confirm)confirm.style.display='block';
+  document.getElementById('dream-input').value='';
+  document.getElementById('btn-d').disabled=true;
 }
 
 function loadTodayDream(){
@@ -4796,10 +5006,25 @@ async function analysePatterns(){
 }
 
 function exportJournal(){
-  const entries=getJournal();if(!entries.length)return;
-  let content=`KAIROSCOPE — Dream Journal\nExported: ${new Date().toLocaleDateString()}\nEntries: ${entries.length}\n\n${'═'.repeat(50)}\n\n`;
-  entries.forEach((e,i)=>{content+=`DREAM ${i+1}\nDate: ${e.date}\nMoon: ${e.moon}\n\n${e.dream}\n`;if(e.interpretation)content+=`\nInterpretation:\n${e.interpretation}\n`;content+=`\n${'─'.repeat(40)}\n\n`;});
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=`kairoscope-journal-${new Date().toLocaleDateString('en-CA')}.txt`;a.click();
+  const dreams=getDreams().map(d=>({type:'DREAM',date:d.date,title:d.moon||'',body:d.text,extra:d.interpretation||d.combined||null}));
+  const kairosDates=getKairosDateRange();
+  const kairosEntries=[];
+  Object.keys(kairosDates).forEach(dateKey=>{
+    const entry=kairosDates[dateKey];
+    if(entry.horoscope) kairosEntries.push({type:'HOROSCOPE',date:entry.horoscope.date||dateKey,title:(entry.horoscope.sign||'')+' · '+(entry.horoscope.period||'today'),body:entry.horoscope.text});
+    if(entry.combined) kairosEntries.push({type:'COMBINED',date:entry.combined.date||dateKey,title:'Stars & Dreams Combined',body:entry.combined.text});
+  });
+  let all=[...dreams,...kairosEntries];
+  all.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!all.length){alert('Nothing to export yet.');return;}
+  if(!APP.isPro) all=all.slice(0,5);
+  let content=`KAIROSCOPE — Your Kairos\nExported: ${new Date().toLocaleDateString()}\nEntries: ${all.length}${!APP.isPro?' (free tier — most recent 5; upgrade to Pro for your full archive)':''}\n\n${'═'.repeat(50)}\n\n`;
+  all.forEach((e,i)=>{
+    content+=`${e.type} ${i+1}\nDate: ${new Date(e.date).toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${e.title?'\n'+e.title+'\n':''}\n${e.body}\n`;
+    if(e.extra) content+=`\nInterpretation:\n${e.extra}\n`;
+    content+=`\n${'─'.repeat(40)}\n\n`;
+  });
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=`kairoscope-${new Date().toLocaleDateString('en-CA')}.txt`;a.click();
 }
 
 // old journal init removed
@@ -5361,7 +5586,7 @@ setTimeout(loadBirthData,100);
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">IS MY DATA PRIVATE?</div><div class="faq-a">Your dream journal and birth chart live only on your device. Nothing personal is stored on our servers. We are Canadian, we operate under PIPEDA, and privacy is something we take seriously. No ads, no data selling, no exceptions.</div></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><div class="faq-q">WHAT DOES PRO INCLUDE?</div><div class="faq-a">Pro gives you unlimited readings across all three modes, your complete birth chart with sun, moon and rising sign calculated using professional-grade astronomical precision, readings personalised to your natal placements, an unlimited dream journal, pattern analysis across your entries, and weekly cosmic forecasts. $5.99 USD a month. Cancel any time.</div></div>
+    <div class="modal-section"><div class="faq-q">WHAT DOES PRO INCLUDE?</div><div class="faq-a">Pro unlocks your complete birth chart with sun, moon and rising sign calculated using professional-grade astronomical precision, readings personalised to your natal placements, an unlimited dream journal, pattern analysis across your entries, and weekly cosmic forecasts. $5.99 USD a month. Cancel any time.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">HOW ACCURATE IS THE BIRTH CHART?</div><div class="faq-a">We calculate your chart using Jean Meeus astronomical algorithms, which are the same mathematical foundations used by professional astrology software worldwide. Your sun sign is exact. Your moon sign is accurate to the day. Your rising sign requires your birth time and city for full precision.</div></div>
     <div class="modal-divider"></div>
