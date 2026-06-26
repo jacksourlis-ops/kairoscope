@@ -3357,7 +3357,9 @@ Write 2-3 rich paragraphs. Poetic, personal, intelligent. Never generic. Never c
       })
     });
     const data=await res.json();
-    const text=stripMarkdown(data.content?.find(b=>b.type==='text')?.text||'The symbol slipped away. Try again.');
+    const rawText=data.content?.find(b=>b.type==='text')?.text;
+    if(!rawText) throw new Error('empty response');
+    const text=stripMarkdown(rawText);
     resultDiv.textContent=text;
     localStorage.setItem(dayKey,'1');
   }catch(e){
@@ -3567,7 +3569,8 @@ async function saveDreamEntry(action){
       body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:700,system,messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
-    const txt=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
+    const txt=data.content?.find(b=>b.type==='text')?.text;
+    if(!txt) throw new Error('empty response');
     resultText.textContent=txt;
 
     // Save interpretation to dream
@@ -3781,7 +3784,8 @@ async function analysePatterns(){
       body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:700,system:'You are Kairoscope — a dream pattern analyst and astrologer. Analyse recurring dream patterns with Jungian depth and astrological insight. Poetic, personal, never generic.',messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
-    const txt=data.content?.find(b=>b.type==='text')?.text||'Try again.';
+    const txt=data.content?.find(b=>b.type==='text')?.text;
+    if(!txt) throw new Error('empty response');
     if(el) el.textContent=txt;
   } catch(e){
     if(el) el.textContent='Something slipped away. Try again.';
@@ -4847,7 +4851,9 @@ async function callAI(prompt,system){
   });
   const data=await res.json();
   if(data.error)throw new Error(data.error.message);
-  return data.content?.find(b=>b.type==='text')?.text||'The moment is silent. Please try again.';
+  const text=data.content?.find(b=>b.type==='text')?.text;
+  if(!text) throw new Error('The moment is silent. Please try again.');
+  return text;
 }
 
 async function doReading(type){
@@ -4882,8 +4888,6 @@ async function doReading(type){
   }
 
   // NOT CACHED — generate fresh reading
-  if(!APP.isPro){APP.free--;updateFree();}
-  const rc=parseInt(localStorage.getItem('k_readings_count')||'0');localStorage.setItem('k_readings_count',rc+1);
   btn.disabled=true;showLoading(box);
   // Build full astrological context for horoscope and combined
   const astroCtx=buildAstroContext(APP.sh||'Aries',APP.period||'today');
@@ -4906,6 +4910,11 @@ async function doReading(type){
   try{
     // Always generate in English
     const englishText=await callAI(PROMPTS[type],SYSTEMS[type]);
+
+    // Reading succeeded — charge the free credit / count it now, not before the attempt
+    if(!APP.isPro){APP.free--;updateFree();}
+    const rc=parseInt(localStorage.getItem('k_readings_count')||'0');localStorage.setItem('k_readings_count',rc+1);
+
     const[icon,title,sub]=HEADS[type];
     const lockMsg=type!=='d'?getNextRefreshMsg(APP.period):null;
 
