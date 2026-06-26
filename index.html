@@ -2676,6 +2676,13 @@ function canDoCompatibility(personId){
   return !localStorage.getItem(getCompatWeekKey(personId));
 }
 
+function showRetryBtn(retryFn){
+  const btn=document.getElementById('conn-retry-btn');
+  if(!btn)return;
+  btn.style.display='block';
+  btn.onclick=()=>{btn.style.display='none';retryFn();};
+}
+
 async function getCompatibility(person){
   const reading=document.getElementById('conn-reading');
   const txt=document.getElementById('conn-reading-text');
@@ -2683,6 +2690,8 @@ async function getCompatibility(person){
   const scoreEl=document.getElementById('conn-score');
   const scoreNum=document.getElementById('conn-score-num');
   const freeNote=document.getElementById('conn-free-note');
+  const retryBtn=document.getElementById('conn-retry-btn');
+  if(retryBtn) retryBtn.style.display='none';
 
   reading.classList.add('on');
   reading.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2776,7 +2785,8 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
       })
     });
     const data=await res.json();
-    const text=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
+    const text=data.content?.find(b=>b.type==='text')?.text;
+    if(!text) throw new Error('empty response');
     txt.textContent=text;
 
     // Cache result
@@ -2788,7 +2798,8 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
       freeNote.textContent='Free compatibility reading used. Upgrade to Pro for weekly readings per person.';
     }
   } catch(e){
-    txt.textContent='The connection slipped away. Try again.';
+    txt.textContent='The connection slipped away.';
+    showRetryBtn(()=>getCompatibility(person));
   }
 }
 
@@ -2809,6 +2820,8 @@ async function getJointReading(person, period){
   const title=document.getElementById('conn-reading-title');
   const scoreEl=document.getElementById('conn-score');
   const freeNote=document.getElementById('conn-free-note');
+  const retryBtn=document.getElementById('conn-retry-btn');
+  if(retryBtn) retryBtn.style.display='none';
 
   reading.classList.add('on');
   reading.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2862,10 +2875,13 @@ Write a ${period} joint reading for this connection. How do the current planetar
       })
     });
     const data=await res.json();
-    txt.textContent=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
+    const text=data.content?.find(b=>b.type==='text')?.text;
+    if(!text) throw new Error('empty response');
+    txt.textContent=text;
     if(!APP.isPro) localStorage.setItem('k_last_compat',Date.now());
   } catch(e){
-    txt.textContent='The connection slipped away. Try again.';
+    txt.textContent='The connection slipped away.';
+    showRetryBtn(()=>getJointReading(person,period));
   }
 }
 
@@ -2879,6 +2895,8 @@ async function getTheirReading(person){
   const title=document.getElementById('conn-reading-title');
   const scoreEl=document.getElementById('conn-score');
   const freeNote=document.getElementById('conn-free-note');
+  const retryBtn=document.getElementById('conn-retry-btn');
+  if(retryBtn) retryBtn.style.display='none';
 
   reading.classList.add('on');
   reading.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2911,9 +2929,12 @@ Write a daily horoscope for ${person.name} (${theirSign}). This is being read by
       })
     });
     const data=await res.json();
-    txt.textContent=data.content?.find(b=>b.type==='text')?.text||'The stars are quiet. Try again.';
+    const text=data.content?.find(b=>b.type==='text')?.text;
+    if(!text) throw new Error('empty response');
+    txt.textContent=text;
   } catch(e){
-    txt.textContent='The connection slipped away. Try again.';
+    txt.textContent='The connection slipped away.';
+    showRetryBtn(()=>getTheirReading(person));
   }
 }
 
@@ -5798,6 +5819,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
     </div>
     <div class="conn-reading-text" id="conn-reading-text">Loading your cosmic connection...</div>
     <div class="conn-free-note" id="conn-free-note"></div>
+    <button id="conn-retry-btn" style="display:none;width:100%;margin-top:.75rem;padding:11px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:10px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:rgba(220,205,255,0.85);cursor:pointer">↻ TRY AGAIN</button>
   </div>
 
 </div>
