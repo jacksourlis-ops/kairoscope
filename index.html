@@ -734,7 +734,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:2px;background:rgba(180,220,255,0.8)"></div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">COMBINED</div></div>
       <div style="display:flex;align-items:center;gap:4px"><div class="cal-wish-star">★</div><div style="font-family:'Cinzel',serif;font-size:7px;color:rgba(200,175,255,0.65)">WISH</div></div>
     </div>
-    <button class="export-btn" id="export-btn" onclick="exportJournal()" style="margin-top:.65rem">↓ EXPORT YOUR KAIROS AS .TXT</button>
   </div>
 
   <!-- RECORD BUTTON -->
@@ -3726,6 +3725,8 @@ function showKairosForDate(dateKey){
 
   if(!kairos&&!dream){
     html+=`<div style="text-align:center;padding:2rem;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.3);font-style:italic">Nothing was recorded this day.</div>`;
+  }else{
+    html+=`<button onclick="exportSingleDay('${dateKey}')" style="width:100%;padding:12px;background:transparent;border:.5px solid rgba(200,175,255,0.2);border-radius:8px;color:rgba(200,175,255,0.6);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer;margin-top:.5rem">↓ EXPORT THIS DAY AS .TXT</button>`;
   }
 
   html+=`</div>`;
@@ -5005,26 +5006,37 @@ async function analysePatterns(){
   }catch(e){box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">Analysis failed. Check your API key.</div>`;}
 }
 
-function exportJournal(){
-  const dreams=getDreams().map(d=>({type:'DREAM',date:d.date,title:d.moon||'',body:d.text,extra:d.interpretation||d.combined||null}));
-  const kairosDates=getKairosDateRange();
-  const kairosEntries=[];
-  Object.keys(kairosDates).forEach(dateKey=>{
-    const entry=kairosDates[dateKey];
-    if(entry.horoscope) kairosEntries.push({type:'HOROSCOPE',date:entry.horoscope.date||dateKey,title:(entry.horoscope.sign||'')+' · '+(entry.horoscope.period||'today'),body:entry.horoscope.text});
-    if(entry.combined) kairosEntries.push({type:'COMBINED',date:entry.combined.date||dateKey,title:'Stars & Dreams Combined',body:entry.combined.text});
+function exportSingleDay(dateKey){
+  const kairos=loadKairos(dateKey);
+  const dreams=getDreams();
+  const [y,m,d]=dateKey.split('-').map(Number);
+  const dream=dreams.find(dr=>{
+    const dt=new Date(dr.date);
+    return dt.getFullYear()===y&&(dt.getMonth()+1)===m&&dt.getDate()===d;
   });
-  let all=[...dreams,...kairosEntries];
-  all.sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if(!all.length){alert('Nothing to export yet.');return;}
-  if(!APP.isPro) all=all.slice(0,5);
-  let content=`KAIROSCOPE — Your Kairos\nExported: ${new Date().toLocaleDateString()}\nEntries: ${all.length}${!APP.isPro?' (free tier — most recent 5; upgrade to Pro for your full archive)':''}\n\n${'═'.repeat(50)}\n\n`;
-  all.forEach((e,i)=>{
-    content+=`${e.type} ${i+1}\nDate: ${new Date(e.date).toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${e.title?'\n'+e.title+'\n':''}\n${e.body}\n`;
-    if(e.extra) content+=`\nInterpretation:\n${e.extra}\n`;
+  if(!kairos&&!dream){alert('Nothing to export for this day.');return;}
+
+  const dateLabel=new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  let content=`KAIROSCOPE — Your Kairos\n${dateLabel}\n\n${'═'.repeat(50)}\n\n`;
+
+  if(kairos?.horoscope){
+    content+=`HOROSCOPE — ${(kairos.horoscope.sign||'').toUpperCase()} · ${(kairos.horoscope.period||'today').toUpperCase()}\n\n${kairos.horoscope.text}\n\n${'─'.repeat(40)}\n\n`;
+  }
+  if(dream){
+    content+=`DREAM JOURNAL\n\n${dream.dream||dream.text||''}\n`;
+    if(dream.interpretation) content+=`\nInterpretation:\n${dream.interpretation}\n`;
     content+=`\n${'─'.repeat(40)}\n\n`;
-  });
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=`kairoscope-${new Date().toLocaleDateString('en-CA')}.txt`;a.click();
+  }
+  if(kairos?.combined){
+    content+=`STARS & DREAMS COMBINED\n\n${kairos.combined.text}\n\n${'─'.repeat(40)}\n\n`;
+  }
+  if(kairos?.wishes&&kairos.wishes.length){
+    kairos.wishes.forEach(w=>{
+      content+=`${(w.label||'WISH').toUpperCase()}\n\n"${w.text}"\n\n${w.reading}\n\n${'─'.repeat(40)}\n\n`;
+    });
+  }
+
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=`kairoscope-${dateKey}.txt`;a.click();
 }
 
 // old journal init removed
