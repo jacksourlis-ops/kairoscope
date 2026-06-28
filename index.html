@@ -522,7 +522,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <!-- CONTROLS -->
   <div class="ctrl-row">
     <button class="sound-btn" id="sound-btn" onclick="toggleSound()">♫ ambient off</button>
-    <div class="pill" id="main-pill">◈ <span id="free-count">5</span> free readings remaining</div>
+    <div class="pill" id="main-pill">◈ <span id="free-count">5</span> free readings remaining this month</div>
   </div>
   <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;text-align:center;margin-bottom:.75rem;display:none" id="audio-label"></div>
 
@@ -962,9 +962,25 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 // ENV_AUDIO must be declared before any function that references it
 const ENV_AUDIO={ctx:null,master:null,nodes:[],currentEnv:null};
 
+// Free credit pool — 5 per calendar month, shared across every reading type. Resets automatically when the month changes.
+function getFreeMonthKey(){
+  const now=new Date();
+  return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+}
+function getFreeCreditsOnLoad(){
+  const currentMonth=getFreeMonthKey();
+  const storedMonth=localStorage.getItem('k_free_month');
+  if(storedMonth!==currentMonth){
+    localStorage.setItem('k_free_month',currentMonth);
+    localStorage.setItem('k_free','5');
+    return 5;
+  }
+  return parseInt(localStorage.getItem('k_free')??'5');
+}
+
 const APP={
   isPro:localStorage.getItem('k_pro')==='true',
-  free:parseInt(localStorage.getItem('k_free')??'5'),
+  free:getFreeCreditsOnLoad(),
   sh:'',sc:'',period:'today',
   sndOn:false,
   chart:{sun:'',moon:'',rising:'',sunDeg:0,moonDeg:0,riseDeg:0,city:''},
@@ -1101,7 +1117,7 @@ async function retranslateDisplayedReadings(){
 const TRANSLATIONS={
   English:{
     ambientOff:'♫ ambient off',ambientOn:'♫ ambient on',
-    freeReadings:'free readings remaining',
+    freeReadings:'free readings remaining this month',
     freeTier:'◈ FREE',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — unlimited readings',
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Dream',tabCombined:'⊕ Combined',tabJournal:'📖 Journal',
     yourSign:'YOUR SIGN',period:'PERIOD',
@@ -2666,10 +2682,7 @@ function getCompatWeekKey(personId){
 }
 function canDoCompatibility(personId){
   if(!APP.isPro){
-    const lastComp=localStorage.getItem('k_last_compat');
-    if(!lastComp) return true;
-    const daysSince=(Date.now()-parseInt(lastComp))/(1000*60*60*24);
-    return daysSince>=30;
+    return APP.free>0;
   }
   // Pro: once per week per person, cached
   return !localStorage.getItem(getCompatWeekKey(personId));
@@ -2714,9 +2727,7 @@ async function getCompatibility(person){
   }
   if(!canDoCompatibility(person.id||person.name)){
     if(!APP.isPro){
-      const lastComp=localStorage.getItem('k_last_compat');
-      const daysLeft=30-Math.floor((Date.now()-parseInt(lastComp))/(1000*60*60*24));
-      txt.textContent=`You have used your free compatibility reading this month. Upgrade to Pro for weekly readings per person, or return in ${daysLeft} day${daysLeft!==1?'s':''}.`;
+      document.getElementById('paywall').classList.add('on');
     } else {
       txt.textContent=`Your reading with ${person.name} refreshes next week — the cosmic connection is still unfolding. ✦`;
     }
@@ -2793,8 +2804,8 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
       localStorage.setItem(weekKey,JSON.stringify({text,score}));
       freeNote.textContent='This week\'s reading — refreshes next week ✦';
     } else {
-      localStorage.setItem('k_last_compat',Date.now());
-      freeNote.textContent='Free compatibility reading used. Upgrade to Pro for weekly readings per person.';
+      APP.free--;updateFree();
+      freeNote.textContent=APP.free>0?`${APP.free} free reading${APP.free!==1?'s':''} remaining this month.`:'Free readings used for this month. Upgrade to Pro for unlimited.';
     }
   } catch(e){
     txt.textContent='The connection slipped away.';
@@ -2816,12 +2827,9 @@ function getJointPeriodKey(personId,period){
 }
 
 async function getJointReading(person, period){
-  if(!APP.isPro){
-    const lastComp=localStorage.getItem('k_last_compat');
-    if(lastComp&&(Date.now()-parseInt(lastComp))<(30*24*60*60*1000)){
-      document.getElementById('paywall').classList.add('on');
-      return;
-    }
+  if(!APP.isPro&&APP.free<=0){
+    document.getElementById('paywall').classList.add('on');
+    return;
   }
   const reading=document.getElementById('conn-reading');
   const txt=document.getElementById('conn-reading-text');
@@ -2902,7 +2910,8 @@ Write a ${period} joint reading for this connection. How do the current planetar
       localStorage.setItem(periodKey,JSON.stringify({text}));
       freeNote.textContent=period==='monthly'?"This month's reading — refreshes next month ✦":"This week's reading — refreshes next week ✦";
     } else {
-      localStorage.setItem('k_last_compat',Date.now());
+      APP.free--;updateFree();
+      freeNote.textContent=APP.free>0?`${APP.free} free reading${APP.free!==1?'s':''} remaining this month.`:'Free readings used for this month. Upgrade to Pro for unlimited.';
     }
   } catch(e){
     txt.textContent='The connection slipped away.';
@@ -3513,6 +3522,12 @@ async function saveDreamEntry(action){
     return;
   }
 
+  // Free tier additionally draws from the shared 5-per-month pool, same as horoscope and compatibility
+  if(!APP.isPro&&APP.free<=0){
+    document.getElementById('paywall').classList.add('on');
+    return;
+  }
+
   // COMBINE: requires today's horoscope already pulled, and caps at once per day
   if(action==='combine'){
     const todayHoroKey=getCacheKey('h',APP.sh,'today','English');
@@ -3571,6 +3586,7 @@ async function saveDreamEntry(action){
     }
     if(action==='combine') saveToKairos('combined',{text:txt,date:TODAY});
     markDreamActionUsed(action);
+    if(!APP.isPro){APP.free--;updateFree();}
   } catch(e){
     resultText.textContent='Something slipped away. Try again.';
   }
@@ -4558,7 +4574,7 @@ function setTier(t){
     if(pill){pill.className='pill pro';pill.innerHTML='✦ PRO';}
     ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='block';});
   }else{
-    if(pill){pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;}
+    if(pill){pill.className='pill';pill.innerHTML=`◈ <span>${APP.free}</span> free readings remaining this month`;}
     ['birth-h','birth-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
   refreshJournal();
@@ -4665,7 +4681,7 @@ function selPeriod(el){
 function updateFree(){
   localStorage.setItem('k_free',APP.free);
   if(!APP.isPro){
-    document.getElementById('main-pill').innerHTML=`◈ <span>${APP.free}</span> free readings remaining`;
+    document.getElementById('main-pill').innerHTML=`◈ <span>${APP.free}</span> free readings remaining this month`;
     if(APP.free<=1)document.getElementById('main-pill').classList.add('low');
   }
 }
