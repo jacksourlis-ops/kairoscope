@@ -3825,10 +3825,17 @@ function showKairosForDate(dateKey){
 async function analysePatterns(){
   if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
   const dreams=getDreams();
-  if(dreams.length<3) return;
-
   const el=document.getElementById('res-patterns');
-  if(el) el.textContent='Analysing your dream patterns...';
+  if(dreams.length<5){
+    if(el) el.textContent=`Patterns need a bit more to work with. ${5-dreams.length} more dream${5-dreams.length!==1?'s':''} logged, and there'll be enough here to look for something real.`;
+    return;
+  }
+
+  // Sporadic, not constant: only re-run automatically once a meaningful number of new dreams have come in
+  const lastCount=parseInt(localStorage.getItem('k_last_pattern_count')||'0');
+  if(dreams.length-lastCount<3 && lastCount>0) return;
+
+  if(el) el.textContent='Looking for real patterns across your dreams...';
 
   const allTags=dreams.flatMap(d=>d.tags||[]);
   const tagCounts={};
@@ -3838,18 +3845,19 @@ async function analysePatterns(){
   const dreamSummaries=dreams.slice(0,10).map(d=>`"${d.text.slice(0,80)}..."`).join('\n');
   const sign=APP.sh||APP.sc||'unknown';
 
-  const prompt=`DREAM JOURNAL ANALYSIS:\n\nRECURRING TAGS: ${topTags||'none yet'}\n\nRECENT DREAMS:\n${dreamSummaries}\n\nSIGN: ${sign}\n\nAnalyse the recurring patterns in these dreams. What symbols and themes keep appearing? What is the subconscious processing? How do these patterns connect to ${sign}'s astrological nature? What insight does this reveal about where the dreamer stands right now? 3-4 paragraphs. Deeply personal, poetic, grounded in real Jungian and astrological symbolism.`;
+  const prompt=`DREAM JOURNAL ANALYSIS:\n\nRECURRING TAGS: ${topTags||'none yet'}\n\nRECENT DREAMS:\n${dreamSummaries}\n\nSIGN: ${sign}\n\nLook honestly for genuine recurring symbols, emotional undercurrents, or themes across these dreams. If a real pattern is there, describe it with depth, connecting it to ${sign}'s astrological nature. If these dreams don't actually share anything meaningful yet, say so plainly and briefly, encouraging the dreamer to keep logging rather than inventing a pattern that isn't real. 3-4 paragraphs if a genuine pattern exists, 2-3 short sentences if not. Grounded in real Jungian and astrological symbolism, never generic, never manufactured.`;
 
   try{
     const res=await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:700,system:'You are Kairoscope — a dream pattern analyst and astrologer. Analyse recurring dream patterns with Jungian depth and astrological insight. Poetic, personal, never generic.',messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:700,system:'You are Kairoscope, a dream pattern analyst and astrologer. Your job is honesty first: only describe a recurring pattern if one genuinely exists across the dreams provided. If the dreams do not share a real, substantive theme, say so directly and briefly rather than manufacturing a connection. When a pattern is real, describe it with Jungian depth and astrological insight. Poetic, personal, never generic, never forced.',messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
     const txt=data.content?.find(b=>b.type==='text')?.text;
     if(!txt) throw new Error('empty response');
     if(el) el.textContent=txt;
+    localStorage.setItem('k_last_pattern_count',dreams.length);
   } catch(e){
     if(el) el.textContent='Something slipped away. Try again.';
   }
