@@ -521,7 +521,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <!-- API KEY -->
   <!-- CONTROLS -->
   <div class="ctrl-row">
-    <button class="sound-btn" id="sound-btn" onclick="toggleSound()">♫ ambient off</button>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="sound-btn" id="sound-btn" onclick="toggleSound()">♫ ambient off</button>
+      <button class="sound-btn" onclick="openTutorial()" title="How Kairoscope works" style="padding:5px 11px">?</button>
+    </div>
     <div class="pill" id="main-pill">◈ <span id="free-count">5</span> free readings remaining this month</div>
   </div>
   <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;text-align:center;margin-bottom:.75rem;display:none" id="audio-label"></div>
@@ -539,6 +542,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <div class="me-name" id="me-name-h">WANING CRESCENT ENERGY</div>
       <div class="me-desc" id="me-desc-h">Rest and reflection. Surrender. Prepare to begin again.</div>
     </div>
+  </div>
+
+  <div id="active-now-line" style="display:none;text-align:center;font-family:'Crimson Pro',serif;font-size:12.5px;color:rgba(200,175,255,0.55);font-style:italic;margin:-.25rem 0 1rem;letter-spacing:.01em">
+    <span style="opacity:.65">✦</span> <span id="active-now-text"></span>
   </div>
 
   <!-- TABS -->
@@ -593,6 +600,18 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     </div>
     <button class="reveal-btn" id="btn-h" disabled onclick="doReading('h')">◈ REVEAL MY MOMENT ◈</button>
     <div class="result-box" id="res-h"></div>
+
+    <!-- FREE ASTROLOGY GLOSSARY -->
+    <div style="margin-top:1.25rem;border-top:.5px solid var(--border);padding-top:1.25rem">
+      <span class="lbl">ASTROLOGY GLOSSARY — FREE</span>
+      <div style="margin:.5rem 0 .6rem">
+        <select id="glossary-select" onchange="if(this.value){showGlossaryTerm(this.value);}" style="width:100%;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.25);border-radius:12px;padding:12px 14px;color:rgba(235,225,255,0.85);font-family:'Crimson Pro',serif;font-size:14px;outline:none;box-sizing:border-box;cursor:pointer">
+          <option value="">▾ What does that mean? Browse terms A–Z...</option>
+          <option value="ascendant">Ascendant</option><option value="aspect">Aspect</option><option value="cardinal signs">Cardinal Signs</option><option value="chiron">Chiron</option><option value="composite chart">Composite Chart</option><option value="conjunction">Conjunction</option><option value="cusp">Cusp</option><option value="detriment">Detriment</option><option value="direct">Direct</option><option value="eclipse">Eclipse</option><option value="elements">Elements</option><option value="exaltation">Exaltation</option><option value="fixed signs">Fixed Signs</option><option value="houses">Houses</option><option value="jupiter">Jupiter</option><option value="lunar return">Lunar Return</option><option value="mars">Mars</option><option value="mercury">Mercury</option><option value="mercury retrograde">Mercury Retrograde</option><option value="midheaven">Midheaven</option><option value="modalities">Modalities</option><option value="moon sign">Moon Sign</option><option value="mutable signs">Mutable Signs</option><option value="natal chart">Natal Chart</option><option value="neptune">Neptune</option><option value="north node">North Node</option><option value="opposition">Opposition</option><option value="orb">Orb</option><option value="pluto">Pluto</option><option value="progressions">Progressions</option><option value="retrograde">Retrograde</option><option value="rising sign">Rising Sign</option><option value="ruling planet">Ruling Planet</option><option value="saturn">Saturn</option><option value="saturn return">Saturn Return</option><option value="sextile">Sextile</option><option value="solar return">Solar Return</option><option value="south node">South Node</option><option value="square">Square</option><option value="stellium">Stellium</option><option value="sun sign">Sun Sign</option><option value="synastry">Synastry</option><option value="transit">Transit</option><option value="trine">Trine</option><option value="uranus">Uranus</option><option value="venus">Venus</option><option value="void of course moon">Void Of Course Moon</option>
+        </select>
+      </div>
+      <div id="glossary-result" style="display:none;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;font-family:'Crimson Pro',serif;font-size:14px;color:rgba(235,225,255,0.85);line-height:1.75;font-style:italic"></div>
+    </div>
   </div>
 
   <!-- DREAM -->
@@ -930,6 +949,21 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 </div>
 
+<!-- TUTORIAL -->
+<div id="tutorial-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:10001;overflow-y:auto">
+  <div style="max-width:440px;margin:0 auto;padding:2rem 1.5rem 2.5rem;min-height:100%;display:flex;flex-direction:column;justify-content:center">
+    <div id="tutorial-icon" style="font-size:40px;text-align:center;margin-bottom:1.25rem">☽</div>
+    <div id="tutorial-title" style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:.16em;color:var(--gold);text-align:center;margin-bottom:1rem"></div>
+    <div id="tutorial-body" style="font-family:'Crimson Pro',serif;font-size:16px;color:rgba(230,220,255,0.85);line-height:1.85;text-align:center;font-style:italic;margin-bottom:2rem"></div>
+    <div id="tutorial-dots" style="display:flex;justify-content:center;gap:7px;margin-bottom:2rem"></div>
+    <div style="display:flex;gap:10px">
+      <button id="tutorial-back-btn" onclick="tutorialBack()" style="flex:0 0 auto;padding:14px 18px;background:transparent;border:.5px solid rgba(200,175,255,0.25);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:rgba(210,195,255,0.6);cursor:pointer;display:none">← BACK</button>
+      <button id="tutorial-next-btn" onclick="tutorialNext()" style="flex:1;padding:14px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(225,210,255,0.9);cursor:pointer">NEXT</button>
+    </div>
+    <button onclick="closeTutorial()" style="margin-top:1.25rem;background:none;border:none;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.35);cursor:pointer">SKIP</button>
+  </div>
+</div>
+
 <!-- PAYWALL -->
 <div class="paywall" id="paywall">
   <div class="pw-icon">✨</div>
@@ -1068,7 +1102,7 @@ function showStructuredResult(box,icon,title,sub,text,lockMsg){
 }
 function updatePaywallStats(){
   const r=parseInt(localStorage.getItem('k_readings_count')||'0');
-  const d=getJournal().length;
+  const d=getDreams().length;
   const f=localStorage.getItem('k_first_visit')||Date.now();
   const dy=Math.max(1,Math.ceil((Date.now()-parseInt(f))/86400000));
   const rEl=document.getElementById('pw-stat-readings'),dEl=document.getElementById('pw-stat-dreams'),dyEl=document.getElementById('pw-stat-days');
@@ -2029,10 +2063,6 @@ function applyLanguage(){
   // Combine button
   const combineBtn=document.getElementById('btn-c');
   if(combineBtn&&combineBtn.textContent.includes('COMBINE'))combineBtn.textContent=T.combineBtn||'◈ COMBINE ◈';
-
-  // Save to journal button
-  const saveDreamBtn=document.querySelector('[onclick="saveDreamToJournal()"]');
-  if(saveDreamBtn)saveDreamBtn.textContent=T.saveToDream||'+ SAVE TO DREAM JOURNAL';
 
   // Always sync moon energy bar with current phase
   updateMoonEnergy();
@@ -3264,10 +3294,18 @@ function findDreamSymbol(query){
   return null;
 }
 
+const ASTRO_GLOSSARY = {"ascendant": "Your Ascendant (or Rising sign) is whatever zodiac sign was rising on the eastern horizon the exact moment you were born. It shapes your outward personality — the first impression people get of you — and sets the entire structure of your houses, since it marks where your 1st house begins.", "aspect": "An aspect is the angle formed between two planets at a given moment, measured in degrees. Different angles create different relationships — some flowing and easy (trine, sextile), some tense and activating (square, opposition), some intensifying (conjunction). Readings are built almost entirely from aspects.", "cardinal signs": "Aries, Cancer, Libra, and Capricorn are the cardinal signs — the initiators of each season. They're associated with starting things: taking action, beginning new chapters, and pushing energy forward rather than maintaining or finishing it.", "chiron": "Chiron is a small celestial body, not a true planet, associated with deep wounds and the healing that comes from them. Its placement in your chart often points to a sensitive area you've struggled with — and, with time, one where you become uniquely able to help others.", "composite chart": "A composite chart blends two people's natal charts into one single chart representing the relationship itself, rather than either person individually — used to understand a connection's own personality, not just compatibility between two separate charts.", "conjunction": "A conjunction happens when two planets sit at (or very near) the same degree of the zodiac. It's the most intense aspect — blending the energies of both planets together so closely they act almost as one, for better or worse depending on what's involved.", "cusp": "Being born \"on the cusp\" means your birth time fell very close to the boundary between two zodiac signs. Despite the popular idea of having traits from both signs, your Sun is still in exactly one sign — the cusp just means the calculation was close.", "detriment": "A planet is in detriment when it sits in the zodiac sign directly opposite the one it naturally rules — its energy still works, but with more friction, like operating somewhere a little outside its comfort zone.", "direct": "When a planet is direct, it's moving forward through the zodiac as seen from Earth — its normal, default motion. This is simply mentioned to distinguish it from retrograde, when a planet appears to move backward instead.", "eclipse": "Eclipses happen when the Sun, Moon, and Earth align closely enough for one body to block or shadow another. Astrologically, eclipses are considered points of accelerated, often unavoidable change — endings and beginnings arriving faster than usual.", "elements": "Every zodiac sign belongs to one of four elements: Fire (Aries, Leo, Sagittarius — passion and action), Earth (Taurus, Virgo, Capricorn — stability and practicality), Air (Gemini, Libra, Aquarius — thought and connection), or Water (Cancer, Scorpio, Pisces — emotion and intuition).", "exaltation": "A planet is exalted when it's placed in a sign where its qualities are especially amplified and well-supported — operating at something close to its very best expression.", "fixed signs": "Taurus, Leo, Scorpio, and Aquarius are the fixed signs — associated with stability, persistence, and resistance to change. They sustain and deepen what the cardinal signs start, sometimes to the point of stubbornness.", "houses": "Your chart is divided into 12 houses, each governing a different area of life — the 1st house is identity and self, the 7th is partnership, the 10th is career and public life, and so on. Which sign and planets occupy each house shapes how that area of life tends to show up for you.", "jupiter": "Jupiter is the planet of expansion, luck, growth, and abundance. Wherever Jupiter sits in your chart, or whatever it's currently touching by transit, tends to be an area where things grow bigger — opportunities, confidence, sometimes excess.", "lunar return": "A lunar return is the moment, roughly once a month, when the Moon returns to the exact degree it occupied at your birth. It's used to set the emotional tone for the month ahead, similar to how a solar return sets the tone for a year.", "mars": "Mars is the planet of drive, assertion, anger, and desire. It shows how you take action, fight for what you want, and where your raw motivation comes from.", "mercury": "Mercury governs communication, thinking, and how information moves — through speech, writing, and the mind itself. Its sign placement shapes how you process and express ideas.", "mercury retrograde": "Several times a year, Mercury appears to move backward through the sky as seen from Earth. Astrologically, this period is associated with miscommunication, technology hiccups, and revisiting unfinished business — a good window for review rather than launching anything new.", "midheaven": "The Midheaven (MC) is the highest point in your chart at the moment of birth, sitting at the top of the 10th house. It represents your public reputation, career direction, and the legacy you're building toward.", "modalities": "Every sign falls into one of three modalities — cardinal (initiating), fixed (sustaining), or mutable (adapting) — describing how that sign tends to handle change and momentum.", "moon sign": "Your Moon sign reflects your inner emotional world — what you need to feel safe, how you process feelings, and your instinctive, private reactions, as opposed to the more outward-facing Sun sign.", "mutable signs": "Gemini, Virgo, Sagittarius, and Pisces are the mutable signs — adaptable, flexible, and comfortable with change. They close out each season, helping transition smoothly into what comes next.", "natal chart": "Your natal chart (or birth chart) is a snapshot of exactly where every planet was in the sky at the precise moment and location of your birth. It's the foundational map every personalized reading is built from.", "neptune": "Neptune governs dreams, illusion, spirituality, and dissolving boundaries. Its placement can point to where you're most intuitive and imaginative — and also where reality can become hardest to pin down.", "north node": "Your North Node points toward growth — the qualities and direction your soul is moving toward in this lifetime, often outside your comfort zone. It's frequently described as your life's purpose or growth edge.", "opposition": "An opposition occurs when two planets sit directly across the zodiac from each other, 180 degrees apart. It creates tension between two opposing needs or forces that ask to be balanced rather than resolved outright.", "orb": "The orb is the small margin of degrees within which an aspect is still considered active, even if it's not exact. A tighter orb means a stronger, more noticeable influence.", "pluto": "Pluto governs transformation, power, and what lies beneath the surface. Slow-moving and generational, it tends to mark the deepest, most irreversible kinds of change in a chart.", "progressions": "Progressions are a forecasting technique where a small amount of time after birth (often one day per year of life) is symbolically advanced to represent inner psychological development over the years.", "retrograde": "When a planet is retrograde, it appears to move backward through the zodiac as seen from Earth — an optical effect of orbital mechanics, not an actual reversal. Astrologically, retrogrades are read as periods of review, delay, or revisiting that planet's themes.", "rising sign": "Another name for the Ascendant — the sign rising on the eastern horizon at your exact birth moment, shaping your outward presentation and the layout of your entire chart.", "ruling planet": "Each zodiac sign has a ruling planet whose qualities most closely match that sign's nature — for example Mars rules Aries, the Moon rules Cancer. A planet often feels especially strong when placed in the sign it rules.", "saturn": "Saturn governs structure, discipline, limitation, and long-term responsibility. It can feel restrictive in the moment, but its placement often points to where real, lasting mastery is eventually built through effort.", "saturn return": "A Saturn return happens roughly every 29 years, when Saturn completes a full orbit and returns to the position it held at your birth. These periods (commonly around ages 29, 58, and 87) are associated with major life restructuring and reckoning.", "sextile": "A sextile is a 60-degree angle between two planets — generally easy and supportive, offering opportunity, though it usually requires some action to actually make use of.", "solar return": "A solar return is the exact moment, once a year, when the Sun returns to the precise degree it occupied at your birth — your true astrological birthday, used to read the themes likely to define your year ahead.", "south node": "Your South Node represents the qualities, patterns, and comfort zones you already know well — often from earlier in life. It's not bad to draw on, but leaning on it too heavily can mean avoiding the growth your North Node is pointing toward.", "square": "A square is a 90-degree angle between two planets, creating friction and tension that demands action. Squares are often where real growth happens, even though they rarely feel comfortable in the moment.", "stellium": "A stellium is a cluster of three or more planets sitting closely together in the same sign or house, concentrating a huge amount of energy and emphasis into that one area of life or personality.", "sun sign": "Your Sun sign is what most people mean when they say \"I'm a [sign].\" It represents your core identity, ego, and the central character you're here to express — the most outward and recognizable layer of your chart.", "synastry": "Synastry is the comparison of two people's natal charts against each other to understand compatibility — where the connection flows easily, and where it creates friction or growth.", "transit": "A transit is the current, real-time position of a planet as it moves through the sky and forms aspects to your natal chart. Transits are what make a reading feel relevant to right now rather than a fixed, unchanging description.", "trine": "A trine is a 120-degree angle between two planets — the most naturally flowing and harmonious aspect, often showing where talent or ease comes without much friction.", "uranus": "Uranus governs sudden change, rebellion, innovation, and breaking from convention. Its placement often marks where you're most likely to disrupt the expected path and forge something genuinely your own.", "venus": "Venus governs love, beauty, attraction, and what you value. It shapes how you give and receive affection, and what draws you in romantically and aesthetically.", "void of course moon": "A void of course Moon happens when the Moon has finished all its aspects for the day before moving into the next sign. Traditionally considered a quiet, low-momentum stretch — not a great window for starting something new, fine for reflection or rest."};
+
 function showFreeSymbol(key){
   const resultDiv=document.getElementById('free-dict-result');
   resultDiv.style.display='block';
   resultDiv.textContent=DREAM_SYMBOLS[key]||'';
+}
+
+function showGlossaryTerm(key){
+  const resultDiv=document.getElementById('glossary-result');
+  resultDiv.style.display='block';
+  resultDiv.textContent=ASTRO_GLOSSARY[key]||'';
 }
 
 function lookupDream(){
@@ -4204,6 +4242,7 @@ function calcChart(){
     localStorage.setItem('k_last_sign_h',APP.sh);
     updateSignLockUI();
   }
+  renderActiveRightNow();
 }
 
 
@@ -4397,6 +4436,91 @@ function buildAstroContext(userSign, period){
     natal,
     planets
   };
+}
+
+// ============================================================
+// ACTIVE RIGHT NOW — zero AI cost, pure transit math
+// ============================================================
+function getActiveRightNow(){
+  if(!APP.sh) return null;
+  const ctx=buildAstroContext(APP.sh,'today');
+  const aspRank={conjunct:0,trine:1,sextile:2,square:3,opposite:4};
+
+  // Pro with exact birth data: check every current planet against natal Sun and Moon, pick the strongest hit
+  if(ctx.natal&&ctx.natal.sunDeg!==undefined&&ctx.planets){
+    let best=null;
+    Object.entries(ctx.planets).forEach(([name,p])=>{
+      if(name==='jd')return;
+      const aspSun=getAspect(p.lon,ctx.natal.sunDeg);
+      if(aspSun&&(!best||aspRank[aspSun]<aspRank[best.aspect])) best={planet:name,aspect:aspSun,target:'Sun'};
+      if(ctx.natal.moonDeg!==undefined){
+        const aspMoon=getAspect(p.lon,ctx.natal.moonDeg);
+        if(aspMoon&&(!best||aspRank[aspMoon]<aspRank[best.aspect])) best={planet:name,aspect:aspMoon,target:'Moon'};
+      }
+    });
+    if(best) return `${best.planet} is ${best.aspect} your ${best.target} right now`;
+  }
+
+  // Sign-only (Free, or Pro before birth data resolves): use the strongest current transit to the Sun sign
+  if(ctx.keyTransits&&ctx.keyTransits.length>0){
+    const t=ctx.keyTransits[0];
+    return `${t.planet} is ${t.aspect} your Sun right now`;
+  }
+  return null;
+}
+
+function renderActiveRightNow(){
+  const line=document.getElementById('active-now-line');
+  const text=document.getElementById('active-now-text');
+  if(!line||!text)return;
+  const sentence=getActiveRightNow();
+  if(sentence){
+    text.textContent=sentence;
+    line.style.display='block';
+  } else {
+    line.style.display='none';
+  }
+}
+
+// ============================================================
+// TUTORIAL
+// ============================================================
+const TUTORIAL_STEPS=[
+  {icon:'☽',title:'WELCOME TO KAIROSCOPE',body:"Three tabs hold everything — Horoscope for your daily moment, Dream for what surfaced last night, and Journal for your history. Each reading locks once revealed, because the stars do not change their mind because you refresh the page."},
+  {icon:'✦',title:'ALWAYS WITHIN REACH',body:"Sleep Mode, People in My Sky, and Seek Your Kairos sit right below the tabs — visible no matter which one you're on. They never get buried inside another screen."},
+  {icon:'◎',title:'YOUR KAIROS CALENDAR',body:"Inside Journal, tap any marked day to revisit what was said — horoscope, dream, combined, or a wish. From there you can export just that one day as a .txt file."},
+  {icon:'◈',title:'INTERPRET OR COMBINE',body:"When you record a dream, you can interpret it on its own, or combine it with today's horoscope once you've pulled it — for the fullest reading. You can do both, once each, every day."},
+  {icon:'★',title:"YOU'RE READY",body:'That\'s everything. Tap the small "?" near the top any time you want to come back through this again.'}
+];
+let tutorialStep=0;
+
+function openTutorial(){
+  tutorialStep=0;
+  renderTutorialStep();
+  document.getElementById('tutorial-screen').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeTutorial(){
+  document.getElementById('tutorial-screen').style.display='none';
+  document.body.style.overflow='';
+  localStorage.setItem('k_tutorial_seen','1');
+}
+function renderTutorialStep(){
+  const s=TUTORIAL_STEPS[tutorialStep];
+  document.getElementById('tutorial-icon').textContent=s.icon;
+  document.getElementById('tutorial-title').textContent=s.title;
+  document.getElementById('tutorial-body').textContent=s.body;
+  const dots=document.getElementById('tutorial-dots');
+  dots.innerHTML=TUTORIAL_STEPS.map((_,i)=>`<div style="width:6px;height:6px;border-radius:50%;background:${i===tutorialStep?'rgba(220,180,80,0.9)':'rgba(200,175,255,0.2)'}"></div>`).join('');
+  document.getElementById('tutorial-back-btn').style.display=tutorialStep>0?'block':'none';
+  document.getElementById('tutorial-next-btn').textContent=tutorialStep===TUTORIAL_STEPS.length-1?'✦ BEGIN ✦':'NEXT';
+}
+function tutorialNext(){
+  if(tutorialStep<TUTORIAL_STEPS.length-1){tutorialStep++;renderTutorialStep();}
+  else closeTutorial();
+}
+function tutorialBack(){
+  if(tutorialStep>0){tutorialStep--;renderTutorialStep();}
 }
 
 function astroContextToPrompt(ctx){
@@ -4617,8 +4741,6 @@ updateSignLockUI();
 renderWishStarsIndicator();
 const __dictLockInit=document.getElementById('dict-btn-lock');
 if(__dictLockInit) __dictLockInit.style.display = APP.isPro ? 'none' : 'flex';
-document.addEventListener('DOMContentLoaded',loadTodayDream);
-if(document.readyState==='complete'||document.readyState==='interactive')setTimeout(loadTodayDream,0);
 
 function switchTab(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -4672,6 +4794,7 @@ function selSign(el,grid,key){
   if(key==='sh'){
     document.getElementById('btn-h').disabled=false;
     localStorage.setItem('k_last_sign_h', APP.sh);
+    renderActiveRightNow();
   }
 }
 function selPeriod(el){
@@ -4955,31 +5078,6 @@ async function doReading(type){
 // ============================================================
 // DREAM JOURNAL
 // ============================================================
-function getJournal(){try{return JSON.parse(localStorage.getItem('k_journal')||'[]');}catch{return[];}}
-function saveJournal(e){localStorage.setItem('k_journal',JSON.stringify(e));}
-
-function checkJournalLimit(){
-  if(APP.isPro)return;
-  const e=getJournal();
-  const warn=document.getElementById('journal-limit-warn');
-  const btnJ=document.getElementById('btn-j');
-  if(warn) warn.style.display=e.length>=5?'block':'none';
-  if(btnJ) btnJ.disabled=e.length>=5;
-}
-
-function addJournalEntry(){
-  const text=document.getElementById('journal-input').value.trim();
-  if(!text)return;
-  if(!APP.isPro&&getJournal().length>=5){document.getElementById('paywall').classList.add('on');return;}
-  const entries=getJournal();
-  entries.unshift({id:Date.now(),date:new Date().toLocaleDateString('en-CA',{weekday:'short',year:'numeric',month:'short',day:'numeric'}),moon:moonData.emoji+' '+moonData.name,dream:text,interpretation:''});
-  saveJournal(entries);
-  document.getElementById('journal-input').value='';
-  renderJournal();checkJournalLimit();
-}
-
-function getTodayKey(){return new Date().toLocaleDateString('en-CA');}
-
 function saveTodayDream(){
   const text=document.getElementById('dream-input').value.trim();
   if(!text)return;
@@ -4992,39 +5090,6 @@ function saveTodayDream(){
   }
   document.getElementById('dream-input').value='';
   document.getElementById('btn-d').disabled=true;
-}
-
-function loadTodayDream(){
-  const todayKey=getTodayKey();
-  const existing=getJournal().find(e=>e.dateKey===todayKey);
-  const input=document.getElementById('dream-input');
-  if(existing&&input){
-    input.value=existing.dream;
-    document.getElementById('btn-d').disabled=false;
-    const confirm=document.getElementById('dream-save-confirm');
-    if(confirm)confirm.style.display='block';
-  }
-}
-
-function saveDreamToJournal(){
-  if(!APP.lastDreamText)return;
-  if(!APP.isPro&&getJournal().length>=5){document.getElementById('paywall').classList.add('on');return;}
-  const entries=getJournal();
-  entries.unshift({id:Date.now(),date:new Date().toLocaleDateString('en-CA',{weekday:'short',year:'numeric',month:'short',day:'numeric'}),moon:moonData.emoji+' '+moonData.name,dream:APP.lastDreamText,interpretation:APP.lastDreamInterp});
-  saveJournal(entries);
-  document.getElementById('save-dream-wrap').style.display='none';
-  alert('Dream saved to your journal ✦');
-}
-
-function deleteEntry(id){const e=getJournal().filter(e=>e.id!==id);saveJournal(e);renderJournal();checkJournalLimit();}
-
-function renderJournal(){
-  const entries=getJournal();
-  document.getElementById('stat-entries').textContent=entries.length;
-  const list=document.getElementById('journal-list'),empty=document.getElementById('journal-empty');
-  if(!entries.length){list.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  list.innerHTML=entries.map(e=>`<div class="journal-entry"><div class="je-header"><span class="je-date">${e.date} · ${e.moon}</span><button class="je-delete" onclick="deleteEntry(${e.id})">✕</button></div><div class="je-dream">"${e.dream.length>200?e.dream.slice(0,200)+'...':e.dream}"</div>${e.interpretation?`<div class="je-interp">${e.interpretation.slice(0,300)}${e.interpretation.length>300?'...':''}</div>`:''}</div>`).join('');
 }
 
 function exportSingleDay(dateKey){
@@ -5572,6 +5637,8 @@ setTimeout(loadBirthData,100);
     }
   }
 })();
+renderActiveRightNow();
+if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
 </script>
 <!-- PRIVACY POLICY MODAL -->
 <div class="modal-overlay" id="modal-privacy">
