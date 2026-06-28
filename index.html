@@ -2621,7 +2621,6 @@ function renderPeople(){
         <button class="conn-read-btn" onclick="event.stopPropagation();getCompatibility(p_${p.id})">◈ Compatibility</button>
         <button class="conn-read-btn" onclick="event.stopPropagation();getJointReading(p_${p.id},'weekly')">◇ This Week</button>
         <button class="conn-read-btn" onclick="event.stopPropagation();getJointReading(p_${p.id},'monthly')">◉ This Month</button>
-        <button class="conn-read-btn ${APP.isPro?'':'pro-lock'}" onclick="event.stopPropagation();${APP.isPro?'getTheirReading(p_'+p.id+')':'document.getElementById(\'paywall\').classList.add(\'on\')'}">✦ Their Day${APP.isPro?'':' · PRO'}</button>
       </div>`;
     window['p_'+p.id]=p;
     d.style.cursor='default';
@@ -2807,6 +2806,15 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
 // ============================================================
 // JOINT READING — how are our combined energies this period?
 // ============================================================
+function getJointPeriodKey(personId,period){
+  const now=new Date();
+  if(period==='monthly'){
+    return `k_joint_${personId}_m${now.getMonth()}_${now.getFullYear()}`;
+  }
+  const week=Math.floor((now-new Date(now.getFullYear(),0,1))/(7*24*60*60*1000));
+  return `k_joint_${personId}_w${week}_${now.getFullYear()}`;
+}
+
 async function getJointReading(person, period){
   if(!APP.isPro){
     const lastComp=localStorage.getItem('k_last_compat');
@@ -2826,6 +2834,18 @@ async function getJointReading(person, period){
   reading.classList.add('on');
   reading.scrollIntoView({behavior:'smooth',block:'nearest'});
   scoreEl.style.display='none';
+
+  // Pro: locked per person, per period — once per week for "This Week", once per month for "This Month"
+  const periodKey=getJointPeriodKey(person.id||person.name,period);
+  const cachedJoint=APP.isPro?localStorage.getItem(periodKey):null;
+  if(cachedJoint){
+    const data=JSON.parse(cachedJoint);
+    title.textContent=`YOU & ${person.name.toUpperCase()} · ${period.toUpperCase()}`;
+    txt.textContent=data.text;
+    freeNote.textContent=period==='monthly'?"This month's reading — refreshes next month ✦":"This week's reading — refreshes next week ✦";
+    return;
+  }
+
   title.textContent=`YOU & ${person.name.toUpperCase()} · ${period.toUpperCase()}`;
   txt.textContent='Reading your combined energies...';
   freeNote.textContent='';
@@ -2878,7 +2898,12 @@ Write a ${period} joint reading for this connection. How do the current planetar
     const text=data.content?.find(b=>b.type==='text')?.text;
     if(!text) throw new Error('empty response');
     txt.textContent=text;
-    if(!APP.isPro) localStorage.setItem('k_last_compat',Date.now());
+    if(APP.isPro){
+      localStorage.setItem(periodKey,JSON.stringify({text}));
+      freeNote.textContent=period==='monthly'?"This month's reading — refreshes next month ✦":"This week's reading — refreshes next week ✦";
+    } else {
+      localStorage.setItem('k_last_compat',Date.now());
+    }
   } catch(e){
     txt.textContent='The connection slipped away.';
     showRetryBtn(()=>getJointReading(person,period));
@@ -2889,53 +2914,8 @@ Write a ${period} joint reading for this connection. How do the current planetar
 // THEIR READING — daily horoscope for the other person (Pro)
 // ============================================================
 async function getTheirReading(person){
-  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
-  const reading=document.getElementById('conn-reading');
-  const txt=document.getElementById('conn-reading-text');
-  const title=document.getElementById('conn-reading-title');
-  const scoreEl=document.getElementById('conn-score');
-  const freeNote=document.getElementById('conn-free-note');
-  const retryBtn=document.getElementById('conn-retry-btn');
-  if(retryBtn) retryBtn.style.display='none';
-
-  reading.classList.add('on');
-  reading.scrollIntoView({behavior:'smooth',block:'nearest'});
-  scoreEl.style.display='none';
-  freeNote.textContent='';
-  title.textContent=`${person.name.toUpperCase()}'S DAY`;
-  txt.textContent='Reading their cosmic moment...';
-
-  const theirSign=person.chart.sun||'unknown';
-  const isCrush=person.rel.includes('Crush');
-  const astroCtx=buildAstroContext(theirSign,'today');
-  const fullAstro=astroContextToPrompt(astroCtx);
-
-  const crushGuardrail=isCrush?`
-Frame this as a window into who this person is and what they are experiencing — with warmth and genuine insight. Help the reader feel closer to understanding them. This is about empathy and connection, not strategy.`:'';
-
-  const prompt=`${fullAstro}
-
-Write a daily horoscope for ${person.name} (${theirSign}). This is being read by someone who cares about them — ${person.rel}. Help the reader understand what ${person.name} may be experiencing today, what energies are moving through them, and what they may need. 3 paragraphs. Poetic, empathetic, insightful.${crushGuardrail}`;
-
-  try{
-    const res=await fetch('/api/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-5',
-        max_tokens:600,
-        system:`You are Kairoscope — writing a daily reading for someone else, seen through the eyes of a person who cares about them. Help the reader understand what their person may be experiencing astrologically. Poetic, empathetic, technically grounded. Never encourage pursuit or manipulation.`,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data=await res.json();
-    const text=data.content?.find(b=>b.type==='text')?.text;
-    if(!text) throw new Error('empty response');
-    txt.textContent=text;
-  } catch(e){
-    txt.textContent='The connection slipped away.';
-    showRetryBtn(()=>getTheirReading(person));
-  }
+  // Disabled — removed until friends/settings exists to control cost at scale
+  return;
 }
 
 
@@ -3195,7 +3175,6 @@ let selectedTags = [];
 let calCurrentDate = new Date();
 let editingDreamId = null;
 
-const FREE_INTERP_LIMIT = 3;
 function getDreams(){
   try{ return JSON.parse(localStorage.getItem('k_dreams')||'[]'); }
   catch{ return []; }
@@ -3210,15 +3189,16 @@ function getTodaysDreamEntry(){
   })||null;
 }
 
-function getDreamInterpCount(){
-  return parseInt(localStorage.getItem('k_dream_interps')||'0');
+// Dream interpretation / combine — once per day each, same rule for Free and Pro.
+// Tracked separately so doing one today doesn't use up the other.
+function getDreamActionDayKey(action){
+  return 'k_dream_'+action+'_used_'+new Date().toLocaleDateString('en-CA');
 }
-function incrementDreamInterp(){
-  localStorage.setItem('k_dream_interps', getDreamInterpCount()+1);
+function canDoDreamAction(action){
+  return !localStorage.getItem(getDreamActionDayKey(action));
 }
-function canInterpretDream(){
-  if(APP.isPro) return true;
-  return getDreamInterpCount() < FREE_INTERP_LIMIT;
+function markDreamActionUsed(action){
+  localStorage.setItem(getDreamActionDayKey(action),'1');
 }
 
 function openDreamDictionary(){
@@ -3415,21 +3395,25 @@ function openDreamEntry(dreamId){
     if(continuingNote) continuingNote.style.display='none';
   }
 
-  // Free limit note
+  // Daily availability note — same rule for Free and Pro, interpret and combine tracked separately
   const note = document.getElementById('dream-free-note');
   const interpBtn = document.getElementById('dream-interp-btn');
   const combineBtn = document.getElementById('dream-combine-btn');
-  if(!APP.isPro){
-    const remaining = FREE_INTERP_LIMIT - getDreamInterpCount();
-    if(remaining<=0){
-      if(note) note.textContent='You have used your '+FREE_INTERP_LIMIT+' free interpretations. Upgrade to Pro for unlimited.';
-      if(interpBtn){ interpBtn.style.opacity='.4'; interpBtn.onclick=()=>document.getElementById('paywall').classList.add('on'); }
-      if(combineBtn){ combineBtn.style.opacity='.4'; combineBtn.onclick=()=>document.getElementById('paywall').classList.add('on'); }
-    } else {
-      if(note) note.textContent=remaining+' free interpretation'+(remaining!==1?'s':'')+' remaining.';
-      if(interpBtn){ interpBtn.style.opacity='1'; interpBtn.onclick=()=>saveDreamEntry('interpret'); }
-      if(combineBtn){ combineBtn.style.opacity='1'; combineBtn.onclick=()=>saveDreamEntry('combine'); }
-    }
+  const canInterpToday = canDoDreamAction('interpret');
+  const canCombineToday = canDoDreamAction('combine');
+  if(note){
+    if(canInterpToday&&canCombineToday) note.textContent='Interpret or combine — both available today.';
+    else if(!canInterpToday&&!canCombineToday) note.textContent="Today's dream insight is complete. Back tomorrow for more. ✦";
+    else if(!canInterpToday) note.textContent='Interpretation used for today — combine is still available.';
+    else note.textContent='Combine used for today — interpretation is still available.';
+  }
+  if(interpBtn){
+    interpBtn.style.opacity=canInterpToday?'1':'.4';
+    interpBtn.onclick=canInterpToday?()=>saveDreamEntry('interpret'):null;
+  }
+  if(combineBtn){
+    combineBtn.style.opacity=canCombineToday?'1':'.4';
+    combineBtn.onclick=canCombineToday?()=>saveDreamEntry('combine'):null;
   }
 
   // Reset result
@@ -3514,15 +3498,20 @@ async function saveDreamEntry(action){
     return;
   }
 
-  // Interpret or combine
-  if(!canInterpretDream()&&!APP.isPro){
-    document.getElementById('paywall').classList.add('on');
-    return;
-  }
-
   const resultBox=document.getElementById('dream-entry-result');
   const resultTitle=document.getElementById('dream-entry-result-title');
   const resultText=document.getElementById('dream-entry-result-text');
+
+  // Interpret or combine — once per day each, same rule for Free and Pro
+  if(!canDoDreamAction(action)){
+    resultBox.style.display='block';
+    resultTitle.textContent='ONE PER DAY';
+    resultText.textContent = action==='interpret'
+      ? "You've received your dream interpretation for today. Return tomorrow — your subconscious continues to speak as you sleep. ✦"
+      : "You've already combined your stars and dreams today. Return tomorrow for a fresh reading. ✦";
+    resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
 
   // COMBINE: requires today's horoscope already pulled, and caps at once per day
   if(action==='combine'){
@@ -3581,8 +3570,7 @@ async function saveDreamEntry(action){
       saveDreams(dreams);
     }
     if(action==='combine') saveToKairos('combined',{text:txt,date:TODAY});
-
-    if(!APP.isPro) incrementDreamInterp();
+    markDreamActionUsed(action);
   } catch(e){
     resultText.textContent='Something slipped away. Try again.';
   }
@@ -3761,6 +3749,7 @@ function showKairosForDate(dateKey){
 // PATTERN ANALYSIS
 // ============================================================
 async function analysePatterns(){
+  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
   const dreams=getDreams();
   if(dreams.length<3) return;
 
@@ -5020,18 +5009,6 @@ function renderJournal(){
   if(!entries.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
   list.innerHTML=entries.map(e=>`<div class="journal-entry"><div class="je-header"><span class="je-date">${e.date} · ${e.moon}</span><button class="je-delete" onclick="deleteEntry(${e.id})">✕</button></div><div class="je-dream">"${e.dream.length>200?e.dream.slice(0,200)+'...':e.dream}"</div>${e.interpretation?`<div class="je-interp">${e.interpretation.slice(0,300)}${e.interpretation.length>300?'...':''}</div>`:''}</div>`).join('');
-}
-
-async function analysePatterns(){
-  if(!APP.isPro){document.getElementById('paywall').classList.add('on');return;}
-  const entries=getJournal();
-  if(entries.length<3){alert('Log at least 3 dreams before running pattern analysis.');return;}
-  const box=document.getElementById('res-patterns');showLoading(box);
-  const dreamList=entries.slice(0,20).map((e,i)=>`Dream ${i+1} (${e.date}, ${e.moon}): ${e.dream}`).join('\n');
-  try{
-    const text=await callAI(`Analyse these dream journal entries:\n\n${dreamList}${buildChartCtx()}`,SYSTEMS.patterns);
-    showResult(box,'◈','DREAM PATTERN ANALYSIS',`${entries.length} dreams analysed`,text);
-  }catch(e){box.innerHTML=`<div class="rbody" style="color:var(--muted);font-style:italic">Analysis failed. Check your API key.</div>`;}
 }
 
 function exportSingleDay(dateKey){
