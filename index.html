@@ -116,7 +116,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .sleep-screen .sleep-phase-lbl{color:rgba(200,175,255,0.65) !important}
 .sleep-screen .sleep-prompt-lbl{color:rgba(200,175,255,0.55) !important}
 .sleep-screen .sleep-prompt-text{color:rgba(220,210,255,0.82) !important}
-.sleep-screen .sleep-back{color:rgba(200,175,255,0.65) !important}
 .sleep-screen .sleep-pill{color:rgba(200,175,255,0.65) !important;border-color:rgba(200,175,255,0.22) !important}
 .sleep-screen .sleep-pill.on{color:rgba(220,190,100,0.9) !important;border-color:rgba(200,175,255,0.4) !important}
 .sleep-screen .sleep-timer-pill{color:rgba(200,175,255,0.65) !important;border-color:rgba(200,175,255,0.22) !important}
@@ -148,8 +147,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .conn-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9999;flex-direction:column;align-items:center;overflow-y:auto;padding:1.5rem 1.25rem 2rem}
 .conn-screen.on{display:flex}
 .conn-top{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.conn-back{background:none;border:none;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;color:rgba(210,190,255,0.75);cursor:pointer;padding:0}
-.conn-back:hover{color:rgba(200,175,255,0.7)}
+.nav-back-btn{background:rgba(200,175,255,0.1);border:1px solid rgba(200,175,255,0.4);border-radius:20px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;color:rgba(230,220,255,0.95);cursor:pointer;padding:8px 16px;transition:all .2s}
+.nav-back-btn:hover{background:rgba(200,175,255,0.18)}
 .conn-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:rgba(235,225,255,0.95);text-align:center}
 .conn-your-chart{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.12);border-radius:10px;padding:.75rem 1rem;width:100%;margin-bottom:1rem;text-align:center}
 .conn-your-name{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(235,225,255,0.85);margin-bottom:4px}
@@ -209,8 +208,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 }
 
 .sleep-top{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
-.sleep-back{background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(210,195,255,0.82),255,0.3);cursor:pointer;padding:0}
-.sleep-back:hover{color:rgba(200,175,255,0.7)}
 .sleep-phase-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;color:rgba(220,205,255,0.85);text-align:center}
 .sleep-moon-wrap{width:min(260px,72vw);height:min(260px,72vw);margin:.5rem auto .75rem;flex-shrink:0;}
 .sleep-prompt{text-align:center;margin:0 0 1rem;padding:0 .5rem}
@@ -707,7 +704,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 <div id="journal-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9996;overflow-y:auto;padding:1.5rem 1.25rem 3rem">
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;position:sticky;top:0;background:#03020d;padding:.5rem 0;z-index:10">
-    <button onclick="closeJournal()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.6);cursor:pointer;padding:8px 0">← BACK</button>
+    <button onclick="closeJournal()" class="nav-back-btn">← BACK</button>
     <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(235,225,255,0.85)">DREAM JOURNAL</div>
     <div style="width:50px;text-align:right"><button onclick="closeJournal()" style="background:none;border:none;color:rgba(200,175,255,0.4);font-size:20px;cursor:pointer;padding:4px">×</button></div>
   </div>
@@ -860,7 +857,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   <!-- HEADER -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;position:sticky;top:0;background:#03020d;padding:.5rem 0;z-index:10">
-    <button onclick="closeDreamDictionary()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.7);cursor:pointer;padding:8px 0">← BACK</button>
+    <button onclick="closeDreamDictionary()" class="nav-back-btn">← BACK</button>
     <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(235,225,255,0.88)">DREAM DICTIONARY</div>
     <div style="width:50px"></div>
   </div>
@@ -909,7 +906,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 <div id="wish-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9998;overflow-y:auto;padding:1.5rem 1.25rem 3rem">
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;position:sticky;top:0;background:#03020d;padding:.5rem 0;z-index:10">
-    <button onclick="closeWishScreen()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.7);cursor:pointer;padding:8px 0">← BACK</button>
+    <button onclick="closeWishScreen()" class="nav-back-btn">← BACK</button>
     <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:rgba(240,210,100,0.9)">SEEK YOUR KAIROS</div>
     <div style="width:50px"></div>
   </div>
@@ -977,7 +974,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div id="tutorial-body" style="font-family:'Crimson Pro',serif;font-size:16px;color:rgba(230,220,255,0.85);line-height:1.85;text-align:center;font-style:italic;margin-bottom:2rem"></div>
     <div id="tutorial-dots" style="display:flex;justify-content:center;gap:7px;margin-bottom:2rem"></div>
     <div style="display:flex;gap:10px">
-      <button id="tutorial-back-btn" onclick="tutorialBack()" style="flex:0 0 auto;padding:14px 18px;background:transparent;border:.5px solid rgba(200,175,255,0.25);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:rgba(210,195,255,0.6);cursor:pointer;display:none">← BACK</button>
+      <button id="tutorial-back-btn" onclick="tutorialBack()" class="nav-back-btn" style="flex:0 0 auto;padding:14px 18px;display:none">← BACK</button>
       <button id="tutorial-next-btn" onclick="tutorialNext()" style="flex:1;padding:14px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(225,210,255,0.9);cursor:pointer">NEXT</button>
     </div>
     <button onclick="closeTutorial()" style="margin-top:1.25rem;background:none;border:none;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:rgba(200,175,255,0.35);cursor:pointer">SKIP</button>
@@ -3771,7 +3768,7 @@ function showKairosForDate(dateKey){
   const dateLabel=new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   let html=`<div id="kairos-day-modal" style="position:fixed;inset:0;background:rgba(4,2,16,0.97);z-index:10000;overflow-y:auto;padding:1.5rem 1.25rem 3rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;position:sticky;top:0;background:#03020d;padding:.5rem 0;z-index:10">
-      <button onclick="document.getElementById('kairos-day-modal').remove()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(200,175,255,0.7);cursor:pointer;padding:8px 0">← BACK</button>
+      <button onclick="document.getElementById('kairos-day-modal').remove()" class="nav-back-btn">← BACK</button>
       <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:var(--gold)">your Kairos</div>
       <div style="width:50px"></div>
     </div>
@@ -5764,7 +5761,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 <div class="sleep-screen" id="sleep-screen">
 
   <div class="sleep-top">
-    <button class="sleep-back" id="sleep-back-btn" onclick="closeSleep()">← back</button>
+    <button class="nav-back-btn" id="sleep-back-btn" onclick="closeSleep()">← BACK</button>
     <div class="sleep-phase-lbl" id="sleep-phase-lbl">MOON PHASE</div>
     <div style="width:40px"></div>
   </div>
@@ -5871,7 +5868,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 <div class="conn-screen" id="conn-screen">
 
   <div class="conn-top">
-    <button class="conn-back" onclick="closeConnections()">← back</button>
+    <button class="nav-back-btn" onclick="closeConnections()">← BACK</button>
     <div class="conn-title">PEOPLE IN MY SKY</div>
     <div style="width:40px"></div>
   </div>
