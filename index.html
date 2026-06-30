@@ -2096,7 +2096,7 @@ const SLEEP_STATE={
   alarmTimeout:null,
   previewNodes:[],
   sleepSound:'fanhum',
-  wakeSound:'bowl',
+  wakeSound:'holy',
   timerMins:60,
   sleeping:false,
   timerInterval:null,
@@ -2436,7 +2436,7 @@ function applyLanguageToSleep(){
   const sLabels=[T.holy,T.pink,T.brown,T.ocean];
   sPills.forEach((p,i)=>{if(sLabels[i])p.textContent=sLabels[i];});
   const wPills=document.querySelectorAll('#sleep-wake-pills .sleep-pill');
-  const wLabels=[T.bowl,T.oceanW,T.holyW,T.cosmic];
+  const wLabels=[T.holyW||'Holy Light',T.tibetanW||'Tibetan Singing Bowl',T.crystalW||'Crystal Bells',T.genesisW||'Genesis Drone',T.auroraW||'Aurora Strings',T.cosmicpulseW||'Cosmic Pulse'];
   wPills.forEach((p,i)=>{if(wLabels[i])p.textContent=wLabels[i];});
 }
 
@@ -2982,88 +2982,46 @@ function playWakeSound(sound){
   initSleepAudio();
   if(SLEEP_STATE.audioCtx.state==='suspended') SLEEP_STATE.audioCtx.resume();
   const ctx=SLEEP_STATE.audioCtx;
-  const master=SLEEP_STATE.audioMaster;
-  const ns=SLEEP_STATE.audioNodes;
-  const swell=15;
   const wvol=SLEEP_STATE.wakeVolume||0.85;
 
-  function swellG(g,peak,rise){
-    const now=ctx.currentTime;
-    g.gain.setValueAtTime(0,now);
-    g.gain.linearRampToValueAtTime(peak,now+rise);
-  }
+  // Use the shared master for alarm playback with a proper swell to wake volume
+  SLEEP_STATE.audioMaster.gain.setValueAtTime(0,ctx.currentTime);
+  SLEEP_STATE.audioMaster.gain.linearRampToValueAtTime(wvol,ctx.currentTime+20);
 
-  if(sound==='bowl'){
-    // Pure Tibetan bowl tones swelling from silence — NO birds
-    const rev=ctx.createConvolver();
-    const rb=ctx.createBuffer(2,ctx.sampleRate*3,ctx.sampleRate);
-    for(let c=0;c<2;c++){const d=rb.getChannelData(c);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);}
-    rev.buffer=rb;const rg=sleepGain(.5);rev.connect(rg);rg.connect(master);
-    [[110,.09],[220,.06],[165,.05],[330,.03],[440,.02]].forEach(([f,peak],i)=>{
-      const o=sleepOsc(f);const o2=sleepOsc(f*1.0025);const g=sleepGain(0);
-      swellG(g,peak*wvol,8*(0.3+i*.08));
-      o.connect(g);o2.connect(g);g.connect(master);g.connect(rev);
-      o.start();o2.start();ns.push(o,o2);
-    });
-  } else if(sound==='ocean'){
-    const src=ctx.createBufferSource();src.buffer=pinkBuf(ctx,8);src.loop=true;
-    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
-    const lpf2=ctx.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=350;
-    const g=sleepGain(0);swellG(g,.35,10);
-    const wl1=sleepOsc(.08);const wg1=sleepGain(.12);wl1.connect(wg1);wg1.connect(g.gain);
-    const wl2=sleepOsc(.055);const wg2=sleepGain(.06);wl2.connect(wg2);wg2.connect(g.gain);
-    src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(master);
-    src.start();wl1.start();wl2.start();ns.push(src,wl1,wl2);
-  } else if(sound==='holy'){
-    // Breeze first then crystal pings increase
+  playWakeAudioEngine(ctx,SLEEP_STATE.audioMaster,SLEEP_STATE.audioNodes,sound);
+}
+
+function playWakeAudioEngine(ctx,master,ns,sound){
+  playWakeSound_impl(ctx,master,ns,sound);
+}
+
+// The single implementation used by both alarm and preview
+function playWakeSound_impl(ctx,master,ns,sound){
+  let alive=true;
+  if(sound==='holy'){
     const bsrc=ctx.createBufferSource();bsrc.buffer=pinkBuf(ctx,6);bsrc.loop=true;
     const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
-    const bg=sleepGain(0);swellG(bg,.15,6);
+    const bg=sleepGain(0);
+    const now0=ctx.currentTime;bg.gain.setValueAtTime(0,now0);bg.gain.linearRampToValueAtTime(.15,now0+6);
     const glfo=sleepOsc(.04);const gg=sleepGain(.025);glfo.connect(gg);gg.connect(bg.gain);
     bsrc.connect(lpf);lpf.connect(bg);bg.connect(master);bsrc.start();glfo.start();ns.push(bsrc,glfo);
-    const pingFreqs=[1047,1175,1319,1568,1760,2093];
-    let alive=true;let elapsed=0;
-    function ping(){
-      if(!alive)return;
-      const f=pingFreqs[Math.floor(Math.random()*pingFreqs.length)]*(0.97+Math.random()*.06);
-      const now=ctx.currentTime;
-      const vol=Math.min(.08+elapsed/15*.15,.25);
-      const o1=sleepOsc(f);const o2=sleepOsc(f*1.003);const cg=sleepGain(0);
-      cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(vol,now+.005);
-      cg.gain.exponentialRampToValueAtTime(.001,now+3.5);
-      o1.connect(cg);o2.connect(cg);cg.connect(master);
-      o1.start(now);o2.start(now);o1.stop(now+4);o2.stop(now+4);ns.push(o1,o2);
-      const interval=Math.max(400,2000-elapsed/15*1600)*(0.5+Math.random());
-      elapsed+=interval/1000;
-      setTimeout(ping,interval);
-    }
-    setTimeout(ping,2000);
-    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
-  } else if(sound==='cosmic'){
-    // Deep drone brightening — softened high tones
-    [[40,.15],[65,.10],[98,.08],[130,.06]].forEach(([f,peak],i)=>{
-      const o=sleepOsc(f);const g=sleepGain(0);swellG(g,peak,swell*(0.3+i*.1));
-      o.connect(g);g.connect(master);o.start();ns.push(o);
-    });
-    setTimeout(()=>{
-      [261,329,392,523].forEach((f,i)=>{
-        const o=sleepOsc(f);const g=sleepGain(0);swellG(g,.012+i*.004,20);
-        const lfo=sleepOsc(.03+i*.01);const lg=sleepGain(.006);lfo.connect(lg);lg.connect(g.gain);
-        o.connect(g);g.connect(master);o.start();lfo.start();ns.push(o,lfo);
-      });
-    },10000);
-    let alive=true;
-    setTimeout(function shimmer(){
-      if(!alive)return;
-      const f=150+Math.random()*450;
-      const o=sleepOsc(f);const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
-      const g=sleepGain(0);const t=ctx.currentTime;
-      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.008,t+.8);
-      g.gain.exponentialRampToValueAtTime(.001,t+5);
-      o.connect(lpf);lpf.connect(g);g.connect(master);o.start(t);o.stop(t+5.5);ns.push(o);
-      setTimeout(shimmer,2000+Math.random()*3000);
-    },15000);
-    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+    const pingFreqs=[1047,1175,1319,1568,1760,2093];let elapsed=0;
+    function ping(){if(!alive)return;const f=pingFreqs[Math.floor(Math.random()*pingFreqs.length)]*(0.97+Math.random()*.06);const now=ctx.currentTime;const vol=Math.min(.08+elapsed/15*.15,.25);const o1=sleepOsc(f);const o2=sleepOsc(f*1.003);const cg=sleepGain(0);cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(vol,now+.005);cg.gain.exponentialRampToValueAtTime(.001,now+3.5);o1.connect(cg);o2.connect(cg);cg.connect(master);o1.start(now);o2.start(now);o1.stop(now+4);o2.stop(now+4);ns.push(o1,o2);const interval=Math.max(400,2000-elapsed/15*1600)*(0.5+Math.random());elapsed+=interval/1000;setTimeout(ping,interval);}
+    setTimeout(ping,2000);ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='tibetan'){
+    function strike(){if(!alive)return;[432,648,864].forEach((f,i)=>{const o=sleepOsc(f);const env=sleepGain(0);const t=ctx.currentTime;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.35/(i+1),t+0.02);env.gain.exponentialRampToValueAtTime(0.001,t+4.5);o.connect(env);env.connect(master);o.start(t);o.stop(t+5);ns.push(o);});setTimeout(strike,5500);}
+    strike();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='crystal'){
+    const seq=[523.25,587.33,659.25,698.46,783.99];let idx=0;
+    function bell(){if(!alive)return;const o=sleepOsc(seq[idx%seq.length]);const env=sleepGain(0);const t=ctx.currentTime;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.5,t+0.01);env.gain.exponentialRampToValueAtTime(0.001,t+2.5);o.connect(env);env.connect(master);o.start(t);o.stop(t+2.8);idx++;setTimeout(bell,idx%seq.length===0?3000:700);}
+    bell();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='genesis'){
+    [55,82.5,110,165,220].forEach((f,i)=>{const o=sleepOsc(f);const o2=sleepOsc(f);const env=sleepGain(0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(80,ctx.currentTime);filter.frequency.linearRampToValueAtTime(800,ctx.currentTime+30);const delay=i*5;env.gain.setValueAtTime(0,ctx.currentTime+delay);env.gain.linearRampToValueAtTime(0.15/(i*0.5+1),ctx.currentTime+delay+8);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(ctx.currentTime+delay);o2.start(ctx.currentTime+delay);ns.push(o,o2);});
+  } else if(sound==='aurora'){
+    [[130.81,196.00],[196.00,293.66],[261.63,392.00]].forEach(([f1,f2],i)=>{[f1,f2].forEach(freq=>{const o=sleepOsc(freq,'sawtooth');const o2=sleepOsc(freq);const env=sleepGain(0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=600+i*200;const t=ctx.currentTime+i*7;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.06,t+5);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(t);o2.start(t);ns.push(o,o2);});});
+  } else if(sound==='cosmicpulse'){
+    function pulse(){if(!alive)return;[60,90,120].forEach((f,i)=>{const o=sleepOsc(f);const env=sleepGain(0);const t=ctx.currentTime+i*0.08;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.4/(i+1),t+0.1);env.gain.exponentialRampToValueAtTime(0.001,t+1.8);o.connect(env);env.connect(master);o.start(t);o.stop(t+2);ns.push(o);});setTimeout(pulse,2800);}
+    pulse();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
   }
 }
 
@@ -3074,121 +3032,93 @@ let previewCtx = null;
 let previewMaster = null;
 let currentPreviewing = null;
 
-function toggleWakePreview(sound){
-  // If already previewing this sound, stop it
-  if(currentPreviewing === sound){
-    stopWakePreview();
-    return;
-  }
-  stopWakePreview();
-  currentPreviewing = sound;
+const WAKE_SOUND_IDS = ['holy','tibetan','crystal','genesis','aurora','cosmicpulse'];
+const SLEEP_SOUND_IDS = ['fanhum','pink','brown','ocean'];
 
-  // Update button states
-  ['bowl','ocean','holy','cosmic'].forEach(s=>{
-    const btn = document.getElementById('prev-'+s);
-    if(btn) btn.textContent = s===sound ? '◼' : '▶';
-  });
+function pOscP(ctx,f,type='sine'){const o=ctx.createOscillator();o.type=type;o.frequency.value=f;return o;}
+function pGainP(ctx,v){const g=ctx.createGain();g.gain.value=v;return g;}
+function swellP(g,peak,rise,ctx){const now=ctx.currentTime;g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(peak,now+rise);}
+function pinkBufP(ctx,secs){
+  const buf=ctx.createBuffer(1,ctx.sampleRate*secs,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for(let i=0;i<d.length;i++){const w=Math.random()*2-1;b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;}
+  return buf;
+}
 
-  // Init audio
-  if(!previewCtx){
-    previewCtx = new(window.AudioContext||window.webkitAudioContext)();
-    previewMaster = previewCtx.createGain();
-    previewMaster.gain.value = SLEEP_STATE.wakeVolume||0.9;
-    previewMaster.connect(previewCtx.destination);
-  }
-  if(previewCtx.state==='suspended') previewCtx.resume();
-
-  const ctx = previewCtx;
-  const master = previewMaster;
-  const ns = previewNodes;
-
-  function pinkP(secs){
-    const buf=ctx.createBuffer(1,ctx.sampleRate*secs,ctx.sampleRate);
-    const d=buf.getChannelData(0);
-    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
-    for(let i=0;i<d.length;i++){
-      const w=Math.random()*2-1;
-      b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;
-      b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;
-      b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;
-      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;
-    }
-    return buf;
-  }
-  function pOsc(f){const o=ctx.createOscillator();o.type='sine';o.frequency.value=f;return o;}
-  function pGain(v){const g=ctx.createGain();g.gain.value=v;return g;}
-  function swellP(g,peak,rise){
-    const now=ctx.currentTime;
-    g.gain.setValueAtTime(0,now);
-    g.gain.linearRampToValueAtTime(peak,now+rise);
-  }
-
-  if(sound==='bowl'){
-    const rev=ctx.createConvolver();
-    const rb=ctx.createBuffer(2,ctx.sampleRate*2,ctx.sampleRate);
-    for(let c=0;c<2;c++){const d=rb.getChannelData(c);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.5);}
-    rev.buffer=rb;const rg=pGain(.4);rev.connect(rg);rg.connect(master);
-    [[110,.09],[220,.06],[165,.05]].forEach(([f,peak],i)=>{
-      const o=pOsc(f);const o2=pOsc(f*1.0025);const g=pGain(0);
-      swellP(g,peak,4+i*1.5);
-      o.connect(g);o2.connect(g);g.connect(master);g.connect(rev);
-      o.start();o2.start();ns.push(o,o2);
-    });
-  } else if(sound==='ocean'){
-    const src=ctx.createBufferSource();src.buffer=pinkP(8);src.loop=true;
-    const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=500;
-    const g=pGain(0);swellP(g,.18,5);
-    const wl=pOsc(.08);const wg=pGain(.1);wl.connect(wg);wg.connect(g.gain);
-    src.connect(lpf);lpf.connect(g);g.connect(master);
-    src.start();wl.start();ns.push(src,wl);
-  } else if(sound==='holy'){
-    const bsrc=ctx.createBufferSource();bsrc.buffer=pinkP(6);bsrc.loop=true;
+function playWakePreviewSound(ctx, master, ns, sound){
+  let alive = true;
+  if(sound==='holy'){
+    const bsrc=ctx.createBufferSource();bsrc.buffer=pinkBufP(ctx,6);bsrc.loop=true;
     const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=280;
-    const bg=pGain(0);swellP(bg,.055,4);
+    const bg=pGainP(ctx,0);swellP(bg,.055,4,ctx);
     bsrc.connect(lpf);lpf.connect(bg);bg.connect(master);bsrc.start();ns.push(bsrc);
     const freqs=[1047,1175,1319,1568,1760];
-    let alive=true;
-    function ping(){
-      if(!alive)return;
-      const f=freqs[Math.floor(Math.random()*freqs.length)];
-      const now=ctx.currentTime;
-      const o1=pOsc(f);const o2=pOsc(f*1.003);const cg=pGain(0);
-      cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(.07,now+.005);
-      cg.gain.exponentialRampToValueAtTime(.001,now+3.5);
-      o1.connect(cg);o2.connect(cg);cg.connect(master);
-      o1.start(now);o2.start(now);o1.stop(now+4);o2.stop(now+4);ns.push(o1,o2);
-      setTimeout(ping,2000+Math.random()*3000);
-    }
-    setTimeout(ping,1000);
-    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
-  } else if(sound==='cosmic'){
-    [[40,.06],[65,.04],[98,.03]].forEach(([f,peak],i)=>{
-      const o=pOsc(f);const g=pGain(0);swellP(g,peak,5*(0.3+i*.1));
-      o.connect(g);g.connect(master);o.start();ns.push(o);
-    });
-    let alive=true;
-    setTimeout(function shimmer(){
-      if(!alive)return;
-      const f=150+Math.random()*350;
-      const o=pOsc(f);const g=pGain(0);const t=ctx.currentTime;
-      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.008,t+.5);
-      g.gain.exponentialRampToValueAtTime(.001,t+3);
-      o.connect(g);g.connect(master);o.start(t);o.stop(t+3.5);ns.push(o);
-      setTimeout(shimmer,1500+Math.random()*2000);
-    },3000);
-    ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+    function ping(){if(!alive)return;const f=freqs[Math.floor(Math.random()*freqs.length)];const now=ctx.currentTime;const o1=pOscP(ctx,f);const o2=pOscP(ctx,f*1.003);const cg=pGainP(ctx,0);cg.gain.setValueAtTime(0,now);cg.gain.linearRampToValueAtTime(.07,now+.005);cg.gain.exponentialRampToValueAtTime(.001,now+3.5);o1.connect(cg);o2.connect(cg);cg.connect(master);o1.start(now);o2.start(now);o1.stop(now+4);o2.stop(now+4);ns.push(o1,o2);setTimeout(ping,2000+Math.random()*3000);}
+    setTimeout(ping,1000);ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='tibetan'){
+    function strike(){if(!alive)return;[432,648,864].forEach((f,i)=>{const o=pOscP(ctx,f);const env=pGainP(ctx,0);const t=ctx.currentTime;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.35/(i+1),t+0.02);env.gain.exponentialRampToValueAtTime(0.001,t+4.5);o.connect(env);env.connect(master);o.start(t);o.stop(t+5);ns.push(o);});setTimeout(strike,5500);}
+    strike();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='crystal'){
+    const seq=[523.25,587.33,659.25,698.46,783.99];let idx=0;
+    function bell(){if(!alive)return;const o=pOscP(ctx,seq[idx%seq.length]);const env=pGainP(ctx,0);const t=ctx.currentTime;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.5,t+0.01);env.gain.exponentialRampToValueAtTime(0.001,t+2.5);o.connect(env);env.connect(master);o.start(t);o.stop(t+2.8);idx++;setTimeout(bell,idx%seq.length===0?3000:700);}
+    bell();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
+  } else if(sound==='genesis'){
+    [55,82.5,110,165,220].forEach((f,i)=>{const o=pOscP(ctx,f);const o2=pOscP(ctx,f*1.001);const env=pGainP(ctx,0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(80,ctx.currentTime);filter.frequency.linearRampToValueAtTime(800,ctx.currentTime+30);const delay=i*5;env.gain.setValueAtTime(0,ctx.currentTime+delay);env.gain.linearRampToValueAtTime(0.15/(i*0.5+1),ctx.currentTime+delay+8);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(ctx.currentTime+delay);o2.start(ctx.currentTime+delay);ns.push(o,o2);});
+  } else if(sound==='aurora'){
+    [[130.81,196.00],[196.00,293.66],[261.63,392.00]].forEach(([f1,f2],i)=>{[f1,f2].forEach(freq=>{const o=pOscP(ctx,freq,'sawtooth');const o2=pOscP(ctx,freq*1.0015,'sawtooth');const env=pGainP(ctx,0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=600+i*200;const t=ctx.currentTime+i*7;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.06,t+5);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(t);o2.start(t);ns.push(o,o2);});});
+  } else if(sound==='cosmicpulse'){
+    function pulse(){if(!alive)return;[60,90,120].forEach((f,i)=>{const o=pOscP(ctx,f);const env=pGainP(ctx,0);const t=ctx.currentTime+i*0.08;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.4/(i+1),t+0.1);env.gain.exponentialRampToValueAtTime(0.001,t+1.8);o.connect(env);env.connect(master);o.start(t);o.stop(t+2);ns.push(o);});setTimeout(pulse,2800);}
+    pulse();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
   }
 }
 
+function toggleWakePreview(sound){
+  if(currentPreviewing==='wake-'+sound){stopWakePreview();return;}
+  stopWakePreview();stopSleepPreview();
+  currentPreviewing='wake-'+sound;
+  WAKE_SOUND_IDS.forEach(s=>{const btn=document.getElementById('prev-wake-'+s);if(btn)btn.textContent=s===sound?'◼':'▶';});
+  if(!previewCtx){previewCtx=new(window.AudioContext||window.webkitAudioContext)();previewMaster=previewCtx.createGain();previewMaster.gain.value=SLEEP_STATE.wakeVolume||0.9;previewMaster.connect(previewCtx.destination);}
+  if(previewCtx.state==='suspended')previewCtx.resume();
+  playWakePreviewSound(previewCtx,previewMaster,previewNodes,sound);
+}
 
 function stopWakePreview(){
   previewNodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});
-  previewNodes=[];
-  currentPreviewing=null;
-  ['bowl','ocean','holy','cosmic'].forEach(s=>{
-    const btn=document.getElementById('prev-'+s);
-    if(btn)btn.textContent='▶';
-  });
+  previewNodes=[];currentPreviewing=null;
+  WAKE_SOUND_IDS.forEach(s=>{const btn=document.getElementById('prev-wake-'+s);if(btn)btn.textContent='▶';});
+}
+
+// Sleep sound preview
+let sleepPreviewCtx = null;
+let sleepPreviewNodes = [];
+let currentSleepPreviewing = null;
+
+function toggleSleepPreview(sound){
+  if(currentSleepPreviewing===sound){stopSleepPreview();return;}
+  stopSleepPreview();stopWakePreview();
+  currentSleepPreviewing=sound;
+  SLEEP_SOUND_IDS.forEach(s=>{const btn=document.getElementById('prev-sleep-'+s);if(btn)btn.textContent=s===sound?'◼':'▶';});
+  sleepPreviewCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const ctx=sleepPreviewCtx;
+  const master=ctx.createGain();master.gain.setValueAtTime(0,ctx.currentTime);master.gain.linearRampToValueAtTime(0.7,ctx.currentTime+4);master.connect(ctx.destination);
+  const ns=sleepPreviewNodes;
+  if(sound==='pink'){
+    const src=ctx.createBufferSource();src.buffer=pinkBufP(ctx,6);src.loop=true;const g=ctx.createGain();g.gain.value=.35;src.connect(g);g.connect(master);src.start();ns.push(src);
+  } else if(sound==='brown'){
+    const src=ctx.createBufferSource();src.buffer=pinkBufP(ctx,6);src.loop=true;const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=800;const g=ctx.createGain();g.gain.value=.4;src.connect(lpf);lpf.connect(g);g.connect(master);src.start();ns.push(src);
+  } else if(sound==='ocean'){
+    const src=ctx.createBufferSource();src.buffer=pinkBufP(ctx,8);src.loop=true;const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=420;lpf.Q.value=.8;const lpf2=ctx.createBiquadFilter();lpf2.type='lowpass';lpf2.frequency.value=300;const g=ctx.createGain();g.gain.value=.18;const wl=ctx.createOscillator();wl.frequency.value=.075;const wg=ctx.createGain();wg.gain.value=.11;wl.connect(wg);wg.connect(g.gain);src.connect(lpf);lpf.connect(lpf2);lpf2.connect(g);g.connect(master);src.start();wl.start();ns.push(src,wl);
+  } else {
+    const src=ctx.createBufferSource();const buf=ctx.createBuffer(1,ctx.sampleRate*6,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;src.buffer=buf;src.loop=true;const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=1200;const g=ctx.createGain();g.gain.value=.16;src.connect(lpf);lpf.connect(g);g.connect(master);src.start();ns.push(src);
+  }
+}
+
+function stopSleepPreview(){
+  sleepPreviewNodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});
+  sleepPreviewNodes=[];currentSleepPreviewing=null;
+  if(sleepPreviewCtx){try{sleepPreviewCtx.close();}catch(e){}sleepPreviewCtx=null;}
+  SLEEP_SOUND_IDS.forEach(s=>{const btn=document.getElementById('prev-sleep-'+s);if(btn)btn.textContent='▶';});
 }
 
 
@@ -5782,11 +5712,23 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
 
     <!-- 1. SLEEP SOUND -->
     <div class="sleep-lbl" id="sleep-sound-lbl">SLEEP SOUND</div>
-    <div class="sleep-pills" id="sleep-sound-pills" style="margin-bottom:.6rem">
-      <button class="sleep-pill on" data-sound="fanhum"  onclick="selectSleepSound(this,'fanhum')">Fan Hum</button>
-      <button class="sleep-pill"    data-sound="pink"  onclick="selectSleepSound(this,'pink')">Pink Noise</button>
-      <button class="sleep-pill"    data-sound="brown" onclick="selectSleepSound(this,'brown')">Brown Noise</button>
-      <button class="sleep-pill"    data-sound="ocean" onclick="selectSleepSound(this,'ocean')">Ocean</button>
+    <div class="sleep-pills" id="sleep-sound-pills" style="display:flex;flex-direction:column;gap:7px;width:100%;margin-bottom:.6rem">
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill on" data-sound="fanhum"  onclick="selectSleepSound(this,'fanhum')"  style="flex:1;text-align:left">Fan Hum</button>
+        <button onclick="toggleSleepPreview('fanhum')"  id="prev-sleep-fanhum"  style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill"    data-sound="pink"    onclick="selectSleepSound(this,'pink')"    style="flex:1;text-align:left">Pink Noise</button>
+        <button onclick="toggleSleepPreview('pink')"    id="prev-sleep-pink"    style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill"    data-sound="brown"   onclick="selectSleepSound(this,'brown')"   style="flex:1;text-align:left">Brown Noise</button>
+        <button onclick="toggleSleepPreview('brown')"   id="prev-sleep-brown"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill"    data-sound="ocean"   onclick="selectSleepSound(this,'ocean')"   style="flex:1;text-align:left">Ocean</button>
+        <button onclick="toggleSleepPreview('ocean')"   id="prev-sleep-ocean"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+      </div>
     </div>
 
     <!-- 2. VOLUME -->
@@ -5813,20 +5755,28 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
     <div class="sleep-lbl" id="sleep-wake-lbl">WAKE-UP SOUND <span style="font-size:7px;color:rgba(200,175,255,0.82)">PRO</span></div>
     <div id="sleep-wake-pills" style="display:flex;flex-direction:column;gap:7px;width:100%;margin-bottom:.6rem">
       <div style="display:flex;align-items:center;gap:6px;width:100%">
-        <button class="sleep-pill on" data-wake="bowl"   onclick="selectWakeSound(this,'bowl')"   style="flex:1;text-align:left">Sunrise Bowl</button>
-        <button onclick="toggleWakePreview('bowl')"   id="prev-bowl"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button class="sleep-pill on" data-wake="holy"      onclick="selectWakeSound(this,'holy')"      style="flex:1;text-align:left">Holy Light</button>
+        <button onclick="toggleWakePreview('holy')"      id="prev-wake-holy"      style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;width:100%">
-        <button class="sleep-pill" data-wake="ocean"  onclick="selectWakeSound(this,'ocean')"  style="flex:1;text-align:left">Ocean Tide</button>
-        <button onclick="toggleWakePreview('ocean')"  id="prev-ocean"  style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button class="sleep-pill" data-wake="tibetan"    onclick="selectWakeSound(this,'tibetan')"    style="flex:1;text-align:left">Tibetan Bowl</button>
+        <button onclick="toggleWakePreview('tibetan')"   id="prev-wake-tibetan"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;width:100%">
-        <button class="sleep-pill" data-wake="holy"   onclick="selectWakeSound(this,'holy')"   style="flex:1;text-align:left">Holy Light</button>
-        <button onclick="toggleWakePreview('holy')"   id="prev-holy"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button class="sleep-pill" data-wake="crystal"    onclick="selectWakeSound(this,'crystal')"    style="flex:1;text-align:left">Crystal Bells</button>
+        <button onclick="toggleWakePreview('crystal')"   id="prev-wake-crystal"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;width:100%">
-        <button class="sleep-pill" data-wake="cosmic" onclick="selectWakeSound(this,'cosmic')" style="flex:1;text-align:left">Cosmic Dawn</button>
-        <button onclick="toggleWakePreview('cosmic')" id="prev-cosmic" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+        <button class="sleep-pill" data-wake="genesis"    onclick="selectWakeSound(this,'genesis')"    style="flex:1;text-align:left">Genesis Drone</button>
+        <button onclick="toggleWakePreview('genesis')"   id="prev-wake-genesis"   style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill" data-wake="aurora"     onclick="selectWakeSound(this,'aurora')"     style="flex:1;text-align:left">Aurora Strings</button>
+        <button onclick="toggleWakePreview('aurora')"    id="prev-wake-aurora"    style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;width:100%">
+        <button class="sleep-pill" data-wake="cosmicpulse" onclick="selectWakeSound(this,'cosmicpulse')" style="flex:1;text-align:left">Cosmic Pulse</button>
+        <button onclick="toggleWakePreview('cosmicpulse')" id="prev-wake-cosmicpulse" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
     </div>
 
