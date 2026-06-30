@@ -546,8 +546,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
 
   <div id="birthday-banner" style="display:none;text-align:center;background:rgba(210,175,80,0.08);border:.5px solid rgba(210,175,80,0.35);border-radius:12px;padding:.85rem 1rem;margin:0 0 1rem">
-    <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;color:var(--gold)">✦ HAPPY SOLAR RETURN ✦</div>
-    <div id="birthday-banner-sub" style="font-family:'Crimson Pro',serif;font-size:12.5px;color:rgba(225,215,245,0.85);font-style:italic;margin-top:.3rem">The cosmos has marked your day. A wish is yours to make, free of charge.</div>
+    <div id="birthday-banner-sub" style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(225,215,245,0.9);font-style:italic;margin-top:0;line-height:1.5">The cosmos has marked your day. A wish is yours to make, free of charge.</div>
   </div>
 
   <!-- TABS -->
@@ -3680,6 +3679,11 @@ function renderCalendar(){
       if(hasWish){
         const star=document.createElement('div');
         star.className='cal-wish-star';
+        const bWish=kairosEntry.wishes.find(w=>w.isBirthday);
+        if(bWish&&bWish.birthstoneColor){
+          star.style.color=bWish.birthstoneColor;
+          star.style.textShadow='0 0 4px '+bWish.birthstoneColor;
+        }
         star.textContent='★';
         dots.appendChild(star);
       }
@@ -3751,8 +3755,9 @@ function showKairosForDate(dateKey){
 
   if(kairos?.wishes&&kairos.wishes.length){
     kairos.wishes.forEach(w=>{
+      const starColor=w.isBirthday&&w.birthstoneColor?w.birthstoneColor:'rgba(240,210,100,0.9)';
       html+=`<div style="margin-bottom:1.25rem;border-top:.5px solid rgba(220,180,80,0.12);padding-top:1.25rem">
-        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(240,210,100,0.9);margin-bottom:.6rem">★ ${(w.label||'WISH').toUpperCase()}</div>
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:${starColor};margin-bottom:.6rem">★ ${(w.label||'WISH').toUpperCase()}${w.isBirthday?' · BIRTHDAY WISH':''}</div>
         <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(230,220,255,0.8);line-height:1.75;font-style:italic;margin-bottom:.75rem">"${w.text}"</div>
         <div style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.88);line-height:1.85;font-style:italic;border-top:.5px solid rgba(220,180,80,0.08);padding-top:.75rem">${w.reading}</div>
       </div>`;
@@ -4463,6 +4468,28 @@ function renderActiveRightNow(){
 // ============================================================
 // BIRTHDAY — free bonus wish on the user's solar return
 // ============================================================
+const BIRTHDAY_MESSAGES=[
+  "🌞 Another trip around the Sun deserves a little cosmic magic. Happy Birthday! The Kairos Universe has granted you 1 extra Wish. Use it wisely. The stars are listening. ✨",
+  "🎂 Happy Birthday, Cosmic Traveler! You've completed another orbit around the Sun, and the Kairos Universe is celebrating with you. Enjoy 1 complimentary Wish as a birthday gift. 🌙✨",
+  "✨ A Birthday Gift from the Kairos Universe. Every orbit brings new possibilities. To celebrate this special moment, we've added 1 extra Wish to your account. May the cosmos be in your favor. 🌌",
+  "🌠 Your Birthday Kairos Has Arrived. A birthday isn't just another year, it's the perfect cosmic moment for new beginnings. Your gift is 1 bonus Wish, courtesy of the Kairos Universe. 💫",
+  "☀️ Another Orbit. Another Opportunity. As you complete another journey around the Sun, the universe offers you a little extra guidance. Enjoy 1 free Birthday Wish. ✨",
+  "Happy Birthday! 🎉 Another trip around the Sun. Another perfect Kairos. Your birthday gift is 1 free Wish from the Kairos Universe. ✨",
+  "🌌 The Cosmos Has Noticed. Today marks another successful orbit around the Sun, a rare Kairos worth celebrating. Accept this complimentary Birthday Wish from the Kairos Universe, and may your next chapter be written in the stars. ✨",
+  "🌙 The universe is celebrating with you today. Another year. Another orbit. Another perfect Kairos. Enjoy 1 complimentary Birthday Wish from the Kairos Universe. ✨",
+  "✨ Every birthday marks a new chapter in your cosmic journey. To celebrate this special Kairos, we've gifted you 1 extra Wish. Make it count. 🌠",
+  "🌞 Happy Birthday! You've circled the Sun once more, and the Kairos Universe has a gift waiting for you. 1 extra Wish has been added to your account. ✨",
+  "Happy Birthday! You've completed another orbit around the Sun. To celebrate this perfect Kairos, the Kairos Universe has gifted you 1 extra Wish. May the stars guide it well. ✨"
+];
+function getBirthdayMessage(){
+  const key='k_birthday_msg_'+new Date().getFullYear();
+  let msg=localStorage.getItem(key);
+  if(!msg){
+    msg=BIRTHDAY_MESSAGES[Math.floor(Math.random()*BIRTHDAY_MESSAGES.length)];
+    localStorage.setItem(key,msg);
+  }
+  return msg;
+}
 function isBirthdayToday(){
   const bd=localStorage.getItem('k_bdate');
   if(!bd)return false;
@@ -4474,18 +4501,25 @@ function isBirthdayToday(){
 function birthdayGiftKey(){
   return 'k_birthday_gift_'+new Date().getFullYear();
 }
+const BIRTHSTONE_COLORS={1:'#9b2335',2:'#9966cc',3:'#7fcdcd',4:'#d6d6e8',5:'#50c878',6:'#e8d5e8',7:'#e0115f',8:'#a8c93a',9:'#0f52ba',10:'#e791c4',11:'#ffb84d',12:'#30d5c8'};
+function getBirthstoneColor(){
+  const bd=localStorage.getItem('k_bdate');
+  if(!bd)return BIRTHSTONE_COLORS[1];
+  const p=bd.split('-');
+  const month=parseInt(p[1])||1;
+  return BIRTHSTONE_COLORS[month]||BIRTHSTONE_COLORS[1];
+}
 function birthdayGiftAvailable(){
   return isBirthdayToday()&&APP.isPro&&!localStorage.getItem(birthdayGiftKey());
 }
 function renderBirthdayBanner(){
   const banner=document.getElementById('birthday-banner');
   if(!banner)return;
-  if(isBirthdayToday()&&APP.isPro){
+  if(birthdayGiftAvailable()){
     const sub=document.getElementById('birthday-banner-sub');
-    const available=birthdayGiftAvailable();
-    if(sub)sub.textContent=available?'The cosmos has marked your day. A wish is yours to make, free of charge.':'The cosmos has marked your day. Wishing you a beautiful year ahead.';
-    banner.style.cursor=available?'pointer':'default';
-    banner.onclick=available?openWishScreen:null;
+    if(sub)sub.textContent=getBirthdayMessage();
+    banner.style.cursor='pointer';
+    banner.onclick=openWishScreen;
     banner.style.display='block';
   } else {
     banner.style.display='none';
@@ -4618,7 +4652,7 @@ function updateWishCounterUI(){
   const counterEl=document.getElementById('wish-counter');
   const formWrap=document.getElementById('wish-form-wrap');
   if(birthdayGiftAvailable()){
-    if(counterEl)counterEl.textContent='✦ Your solar return wish — free of charge, on the house ✦';
+    if(counterEl)counterEl.textContent='Every birthday is a Kairos. A perfect moment to wish boldly. ✨';
     if(formWrap)formWrap.style.display='block';
     renderWishStarsIndicator();
     return;
@@ -4696,8 +4730,9 @@ async function submitWish(){
   try{
     const txt=await callAI(prompt,system);
     resultText.textContent=txt;
-    saveWishToKairos({category:selectedWishCat,label:domain.label,text,reading:txt,date:new Date().toLocaleDateString('en-CA')});
-    if(birthdayGiftAvailable()){
+    const isBdayWish=birthdayGiftAvailable();
+    saveWishToKairos({category:selectedWishCat,label:domain.label,text,reading:txt,date:new Date().toLocaleDateString('en-CA'),isBirthday:isBdayWish,birthstoneColor:isBdayWish?getBirthstoneColor():null});
+    if(isBdayWish){
       localStorage.setItem(birthdayGiftKey(),'1');
       renderBirthdayBanner();
     } else {
@@ -5203,7 +5238,7 @@ function exportSingleDay(dateKey){
   }
   if(kairos?.wishes&&kairos.wishes.length){
     kairos.wishes.forEach(w=>{
-      content+=`${(w.label||'WISH').toUpperCase()}\n\n"${w.text}"\n\n${w.reading}\n\n${'─'.repeat(40)}\n\n`;
+      content+=`${(w.label||'WISH').toUpperCase()}${w.isBirthday?' (BIRTHDAY WISH)':''}\n\n"${w.text}"\n\n${w.reading}\n\n${'─'.repeat(40)}\n\n`;
     });
   }
 
