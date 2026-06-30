@@ -529,7 +529,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <!-- TIER -->
   <div class="tier-bar" id="tier-bar">
     <button class="tier-btn on" id="free-btn" onclick="setTier('free')">◈ FREE</button>
-    <button class="tier-btn" id="pro-btn" onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')">✦ PRO — $5.99 USD/mo</button>
+    <button class="tier-btn" id="pro-btn" onclick="updatePaywallStats();document.getElementById('paywall').classList.add('on')">✦ PRO — $5.99/mo</button>
   </div>
 
   <!-- MOON ENERGY -->
@@ -991,7 +991,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div class="pw-stat"><div class="pw-stat-num" id="pw-stat-dreams">0</div><div class="pw-stat-lbl">DREAMS</div></div>
     <div class="pw-stat"><div class="pw-stat-num" id="pw-stat-days">0</div><div class="pw-stat-lbl">DAYS</div></div>
   </div>
-  <div class="pw-price">$5.99 USD<span> / month</span></div>
+  <div class="pw-price">$5.99<span> / month</span></div>
   <div class="pw-feats">
     <div class="pw-feat">Daily horoscope — personalised to your natal chart</div>
     <div class="pw-feat">Full birth chart — sun, moon & rising, precisely calculated</div>
@@ -999,7 +999,6 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div class="pw-feat">Combined reading — your stars & dreams woven into one insight</div>
     <div class="pw-feat">People in My Sky — weekly compatibility readings per person</div>
     <div class="pw-feat">Pattern analysis — symbols recurring across your dream journal</div>
-    <div class="pw-feat">Full reading history — revisit any past horoscope or combined reading</div>
     <div class="pw-feat">Export your journal — your story, always yours to keep</div>
   </div>
   <button class="pw-cta" onclick="activatePro()">✦ UNLOCK MY FULL STORY ✦</button>
@@ -1188,7 +1187,7 @@ const TRANSLATIONS={
   English:{
     ambientOff:'♫ ambient off',ambientOn:'♫ ambient on',
     freeReadings:'free readings remaining this month',
-    freeTier:'◈ FREE',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — unlimited readings',
+    freeTier:'◈ FREE',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — unlimited readings',
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Dream',tabCombined:'⊕ Combined',tabJournal:'📖 Journal',
     yourSign:'YOUR SIGN',period:'PERIOD',
     periodToday:'Today',periodWeek:'This Week',periodMonth:'This Month',
@@ -1252,7 +1251,7 @@ const TRANSLATIONS={
   French:{
     ambientOff:'♫ ambiance désactivée',ambientOn:'♫ ambiance activée',
     freeReadings:'lectures gratuites restantes',
-    freeTier:'◈ GRATUIT',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — lectures illimitées',
+    freeTier:'◈ GRATUIT',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — lectures illimitées',
     tabHoroscope:'◈ Horoscope',tabDream:'◇ Rêve',tabCombined:'⊕ Combiné',tabJournal:'📖 Journal',
     yourSign:'VOTRE SIGNE',period:'PÉRIODE',
     periodToday:"Aujourd'hui",periodWeek:'Cette semaine',periodMonth:'Ce mois-ci',
@@ -1304,7 +1303,7 @@ const TRANSLATIONS={
   Spanish:{
     ambientOff:'♫ ambiente desactivado',ambientOn:'♫ ambiente activado',
     freeReadings:'lecturas gratuitas restantes',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — lecturas ilimitadas',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — lecturas ilimitadas',
     tabHoroscope:'◈ Horóscopo',tabDream:'◇ Sueño',tabCombined:'⊕ Combinado',tabJournal:'📖 Diario',
     yourSign:'TU SIGNO',period:'PERÍODO',
     periodToday:'Hoy',periodWeek:'Esta semana',periodMonth:'Este mes',
@@ -1356,7 +1355,7 @@ const TRANSLATIONS={
   Portuguese:{
     ambientOff:'♫ ambiente desligado',ambientOn:'♫ ambiente ligado',
     freeReadings:'leituras gratuitas restantes',
-    freeTier:'◈ GRÁTIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — leituras ilimitadas',
+    freeTier:'◈ GRÁTIS',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — leituras ilimitadas',
     tabHoroscope:'◈ Horóscopo',tabDream:'◇ Sonho',tabCombined:'⊕ Combinado',tabJournal:'📖 Diário',
     yourSign:'SEU SIGNO',period:'PERÍODO',
     periodToday:'Hoje',periodWeek:'Esta semana',periodMonth:'Este mês',
@@ -1408,7 +1407,7 @@ const TRANSLATIONS={
   German:{
     ambientOff:'♫ Ambiente aus',ambientOn:'♫ Ambiente an',
     freeReadings:'kostenlose Lesungen verbleibend',
-    freeTier:'◈ KOSTENLOS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — unbegrenzte Lesungen',
+    freeTier:'◈ KOSTENLOS',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — unbegrenzte Lesungen',
     tabHoroscope:'◈ Horoskop',tabDream:'◇ Traum',tabCombined:'⊕ Kombiniert',tabJournal:'📖 Tagebuch',
     yourSign:'DEIN ZEICHEN',period:'ZEITRAUM',
     periodToday:'Heute',periodWeek:'Diese Woche',periodMonth:'Diesen Monat',
@@ -1460,7 +1459,7 @@ const TRANSLATIONS={
   Italian:{
     ambientOff:'♫ ambiente disattivato',ambientOn:'♫ ambiente attivato',
     freeReadings:'letture gratuite rimanenti',
-    freeTier:'◈ GRATUITO',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — letture illimitate',
+    freeTier:'◈ GRATUITO',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — letture illimitate',
     tabHoroscope:'◈ Oroscopo',tabDream:'◇ Sogno',tabCombined:'⊕ Combinato',tabJournal:'📖 Diario',
     yourSign:'IL TUO SEGNO',period:'PERIODO',
     periodToday:'Oggi',periodWeek:'Questa settimana',periodMonth:'Questo mese',
@@ -1512,7 +1511,7 @@ const TRANSLATIONS={
   Greek:{
     ambientOff:'♫ περιβάλλον απενεργοποιημένο',ambientOn:'♫ περιβάλλον ενεργοποιημένο',
     freeReadings:'δωρεάν αναγνώσεις που απομένουν',
-    freeTier:'◈ ΔΩΡΕΑΝ',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — απεριόριστες αναγνώσεις',
+    freeTier:'◈ ΔΩΡΕΑΝ',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — απεριόριστες αναγνώσεις',
     tabHoroscope:'◈ Ωροσκόπιο',tabDream:'◇ Όνειρο',tabCombined:'⊕ Συνδυασμένο',tabJournal:'📖 Ημερολόγιο',
     yourSign:'ΤΟ ΖΩΔΙΟ ΣΟΥ',period:'ΠΕΡΙΟΔΟΣ',
     periodToday:'Σήμερα',periodWeek:'Αυτή την εβδομάδα',periodMonth:'Αυτόν τον μήνα',
@@ -1564,7 +1563,7 @@ const TRANSLATIONS={
   Japanese:{
     ambientOff:'♫ 環境音オフ',ambientOn:'♫ 環境音オン',
     freeReadings:'無料リーディング残り',
-    freeTier:'◈ 無料',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — 無制限リーディング',
+    freeTier:'◈ 無料',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — 無制限リーディング',
     tabHoroscope:'◈ 星占い',tabDream:'◇ 夢',tabCombined:'⊕ 複合',tabJournal:'📖 日記',
     yourSign:'あなたのサイン',period:'期間',
     periodToday:'今日',periodWeek:'今週',periodMonth:'今月',
@@ -1619,7 +1618,7 @@ const TRANSLATIONS={
   Chinese:{
     ambientOff:'♫ 环境音关闭',ambientOn:'♫ 环境音开启',
     freeReadings:'剩余免费占卜次数',
-    freeTier:'◈ 免费',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — 无限占卜',
+    freeTier:'◈ 免费',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — 无限占卜',
     tabHoroscope:'◈ 星座',tabDream:'◇ 梦境',tabCombined:'⊕ 综合',tabJournal:'📖 日记',
     yourSign:'你的星座',period:'时间段',
     periodToday:'今天',periodWeek:'本周',periodMonth:'本月',
@@ -1671,7 +1670,7 @@ const TRANSLATIONS={
   Korean:{
     ambientOff:'♫ 배경음 꺼짐',ambientOn:'♫ 배경음 켜짐',
     freeReadings:'무료 리딩 남음',
-    freeTier:'◈ 무료',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — 무제한 리딩',
+    freeTier:'◈ 무료',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — 무제한 리딩',
     tabHoroscope:'◈ 별자리',tabDream:'◇ 꿈',tabCombined:'⊕ 복합',tabJournal:'📖 일기',
     yourSign:'당신의 별자리',period:'기간',
     periodToday:'오늘',periodWeek:'이번 주',periodMonth:'이번 달',
@@ -1723,7 +1722,7 @@ const TRANSLATIONS={
   Hindi:{
     ambientOff:'♫ परिवेश बंद',ambientOn:'♫ परिवेश चालू',
     freeReadings:'शेष निःशुल्क रीडिंग',
-    freeTier:'◈ निःशुल्क',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — असीमित रीडिंग',
+    freeTier:'◈ निःशुल्क',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — असीमित रीडिंग',
     tabHoroscope:'◈ राशिफल',tabDream:'◇ स्वप्न',tabCombined:'⊕ संयुक्त',tabJournal:'📖 डायरी',
     yourSign:'आपकी राशि',period:'अवधि',
     periodToday:'आज',periodWeek:'इस सप्ताह',periodMonth:'इस महीने',
@@ -1769,7 +1768,7 @@ const TRANSLATIONS={
   Arabic:{
     ambientOff:'♫ الصوت البيئي مغلق',ambientOn:'♫ الصوت البيئي مفتوح',
     freeReadings:'قراءات مجانية متبقية',
-    freeTier:'◈ مجاني',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — قراءات غير محدودة',
+    freeTier:'◈ مجاني',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — قراءات غير محدودة',
     tabHoroscope:'◈ الأبراج',tabDream:'◇ الأحلام',tabCombined:'⊕ مدمج',tabJournal:'📖 مجلة',
     yourSign:'برجك',period:'الفترة',
     periodToday:'اليوم',periodWeek:'هذا الأسبوع',periodMonth:'هذا الشهر',
@@ -1815,7 +1814,7 @@ const TRANSLATIONS={
   Dutch:{
     ambientOff:'♫ sfeergeluid uit',ambientOn:'♫ sfeergeluid aan',
     freeReadings:'gratis lezingen resterend',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — onbeperkte lezingen',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — onbeperkte lezingen',
     tabHoroscope:'◈ Horoscoop',tabDream:'◇ Droom',tabCombined:'⊕ Gecombineerd',tabJournal:'📖 Dagboek',
     yourSign:'JOUW TEKEN',period:'PERIODE',
     periodToday:'Vandaag',periodWeek:'Deze week',periodMonth:'Deze maand',
@@ -1861,7 +1860,7 @@ const TRANSLATIONS={
   Polish:{
     ambientOff:'♫ dźwięk otoczenia wyłączony',ambientOn:'♫ dźwięk otoczenia włączony',
     freeReadings:'pozostałe bezpłatne odczyty',
-    freeTier:'◈ BEZPŁATNY',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — nieograniczone odczyty',
+    freeTier:'◈ BEZPŁATNY',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — nieograniczone odczyty',
     tabHoroscope:'◈ Horoskop',tabDream:'◇ Sen',tabCombined:'⊕ Kombinowany',tabJournal:'📖 Dziennik',
     yourSign:'TWÓJ ZNAK',period:'OKRES',
     periodToday:'Dziś',periodWeek:'Ten tydzień',periodMonth:'Ten miesiąc',
@@ -1907,7 +1906,7 @@ const TRANSLATIONS={
   Turkish:{
     ambientOff:'♫ ortam sesi kapalı',ambientOn:'♫ ortam sesi açık',
     freeReadings:'kalan ücretsiz okuma',
-    freeTier:'◈ ÜCRETSİZ',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — sınırsız okuma',
+    freeTier:'◈ ÜCRETSİZ',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — sınırsız okuma',
     tabHoroscope:'◈ Burç',tabDream:'◇ Rüya',tabCombined:'⊕ Birleşik',tabJournal:'📖 Günlük',
     yourSign:'BURÇUN',period:'DÖNEM',
     periodToday:'Bugün',periodWeek:'Bu hafta',periodMonth:'Bu ay',
@@ -1953,7 +1952,7 @@ const TRANSLATIONS={
   Swedish:{
     ambientOff:'♫ ambient av',ambientOn:'♫ ambient på',
     freeReadings:'gratis läsningar kvar',
-    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99 USD/mo',proUnlimited:'✦ PRO — obegränsade läsningar',
+    freeTier:'◈ GRATIS',proTier:'✦ PRO — $5.99/mo',proUnlimited:'✦ PRO — obegränsade läsningar',
     tabHoroscope:'◈ Horoskop',tabDream:'◇ Dröm',tabCombined:'⊕ Kombinerad',tabJournal:'📖 Dagbok',
     yourSign:'DITT TECKEN',period:'PERIOD',
     periodToday:'Idag',periodWeek:'Denna vecka',periodMonth:'Denna månad',
@@ -5709,7 +5708,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     <div class="modal-divider"></div>
     <div class="modal-section"><h3>THE SERVICE</h3><p>Kairoscope provides personalised horoscope readings and dream interpretations for entertainment, reflection, and personal insight. Readings are not a substitute for professional medical, psychological, financial, or legal advice. Trust your own judgment in all important life decisions.</p></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><h3>SUBSCRIPTIONS</h3><ul><li>Pro subscriptions are billed at $5.99 USD per month</li><li>Cancel any time. Access continues until the end of your paid period</li><li>Refunds are considered within 7 days of purchase on a case by case basis</li><li>We will give 30 days notice before any price changes</li></ul></div>
+    <div class="modal-section"><h3>SUBSCRIPTIONS</h3><ul><li>Pro subscriptions are billed at $5.99 per month</li><li>Cancel any time. Access continues until the end of your paid period</li><li>Refunds are considered within 7 days of purchase on a case by case basis</li><li>We will give 30 days notice before any price changes</li></ul></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><h3>FAIR USE</h3><ul><li>You must be 13 or older to use Kairoscope</li><li>One account per person</li><li>Do not attempt to bypass usage limits or exploit the free tier</li><li>Do not use the service for any unlawful purpose</li></ul></div>
     <div class="modal-divider"></div>
@@ -5731,7 +5730,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">IS MY DATA PRIVATE?</div><div class="faq-a">Your dream journal and birth chart live only on your device. Nothing personal is stored on our servers. We are Canadian, we operate under PIPEDA, and privacy is something we take seriously. No ads, no data selling, no exceptions.</div></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><div class="faq-q">WHAT DOES PRO INCLUDE?</div><div class="faq-a">Pro unlocks your complete birth chart with sun, moon and rising sign calculated using professional-grade astronomical precision, readings personalised to your natal placements, an unlimited dream journal, pattern analysis across your entries, and weekly cosmic forecasts. $5.99 USD a month. Cancel any time.</div></div>
+    <div class="modal-section"><div class="faq-q">WHAT DOES PRO INCLUDE?</div><div class="faq-a">Pro unlocks your complete birth chart with sun, moon and rising sign calculated using professional-grade astronomical precision, readings personalised to your natal placements, an unlimited dream journal, pattern analysis across your entries, and weekly cosmic forecasts. $5.99 a month. Cancel any time.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">HOW ACCURATE IS THE BIRTH CHART?</div><div class="faq-a">We calculate your chart using Jean Meeus astronomical algorithms, which are the same mathematical foundations used by professional astrology software worldwide. Your sun sign is exact. Your moon sign is accurate to the day. Your rising sign requires your birth time and city for full precision.</div></div>
     <div class="modal-divider"></div>
