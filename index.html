@@ -1006,6 +1006,25 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <button class="pw-dismiss" onclick="document.getElementById('paywall').classList.remove('on')">maybe later</button>
 </div>
 
+<div id="cancel-survey" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.92);z-index:10002;align-items:center;justify-content:center">
+  <div style="background:rgba(8,5,22,0.97);border:.5px solid rgba(200,175,255,0.3);border-radius:14px;padding:2rem 1.75rem;max-width:360px;width:88%;text-align:center;font-family:'Crimson Pro',serif">
+    <div style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.12em;color:var(--gold);margin-bottom:.4rem">BEFORE YOU GO</div>
+    <div style="font-size:13px;color:rgba(220,210,240,0.85);margin-bottom:1.2rem;line-height:1.5">If you have a moment, it would help us to know why. This is entirely optional.</div>
+    <div id="cancel-survey-options" style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
+      <button class="cs-opt" onclick="selectCancelReason(this,'Too expensive')" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:8px;padding:10px;color:rgba(225,215,245,0.92);font-size:12px;cursor:pointer;text-align:left">Too expensive</button>
+      <button class="cs-opt" onclick="selectCancelReason(this,'Did not use it enough')" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:8px;padding:10px;color:rgba(225,215,245,0.92);font-size:12px;cursor:pointer;text-align:left">Did not use it enough</button>
+      <button class="cs-opt" onclick="selectCancelReason(this,'Missing a feature I needed')" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:8px;padding:10px;color:rgba(225,215,245,0.92);font-size:12px;cursor:pointer;text-align:left">Missing a feature I needed</button>
+      <button class="cs-opt" onclick="selectCancelReason(this,'Found something else I prefer')" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:8px;padding:10px;color:rgba(225,215,245,0.92);font-size:12px;cursor:pointer;text-align:left">Found something else I prefer</button>
+      <button class="cs-opt" onclick="selectCancelReason(this,'Other')" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.25);border-radius:8px;padding:10px;color:rgba(225,215,245,0.92);font-size:12px;cursor:pointer;text-align:left">Other</button>
+    </div>
+    <textarea id="cancel-survey-detail" placeholder="Anything else you'd like to share? (optional)" style="display:none;width:100%;min-height:60px;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.25);border-radius:8px;padding:10px;color:rgba(225,215,245,0.92);font-family:'Crimson Pro',serif;font-size:12px;resize:vertical;margin-bottom:1rem;box-sizing:border-box"></textarea>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button onclick="submitCancelSurvey()" style="background:rgba(210,175,80,0.12);border:.5px solid var(--border2);border-radius:8px;padding:10px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;cursor:pointer">SEND</button>
+      <button onclick="closeCancelSurvey()" style="background:transparent;border:none;color:rgba(200,190,220,0.6);font-family:'Crimson Pro',serif;font-size:12px;font-style:italic;cursor:pointer">skip</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // STATE
@@ -4684,6 +4703,65 @@ async function activatePro(){
     alert('Something went wrong: '+e.message);
   }
 }
+async function manageSubscription(el){
+  const customerId=localStorage.getItem('k_stripe_customer');
+  if(!customerId){
+    alert('We could not find your subscription on this device. Please email hello@kairoscope.app and we will help you cancel or manage it directly.');
+    return;
+  }
+  const original=el?el.textContent:null;
+  if(el){el.textContent='Loading...';el.disabled=true;}
+  try{
+    const res=await fetch('/api/portal',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({customerId,origin:window.location.origin})
+    });
+    const data=await res.json();
+    if(data.url){
+      window.location.href=data.url;
+    }else{
+      throw new Error(data.error||'Could not open subscription manager');
+    }
+  }catch(e){
+    if(el){el.textContent=original;el.disabled=false;}
+    alert('Something went wrong: '+e.message+'\n\nYou can also email hello@kairoscope.app to manage your subscription.');
+  }
+}
+
+let cancelSurveyReason=null;
+function openCancelSurvey(){
+  cancelSurveyReason=null;
+  document.querySelectorAll('.cs-opt').forEach(b=>b.style.background='rgba(200,175,255,0.07)');
+  const detail=document.getElementById('cancel-survey-detail');
+  if(detail){detail.style.display='none';detail.value='';}
+  const el=document.getElementById('cancel-survey');
+  if(el){el.style.display='flex';}
+}
+function closeCancelSurvey(){
+  const el=document.getElementById('cancel-survey');
+  if(el){el.style.display='none';}
+}
+function selectCancelReason(btn,reason){
+  cancelSurveyReason=reason;
+  document.querySelectorAll('.cs-opt').forEach(b=>b.style.background='rgba(200,175,255,0.07)');
+  btn.style.background='rgba(200,175,255,0.22)';
+  const detail=document.getElementById('cancel-survey-detail');
+  if(detail)detail.style.display='block';
+}
+async function submitCancelSurvey(){
+  const detail=document.getElementById('cancel-survey-detail');
+  const detailText=detail?detail.value.trim():'';
+  if(!cancelSurveyReason&&!detailText){closeCancelSurvey();return;}
+  try{
+    await fetch('/api/feedback',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({reason:cancelSurveyReason,detail:detailText})
+    });
+  }catch(e){}
+  closeCancelSurvey();
+}
 // Clear old cache entries that contain HTML or markdown (from previous bug)
 // Also force clear on this deploy version
 const CACHE_VERSION='v4';
@@ -5089,7 +5167,14 @@ function exportSingleDay(dateKey){
   if(params.get('success')==='true'){
     setTier('pro');
     document.getElementById('paywall').classList.remove('on');
+    const sid=params.get('session_id');
     window.history.replaceState({},'',window.location.pathname);
+    if(sid){
+      fetch('/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid})})
+        .then(r=>r.json())
+        .then(d=>{if(d.customerId)localStorage.setItem('k_stripe_customer',d.customerId);})
+        .catch(()=>{});
+    }
     setTimeout(()=>{
       const msg=document.createElement('div');
       msg.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(4,2,16,0.97);border:.5px solid rgba(200,175,255,0.4);border-radius:12px;padding:2rem 2.5rem;text-align:center;z-index:300;font-family:Cinzel,serif;color:var(--gold);letter-spacing:.15em;font-size:13px;line-height:2.2';
@@ -5100,6 +5185,10 @@ function exportSingleDay(dateKey){
   }
   if(params.get('cancelled')==='true'){
     window.history.replaceState({},'',window.location.pathname);
+  }
+  if(params.get('portal_return')==='true'){
+    window.history.replaceState({},'',window.location.pathname);
+    setTimeout(()=>openCancelSurvey(),700);
   }
 })();
 // ============================================================
@@ -5650,7 +5739,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">WHAT ARE THE AMBIENT SOUNDS?</div><div class="faq-a">The ambient sound is wind chimes with a subtle cosmic resonance underneath. It is designed to deepen the reading experience without distracting from it. You can turn it on or off any time using the button at the top of the app.</div></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><div class="faq-q">HOW DO I CANCEL?</div><div class="faq-a">Cancel any time from your account settings. Your Pro access runs until the end of your billing period. If you ever have trouble, email hello@kairoscope.app and we will sort it out personally.</div></div>
+    <div class="modal-section"><div class="faq-q">HOW DO I CANCEL?</div><div class="faq-a">Cancel any time. Your Pro access runs until the end of your billing period, no matter when you cancel.<br><br><button onclick="manageSubscription(this)" style="margin-top:6px;background:rgba(200,175,255,0.1);border:.5px solid rgba(200,175,255,0.4);border-radius:8px;padding:9px 16px;color:rgba(230,220,255,0.95);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">MANAGE SUBSCRIPTION</button><br><br>If you ever have trouble, email hello@kairoscope.app and we will sort it out personally.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">HOW DOES THE COMBINED READING WORK?</div><div class="faq-a">The Combined reading is where Kairoscope goes deepest. It takes your dream from the night before and layers it against the current planetary positions, your natal chart, and the moon phase — then looks for resonance between what your unconscious created while you slept and what the cosmos is doing right now. Often they are saying the same thing from different directions. The combined reading finds that convergence and names it.</div></div>
