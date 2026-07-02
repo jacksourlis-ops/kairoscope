@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Kairoscope Staff</title>
+<style>
+  body{margin:0;min-height:100vh;background:#03020d;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e5dcf5}
+  .card{width:100%;max-width:380px;padding:2rem 1.5rem;box-sizing:border-box}
+  h1{font-size:14px;letter-spacing:.14em;color:#d2af50;text-align:center;margin:0 0 1.5rem;font-weight:600}
+  label{display:block;font-size:11px;color:rgba(225,215,245,0.55);margin:1rem 0 .35rem}
+  input,select{width:100%;box-sizing:border-box;padding:.65rem .75rem;border-radius:8px;border:1px solid rgba(225,215,245,0.18);background:rgba(255,255,255,0.04);color:#e5dcf5;font-size:14px}
+  button{width:100%;margin-top:1.5rem;padding:.75rem;border-radius:8px;border:1px solid rgba(210,175,80,0.5);background:rgba(210,175,80,0.12);color:#d2af50;font-size:13px;letter-spacing:.06em;cursor:pointer}
+  button:disabled{opacity:.4;cursor:default}
+  #result{margin-top:1.25rem;padding:.85rem;border-radius:8px;font-size:13px;display:none;word-break:break-all}
+  #result.ok{background:rgba(120,200,140,0.1);border:1px solid rgba(120,200,140,0.35);color:#9fe0af;display:block}
+  #result.err{background:rgba(220,100,100,0.1);border:1px solid rgba(220,100,100,0.35);color:#f0a5a5;display:block}
+  .code{font-size:20px;letter-spacing:.06em;font-weight:600;margin-top:.35rem}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>✦ KAIROSCOPE STAFF ✦</h1>
+
+  <label>Password</label>
+  <input type="password" id="pw" autocomplete="off">
+
+  <label>What are you granting?</label>
+  <select id="action">
+    <option value="clear_cache">Clear their stuck reading cache</option>
+    <option value="grant_pro">Grant temporary Pro access</option>
+  </select>
+
+  <label>Valid for how long?</label>
+  <select id="hours">
+    <option value="24">24 hours</option>
+    <option value="48">48 hours</option>
+    <option value="72">72 hours</option>
+  </select>
+
+  <button id="go" onclick="generate()">Generate Code</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+async function generate(){
+  const pw=document.getElementById('pw').value;
+  const action=document.getElementById('action').value;
+  const hours=document.getElementById('hours').value;
+  const btn=document.getElementById('go');
+  const result=document.getElementById('result');
+  if(!pw){alert('Enter the password');return;}
+  btn.disabled=true;btn.textContent='Generating...';
+  result.className='';result.style.display='none';
+  try{
+    const res=await fetch('/api/generate-code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pw,action,hours})
+    });
+    const data=await res.json();
+    if(!res.ok){
+      result.className='err';
+      result.textContent=data.error||'Something went wrong';
+    } else {
+      result.className='ok';
+      result.innerHTML='Code generated, valid '+data.expiresInHours+'h:<div class="code">'+data.code+'</div>';
+    }
+  }catch(e){
+    result.className='err';
+    result.textContent='Network error, try again';
+  }
+  btn.disabled=false;btn.textContent='Generate Code';
+}
+</script>
+</body>
+</html>
