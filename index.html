@@ -1007,6 +1007,22 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
   <button class="pw-cta" onclick="activatePro()">✦ UNLOCK MY FULL STORY ✦</button>
   <button class="pw-dismiss" onclick="document.getElementById('paywall').classList.remove('on')">maybe later</button>
+  <div style="text-align:center;margin-top:.6rem">
+    <span onclick="openRestorePurchase()" style="font-family:'Crimson Pro',serif;font-size:11.5px;color:rgba(200,190,220,0.55);font-style:italic;cursor:pointer;text-decoration:underline">Already subscribed? Restore purchase</span>
+  </div>
+</div>
+
+<div id="restore-purchase" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.92);z-index:10003;align-items:center;justify-content:center">
+  <div style="background:rgba(8,5,22,0.97);border:.5px solid rgba(200,175,255,0.3);border-radius:14px;padding:1.75rem 1.5rem;max-width:340px;width:88%;text-align:center;font-family:'Crimson Pro',serif">
+    <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.12em;color:var(--gold);margin-bottom:.6rem">RESTORE PURCHASE</div>
+    <div style="font-size:12.5px;color:rgba(220,210,240,0.8);margin-bottom:1rem;line-height:1.5">Enter the email you subscribed with. We'll check with Stripe and restore your Pro access.</div>
+    <input type="email" id="restore-email" placeholder="you@email.com" style="width:100%;box-sizing:border-box;padding:.65rem .75rem;border-radius:8px;border:.5px solid rgba(200,175,255,0.25);background:rgba(200,175,255,0.06);color:rgba(225,215,245,0.92);font-family:'Crimson Pro',serif;font-size:13px;margin-bottom:1rem">
+    <div id="restore-msg" style="font-size:11.5px;margin-bottom:.8rem;display:none"></div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button id="restore-submit-btn" onclick="submitRestorePurchase()" style="background:rgba(210,175,80,0.12);border:.5px solid var(--border2);border-radius:8px;padding:10px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;cursor:pointer">CHECK</button>
+      <button onclick="closeRestorePurchase()" style="background:transparent;border:none;color:rgba(200,190,220,0.6);font-family:'Crimson Pro',serif;font-size:12px;font-style:italic;cursor:pointer">cancel</button>
+    </div>
+  </div>
 </div>
 
 <div id="cancel-survey" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.92);z-index:10002;align-items:center;justify-content:center">
@@ -4475,6 +4491,93 @@ function renderActiveRightNow(){
 }
 
 // ============================================================
+// RESTORE PURCHASE — re-links Pro on a new device via Stripe email lookup
+// ============================================================
+function openRestorePurchase(){
+  document.getElementById('restore-purchase').style.display='flex';
+}
+function closeRestorePurchase(){
+  document.getElementById('restore-purchase').style.display='none';
+  document.getElementById('restore-msg').style.display='none';
+  document.getElementById('restore-email').value='';
+}
+async function submitRestorePurchase(){
+  const emailEl=document.getElementById('restore-email');
+  const msg=document.getElementById('restore-msg');
+  const btn=document.getElementById('restore-submit-btn');
+  const email=emailEl.value.trim();
+  if(!email||!email.includes('@')){
+    msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='Enter a valid email';
+    return;
+  }
+  btn.disabled=true;btn.textContent='CHECKING...';
+  msg.style.display='none';
+  try{
+    const res=await fetch('/api/restore',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await res.json();
+    if(data.found){
+      localStorage.setItem('k_pro','true');
+      localStorage.setItem('k_stripe_customer',data.customerId);
+      setTier('pro');
+      msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';msg.textContent='Pro restored. Welcome back.';
+      setTimeout(()=>{closeRestorePurchase();document.getElementById('paywall').classList.remove('on');location.reload();},1400);
+    } else {
+      msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='No active subscription found for that email.';
+    }
+  }catch(e){
+    msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='Something went wrong, try again.';
+  }
+  btn.disabled=false;btn.textContent='CHECK';
+}
+
+// ============================================================
+// SUPPORT CODES — one-time codes issued by staff via email
+// ============================================================
+async function redeemSupportCode(){
+  const input=document.getElementById('support-code-input');
+  const msg=document.getElementById('support-code-msg');
+  const btn=document.getElementById('support-code-btn');
+  if(!input||!msg)return;
+  const code=input.value.trim();
+  if(!code){msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='Enter a code';return;}
+  btn.disabled=true;btn.textContent='CHECKING...';
+  msg.style.display='none';
+  try{
+    const res=await fetch('/api/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})});
+    const data=await res.json();
+    if(!res.ok){
+      msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent=data.error||'Invalid code';
+    } else {
+      if(data.action==='clear_cache'){
+        Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')||k.startsWith('k_trans_')||k.startsWith('k_combined_')).forEach(k=>localStorage.removeItem(k));
+        msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';msg.textContent="Cleared. Refreshing now.";
+        setTimeout(()=>location.reload(),1200);
+      } else if(data.action==='grant_pro'){
+        const until=Date.now()+(data.hours||24)*3600*1000;
+        localStorage.setItem('k_temp_pro_until',String(until));
+        localStorage.setItem('k_pro','true');
+        setTier('pro');
+        msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';msg.textContent='Pro access granted for '+(data.hours||24)+' hours.';
+        setTimeout(()=>location.reload(),1400);
+      }
+      input.value='';
+    }
+  }catch(e){
+    msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='Something went wrong, try again.';
+  }
+  btn.disabled=false;btn.textContent='REDEEM';
+}
+function checkTempProExpiry(){
+  const until=localStorage.getItem('k_temp_pro_until');
+  if(until&&Date.now()>parseInt(until)){
+    localStorage.removeItem('k_temp_pro_until');
+    localStorage.removeItem('k_pro');
+    if(typeof APP!=='undefined')APP.isPro=false;
+  }
+}
+checkTempProExpiry();
+
+// ============================================================
 // BIRTHDAY — free bonus wish on the user's solar return
 // ============================================================
 const BIRTHDAY_MESSAGES=[
@@ -5862,6 +5965,15 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     <div class="modal-section"><div class="faq-q">✨ PATTERNS OVER PREDICTIONS</div><div class="faq-a">The real value of Kairoscope grows over time. As you build your dream journal and track your readings, patterns emerge across your entries, your moods, and the cosmic cycles above you. Not fortune telling — self knowledge.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">🇨🇦 BUILT IN CANADA</div><div class="faq-a">Kairoscope is independently built and operated in Canada. We answer to our users, not to investors. Just a thoughtfully made app for people who take their inner life seriously.</div></div>
+    <div class="modal-divider"></div>
+    <div class="modal-section" style="text-align:center">
+      <div style="font-family:'Crimson Pro',serif;font-size:11px;color:rgba(200,190,220,0.45);font-style:italic;margin-bottom:.5rem">Have a support code from our team?</div>
+      <div style="display:flex;gap:6px;justify-content:center;max-width:280px;margin:0 auto">
+        <input type="text" id="support-code-input" placeholder="KAI-XXXXXXXX" style="flex:1;box-sizing:border-box;padding:.5rem .6rem;border-radius:6px;border:.5px solid rgba(200,175,255,0.2);background:rgba(200,175,255,0.05);color:rgba(225,215,245,0.85);font-family:'Crimson Pro',serif;font-size:12px;text-transform:uppercase">
+        <button id="support-code-btn" onclick="redeemSupportCode()" style="background:rgba(210,175,80,0.1);border:.5px solid rgba(210,175,80,0.3);border-radius:6px;padding:.5rem .8rem;color:var(--gold);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer">REDEEM</button>
+      </div>
+      <div id="support-code-msg" style="font-size:11px;margin-top:.5rem;display:none"></div>
+    </div>
   </div>
 </div>
 
