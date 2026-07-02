@@ -2160,6 +2160,7 @@ function closeSleep(){
   document.getElementById('sleep-timer-display').style.display='none';
   if(SLEEP_STATE.alarmTimeout){clearTimeout(SLEEP_STATE.alarmTimeout);SLEEP_STATE.alarmTimeout=null;}
   stopWakePreview();
+  stopSleepPreview();
 }
 
 function startYourDay(){
@@ -2202,6 +2203,8 @@ function selectTimer(el,mins){
 
 function beginSleep(){
   if(SLEEP_STATE.sleeping)return;
+  stopWakePreview();
+  stopSleepPreview();
   SLEEP_STATE.sleeping=true;
   SLEEP_STATE.paused=false;
   // Swap panels
@@ -3095,6 +3098,7 @@ function playWakePreviewSound(ctx, master, ns, sound){
   }
 }
 
+let previewAutoStopTimer=null;
 function toggleWakePreview(sound){
   if(currentPreviewing==='wake-'+sound){stopWakePreview();return;}
   stopWakePreview();stopSleepPreview();
@@ -3103,9 +3107,11 @@ function toggleWakePreview(sound){
   if(!previewCtx){previewCtx=new(window.AudioContext||window.webkitAudioContext)();previewMaster=previewCtx.createGain();previewMaster.gain.value=SLEEP_STATE.wakeVolume||0.9;previewMaster.connect(previewCtx.destination);}
   if(previewCtx.state==='suspended')previewCtx.resume();
   playWakePreviewSound(previewCtx,previewMaster,previewNodes,sound);
+  previewAutoStopTimer=setTimeout(stopWakePreview,20000);
 }
 
 function stopWakePreview(){
+  if(previewAutoStopTimer){clearTimeout(previewAutoStopTimer);previewAutoStopTimer=null;}
   previewNodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});
   previewNodes=[];currentPreviewing=null;
   WAKE_SOUND_IDS.forEach(s=>{const btn=document.getElementById('prev-wake-'+s);if(btn)btn.textContent='▶';});
@@ -3116,6 +3122,7 @@ let sleepPreviewCtx = null;
 let sleepPreviewNodes = [];
 let currentSleepPreviewing = null;
 
+let sleepPreviewAutoStopTimer=null;
 function toggleSleepPreview(sound){
   if(currentSleepPreviewing===sound){stopSleepPreview();return;}
   stopSleepPreview();stopWakePreview();
@@ -3134,9 +3141,11 @@ function toggleSleepPreview(sound){
   } else {
     const src=ctx.createBufferSource();const buf=ctx.createBuffer(1,ctx.sampleRate*6,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;src.buffer=buf;src.loop=true;const lpf=ctx.createBiquadFilter();lpf.type='lowpass';lpf.frequency.value=1200;const g=ctx.createGain();g.gain.value=.16;src.connect(lpf);lpf.connect(g);g.connect(master);src.start();ns.push(src);
   }
+  sleepPreviewAutoStopTimer=setTimeout(stopSleepPreview,20000);
 }
 
 function stopSleepPreview(){
+  if(sleepPreviewAutoStopTimer){clearTimeout(sleepPreviewAutoStopTimer);sleepPreviewAutoStopTimer=null;}
   sleepPreviewNodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});
   sleepPreviewNodes=[];currentSleepPreviewing=null;
   if(sleepPreviewCtx){try{sleepPreviewCtx.close();}catch(e){}sleepPreviewCtx=null;}
