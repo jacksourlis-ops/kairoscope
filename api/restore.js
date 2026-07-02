@@ -1,39 +1,51 @@
-// Restore Purchase — looks up an email in Stripe, returns whether it has
-// an active (or trialing) subscription, and the customer ID if so.
-// Uses the same STRIPE_SECRET_KEY env var your other Stripe files use.
-// If your existing api files use a different env var name for the Stripe
-// secret key, rename it below to match.
+// api/restore.js — Restore Purchase, Stripe email lookup
+// Looks up an email in Stripe directly over the REST API (no SDK),
+// returns whether it has an active or trialing subscription.
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    return res.status(500).json({ error: 'Stripe not configured' });
+  }
+
   const { email } = req.body || {};
   if (!email || typeof email !== 'string' || !email.includes('@')) {
     return res.status(400).json({ error: 'Valid email required' });
   }
 
   try {
-    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
     const cleanEmail = email.trim().toLowerCase();
 
-    const customers = await stripe.customers.list({ email: cleanEmail, limit: 10 });
+    const custRes = await fetch(
+      `https://api.stripe.com/v1/customers?email=${encodeURIComponent(cleanEmail)}&limit=10`,
+      { headers: { 'Authorization': `Bearer ${secretKey}` } }
+    );
+    const customers = await custRes.json();
 
-    for (const customer of customers.data) {
-      const active = await stripe.subscriptions.list({
-        customer: customer.id,
-        status: 'active',
-        limit: 1
-      });
-      if (active.data.length) {
+    if (customers.error) {
+      return res.status(400).json({ error: customers.error.message });
+    }
+
+    for (const customer of (customers.data || [])) {
+      const activeRes = await fetch(
+        `https://api.stripe.com/v1/subscriptions?customer=${customer.id}&status=active&limit=1`,
+        { headers: { 'Authorization': `Bearer ${secretKey}` } }
+      );
+      const active = await activeRes.json();
+      if (active.data && active.data.length) {
         return res.status(200).json({ found: true, customerId: customer.id });
       }
-      const trialing = await stripe.subscriptions.list({
-        customer: customer.id,
-        status: 'trialing',
-        limit: 1
-      });
-      if (trialing.data.length) {
+
+      const trialRes = await fetch(
+        `https://api.stripe.com/v1/subscriptions?customer=${customer.id}&status=trialing&limit=1`,
+        { headers: { 'Authorization': `Bearer ${secretKey}` } }
+      );
+      const trialing = await trialRes.json();
+      if (trialing.data && trialing.data.length) {
         return res.status(200).json({ found: true, customerId: customer.id });
       }
     }
