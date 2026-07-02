@@ -53,7 +53,7 @@ async function generate(){
   const result=document.getElementById('result');
   if(!pw){alert('Enter the password');return;}
   btn.disabled=true;btn.textContent='Generating...';
-  result.className='';result.style.display='none';
+  result.className='';result.removeAttribute('style');
   try{
     const res=await fetch('/api/generate-code',{
       method:'POST',
