@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kairoscope — See Your Moment</title>
+<title>Kairoscope, See Your Moment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23160f2e'/%3E%3Cpath d='M50,50 Q65,35 68,22 Q72,9 62,11 Q52,13 48,24 Q44,35 50,50' fill='none' stroke='%23f0d870' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M50,50 Q35,65 22,68 Q9,72 11,62 Q13,52 24,48 Q35,44 50,50' fill='none' stroke='%23f0d870' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23f0d870'/%3E%3Ccircle cx='50' cy='50' r='4' fill='%23160f2e'/%3E%3C/svg%3E">
@@ -652,13 +652,13 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div id="birth-d" style="display:none">
       <div class="birth-card" style="padding:.7rem 1rem">
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <span style="font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">Birth chart active — reading references your natal placements</span>
+          <span style="font-family:'Crimson Pro',serif;font-size:13px;color:var(--muted);font-style:italic">Birth chart active, reading references your natal placements</span>
           <span class="pro-badge">✦ PRO</span>
         </div>
       </div>
     </div>
     <div style="margin-bottom:.25rem">
-      <span class="lbl">QUICK START — TAP A DREAM</span>
+      <span class="lbl">QUICK START, TAP A DREAM</span>
       <div class="example-dreams">
         <button class="dream-example" onclick="useDreamExample('I was being chased through dark corridors and couldn\'t escape')">Being chased</button>
         <button class="dream-example" onclick="useDreamExample('I was flying high above the clouds, completely free and weightless')">Flying</button>
@@ -687,8 +687,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
       <div id="free-dict-result" style="display:none;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.15);border-radius:12px;padding:1rem;font-family:'Crimson Pro',serif;font-size:14px;color:rgba(235,225,255,0.85);line-height:1.75;font-style:italic"></div>
     </div>
 
-    <!-- DREAM DICTIONARY (PRO) -->
-    <div style="margin-top:1.25rem;border-top:.5px solid var(--border);padding-top:1.25rem;position:relative">
+    <!-- DREAM DICTIONARY (PRO) — put on hold, costs an AI call per lookup. Set display back to nothing to restore. -->
+    <div style="display:none;margin-top:1.25rem;border-top:.5px solid var(--border);padding-top:1.25rem;position:relative">
       <button id="dict-btn-tab" onclick="openDreamDictionary()" style="width:100%;padding:14px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.2);border-radius:12px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(215,200,255,0.82);cursor:pointer;transition:all .2s">◎ DREAM DICTIONARY — UNLIMITED</button>
       <div id="dict-btn-lock" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.32);border-radius:12px;align-items:center;justify-content:center;cursor:pointer" onclick="document.getElementById('paywall').classList.add('on')">
         <span style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.2em;color:rgba(255,255,255,0.7);text-shadow:0 1px 4px rgba(0,0,0,0.6)">PRO ONLY</span>
@@ -808,7 +808,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div id="dream-entry-date" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.16em;color:rgba(200,175,255,0.35);margin-bottom:.35rem;text-align:center"></div>
 
     <!-- CONTINUING NOTE -->
-    <div id="dream-entry-continuing" style="display:none;font-family:'Crimson Pro',serif;font-size:12px;color:rgba(200,175,255,0.5);font-style:italic;text-align:center;margin-bottom:.5rem">✎ Continuing today's entry — pick up where you left off</div>
+    <div id="dream-entry-continuing" style="display:none;font-family:'Crimson Pro',serif;font-size:12px;color:rgba(200,175,255,0.5);font-style:italic;text-align:center;margin-bottom:.5rem">✎ Continuing today's entry, pick up where you left off</div>
 
     <!-- MOON -->
     <div id="dream-entry-moon" style="font-size:22px;margin-bottom:.5rem;text-align:center"></div>
@@ -821,7 +821,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
     <!-- QUICK TAGS -->
     <div style="width:100%;margin-bottom:1rem">
-      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:rgba(200,175,255,0.35);margin-bottom:.5rem">QUICK TAGS — tap to add</div>
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.14em;color:rgba(200,175,255,0.35);margin-bottom:.5rem">QUICK TAGS, tap to add</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px" id="quick-tags-row">
         <button class="qtag" onclick="addQuickTag(this,'Water')">🌊 Water</button>
         <button class="qtag" onclick="addQuickTag(this,'Flying')">🕊 Flying</button>
@@ -921,7 +921,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <div id="dict-personal-wrap" style="margin-top:1.75rem;position:relative;border-radius:14px;overflow:hidden">
     <div id="dict-personal-card" style="background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.18);border-radius:14px;padding:1.25rem;text-align:center">
       <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.16em;color:rgba(220,205,255,0.78);margin-bottom:.5rem">PERSONALIZED INTERPRETATION</div>
-      <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(215,200,255,0.6);font-style:italic;line-height:1.6;margin-bottom:.9rem">Go deeper — a reading woven specifically for your birth chart, not just the symbol's general meaning.</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(215,200,255,0.6);font-style:italic;line-height:1.6;margin-bottom:.9rem">Go deeper, a reading woven specifically for your birth chart, not just the symbol's general meaning.</div>
       <button onclick="getPersonalDreamReading()" id="dict-personal-btn" style="width:100%;padding:12px;background:rgba(200,175,255,0.08);border:.5px solid rgba(200,175,255,0.3);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(225,210,255,0.9);cursor:pointer">◈ REVEAL MY PERSONAL MEANING</button>
       <div id="dict-personal-result" style="display:none;margin-top:1rem;text-align:left;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(235,225,255,0.88);line-height:1.85;font-style:italic"></div>
     </div>
@@ -944,7 +944,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   <div id="wish-intro" style="text-align:center;margin-bottom:1.25rem">
     <div style="font-size:26px;margin-bottom:.5rem">★</div>
-    <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(215,200,255,0.78);line-height:1.7;font-style:italic">Speak your wish into the moment. The stars will tell you if this is the time — and seal it with the cosmos either way.</div>
+    <div style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(215,200,255,0.78);line-height:1.7;font-style:italic">Speak your wish into the moment. The stars will tell you if this is the time, and seal it with the cosmos either way.</div>
   </div>
 
   <div class="wish-counter" id="wish-counter"></div>
@@ -1024,13 +1024,13 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   </div>
   <div class="pw-price">$7.99<span> / month</span></div>
   <div class="pw-feats">
-    <div class="pw-feat">Daily horoscope — personalised to your natal chart</div>
-    <div class="pw-feat">Full birth chart — sun, moon & rising, precisely calculated</div>
+    <div class="pw-feat">Daily horoscope, personalised to your natal chart</div>
+    <div class="pw-feat">Full birth chart, sun, moon & rising, precisely calculated</div>
     <div class="pw-feat">1 dream interpretation per day, journaled & archived</div>
-    <div class="pw-feat">Combined reading — your stars & dreams woven into one insight</div>
-    <div class="pw-feat">People in My Sky — weekly compatibility readings per person</div>
-    <div class="pw-feat">Pattern analysis — symbols recurring across your dream journal</div>
-    <div class="pw-feat">Export your journal — your story, always yours to keep</div>
+    <div class="pw-feat">Combined reading, your stars & dreams woven into one insight</div>
+    <div class="pw-feat">People in My Sky, weekly compatibility readings per person</div>
+    <div class="pw-feat">Pattern analysis, symbols recurring across your dream journal</div>
+    <div class="pw-feat">Export your journal, your story, always yours to keep</div>
   </div>
   <button class="pw-cta" onclick="activatePro()">✦ UNLOCK MY FULL STORY ✦</button>
   <button class="pw-dismiss" onclick="document.getElementById('paywall').classList.remove('on')">maybe later</button>
@@ -1253,7 +1253,7 @@ const TRANSLATIONS={
     saveToDream:'+ SAVE TO DREAM JOURNAL',dreamSaved:'Dream saved to your journal ✦',
     dreamJournal:'DREAM JOURNAL',proUnlimitedBadge:'✦ PRO — UNLIMITED',unlimitedDesc:'Unlimited entries, pattern analysis & export',
     statDreams:'DREAMS',statStreak:'DAY STREAK',statMoon:'MOON NOW',
-    birthActive:'Birth chart active — reading references your natal placements',
+    birthActive:'Birth chart active, reading references your natal placements',
     paywallTitle:'YOUR STORY IS UNFOLDING',
     paywallSub:"You've begun something. Continue discovering the patterns beneath the surface.",
     paywallCta:'✦ UNLOCK MY FULL STORY ✦',paywallPreparing:'✦ PREPARING YOUR MOMENT ✦',paywallDismiss:'maybe later',
@@ -1266,7 +1266,7 @@ const TRANSLATIONS={
     feat7:'Export your journal — your story, always yours to keep',
     footerPrivacy:'Privacy Policy',footerTerms:'Terms of Service',footerFaq:'FAQ',
     signs:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],
-    quickStart:'QUICK START — TAP A DREAM',
+    quickStart:'QUICK START, TAP A DREAM',
     ex1:'Being chased',ex2:'Flying',ex3:'Teeth falling out',ex4:'Lost in a house',ex5:'Meeting a stranger',ex6:'Deceased relative',ex7:'Falling',ex8:'Unprepared exam',
     moonPhaseEnergy:'MOON PHASE',loadingLunar:'Loading lunar energy...',
     howCombined:'HOW COMBINED WORKS',combinedDesc:"See how today's planetary energy and last night's dream symbols speak the same language.",
@@ -2126,7 +2126,7 @@ function applyLanguage(){
     if(txt==='DATE OF BIRTH'||el.dataset.key==='dateOfBirth'){el.textContent=T.dateOfBirth||'DATE OF BIRTH';el.dataset.key='dateOfBirth';}
     if(txt==='TIME OF BIRTH'||el.dataset.key==='timeOfBirth'){el.textContent=T.timeOfBirth||'TIME OF BIRTH';el.dataset.key='timeOfBirth';}
     if(txt==='CITY OF BIRTH'||el.dataset.key==='cityOfBirth'){el.textContent=T.cityOfBirth||'CITY OF BIRTH';el.dataset.key='cityOfBirth';}
-    if(txt==='QUICK START — TAP A DREAM'||el.dataset.key==='quickStart'){el.textContent=T.quickStart;el.dataset.key='quickStart';}
+    if(txt==='QUICK START, TAP A DREAM'||el.dataset.key==='quickStart'){el.textContent=T.quickStart;el.dataset.key='quickStart';}
   });
 
   // Cycle phases button
@@ -2895,7 +2895,7 @@ RELATIONSHIP: ${person.rel}
 COMPATIBILITY SCORE: ${score}%
 
 KEY SYNASTRY ASPECTS:
-${synastryAspects.length?synastryAspects.join('\n'):'Limited data — reading based on Sun signs'}
+${synastryAspects.length?synastryAspects.join('\n'):'Limited data, reading based on Sun signs'}
 
 Write a profound synastry compatibility reading. Be specific about the aspects. Explain what draws them together, what challenges they may face, and the deeper cosmic purpose of this connection. Reference elements and modalities. 3-4 paragraphs. Poetic, intelligent, gender-neutral.`;
 
@@ -2906,7 +2906,7 @@ Write a profound synastry compatibility reading. Be specific about the aspects. 
       body:JSON.stringify({
         model:'claude-sonnet-4-5',
         max_tokens:800,
-        system:'You are Kairoscope — a master astrologer specialising in synastry and relationship astrology. Write compatibility readings that are technically grounded, deeply insightful, and poetically expressed. Never generic. Reference specific aspects and what they mean for this connection.',
+        system:'You are Kairoscope, a master astrologer specialising in synastry and relationship astrology. Write compatibility readings that are technically grounded, deeply insightful, and poetically expressed. Never generic. Reference specific aspects and what they mean for this connection. Do not use em dashes anywhere, use a comma or period instead.',
         messages:[{role:'user',content:prompt}]
       })
     });
@@ -2992,7 +2992,7 @@ async function getJointReading(person, period){
   });
 
   const crushGuardrail = isCrush ? `
-This is a crush or developing connection. Be honest and warm — acknowledge genuine cosmic chemistry where it exists, frame any challenging aspects as opportunities for growth rather than incompatibility. Never say "pursue them" but never crush hope either. If there is real astrological resonance between these charts, say so clearly and beautifully. Challenges are growth, not verdicts. End with something that makes the person feel the connection is real and worth tending — leave them feeling seen, not defeated.` : '';
+This is a crush or developing connection. Be honest and warm, acknowledge genuine cosmic chemistry where it exists, frame any challenging aspects as opportunities for growth rather than incompatibility. Never say "pursue them" but never crush hope either. If there is real astrological resonance between these charts, say so clearly and beautifully. Challenges are growth, not verdicts. End with something that makes the person feel the connection is real and worth tending, leave them feeling seen, not defeated.` : '';
 
   const prompt=`JOINT ${period.toUpperCase()} READING:
 
@@ -3014,7 +3014,7 @@ Write a ${period} joint reading for this connection. How do the current planetar
       body:JSON.stringify({
         model:'claude-sonnet-4-5',
         max_tokens:700,
-        system:`You are Kairoscope — a master astrologer specialising in relationship astrology and synastry. Write joint readings that illuminate what a period means for two people's connection — grounded in real transits, poetically expressed. Never predict outcomes or encourage pursuit. Focus on growth, reflection, and what each person is called to bring.${isCrush?' For crush connections: be honest about real cosmic chemistry where it exists, frame challenges as growth not incompatibility, leave the person feeling hopeful and seen — never crushed.':''}`,
+        system:`You are Kairoscope, a master astrologer specialising in relationship astrology and synastry. Write joint readings that illuminate what a period means for two people's connection, grounded in real transits, poetically expressed. Never predict outcomes or encourage pursuit. Focus on growth, reflection, and what each person is called to bring. Do not use em dashes anywhere, use a comma or period instead.${isCrush?' For crush connections: be honest about real cosmic chemistry where it exists, frame challenges as growth not incompatibility, leave the person feeling hopeful and seen, never crushed.':''}`,
         messages:[{role:'user',content:prompt}]
       })
     });
@@ -3353,7 +3353,7 @@ function lookupDream(){
   if(match){
     resultText.textContent = match.text;
   } else {
-    resultText.textContent = "This symbol isn't in our dictionary yet — we're always adding more. Try a related word, like the object, animal, or feeling at the heart of it.";
+    resultText.textContent = "This symbol isn't in our dictionary yet, we're always adding more. Try a related word, like the object, animal, or feeling at the heart of it.";
   }
   resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -3392,7 +3392,7 @@ Provide a deep, archetypal interpretation of this dream element. Draw on Jungian
 
 Write 2-3 rich paragraphs. Poetic, personal, intelligent. Never generic. Never clinical.`;
 
-  const system=`You are a master dream analyst and depth psychologist with knowledge of Jungian archetypes, mythology, and the collective unconscious. You interpret dream symbols with poetic intelligence and psychological depth. Never be generic. Every interpretation should feel like it was written specifically for this person.`;
+  const system=`You are a master dream analyst and depth psychologist with knowledge of Jungian archetypes, mythology, and the collective unconscious. You interpret dream symbols with poetic intelligence and psychological depth. Never be generic. Every interpretation should feel like it was written specifically for this person. Do not use em dashes anywhere, use a comma or period instead.`;
 
   try{
     const res=await fetch('/api/chat',{
@@ -3619,12 +3619,12 @@ async function saveDreamEntry(action){
   const astroStr=astroContextToPrompt(astroCtx);
 
   const prompt = action==='interpret'
-    ? `DREAM: "${text}"\nTAGS: ${selectedTags.join(', ')||'none'}\nMOON: ${moonData.name}\nSIGN: ${sign}\n\nInterpret this dream with depth — Jungian symbolism, archetypal meaning, emotional undercurrent. What threshold does the dreamer stand at? End with one quiet question for reflection. 3 paragraphs.`
+    ? `DREAM: "${text}"\nTAGS: ${selectedTags.join(', ')||'none'}\nMOON: ${moonData.name}\nSIGN: ${sign}\n\nInterpret this dream with depth, using Jungian symbolism, archetypal meaning, emotional undercurrent. What threshold does the dreamer stand at? End with one quiet question for reflection. 3 paragraphs.`
     : `${astroStr}\n\nDREAM: "${text}"\nTAGS: ${selectedTags.join(', ')||'none'}\n\nWeave the current planetary transits and this dream into one unified insight. How does the cosmos mirror what the unconscious is processing? 3-4 paragraphs.`;
 
   const system = action==='interpret'
-    ? 'You are Kairoscope — a dream analyst versed in Jungian psychology, mythology, and astrology. Interpret dreams with depth and poetic intelligence. Never generic. End with one quiet reflective question.'
-    : 'You are Kairoscope — weave current planetary transits and the dream into one unified cosmic message. Show how the stars and the unconscious deliver the same insight from different directions. Poetic, technically grounded.';
+    ? 'You are Kairoscope, a dream analyst versed in Jungian psychology, mythology, and astrology. Interpret dreams with depth and poetic intelligence. Never generic. End with one quiet reflective question. Do not use em dashes anywhere, use a comma or period instead.'
+    : 'You are Kairoscope, weaving current planetary transits and the dream into one unified cosmic message. Show how the stars and the unconscious deliver the same insight from different directions. Poetic, technically grounded. Do not use em dashes anywhere, use a comma or period instead.';
 
   try{
     const res=await fetch('/api/chat',{
@@ -3859,7 +3859,7 @@ async function analysePatterns(){
     const res=await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:700,system:'You are Kairoscope, a dream pattern analyst and astrologer. Your job is honesty first: only describe a recurring pattern if one genuinely exists across the dreams provided. If the dreams do not share a real, substantive theme, say so directly and briefly rather than manufacturing a connection. When a pattern is real, describe it with Jungian depth and astrological insight. Poetic, personal, never generic, never forced.',messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:700,system:'You are Kairoscope, a dream pattern analyst and astrologer. Your job is honesty first: only describe a recurring pattern if one genuinely exists across the dreams provided. If the dreams do not share a real, substantive theme, say so directly and briefly rather than manufacturing a connection. When a pattern is real, describe it with Jungian depth and astrological insight. Poetic, personal, never generic, never forced. Do not use em dashes anywhere, use a comma or period instead.',messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
     const txt=data.content?.find(b=>b.type==='text')?.text;
@@ -4824,10 +4824,10 @@ function astroContextToPrompt(ctx){
   lines.push(`\nMOON: ${ctx.moonPhase.replace(/-/g,' ')} (${ctx.moonPhaseAngle}° from Sun)`);
   if(ctx.keyTransits.length){
     lines.push(`\nKEY TRANSITS TO ${ctx.userSign.toUpperCase()}:`);
-    ctx.keyTransits.forEach(t=>lines.push(`  ${t.planet} in ${t.sign} — ${t.aspect} ${ctx.userSign}`));
+    ctx.keyTransits.forEach(t=>lines.push(`  ${t.planet} in ${t.sign}, ${t.aspect} ${ctx.userSign}`));
   }
   if(ctx.retrograde.length){
-    lines.push(`\nRETROGRADE INFLUENCE: ${ctx.retrograde.join(', ')} retrograde — delays and revision in those domains`);
+    lines.push(`\nRETROGRADE INFLUENCE: ${ctx.retrograde.join(', ')} retrograde, delays and revision in those domains`);
   }
   if(ctx.natalAspects.length){
     lines.push(`\nCURRENT TRANSITS TO NATAL CHART:`);
@@ -4947,7 +4947,7 @@ function saveWishToKairos(wishData){
 
 async function submitWish(){
   const text=document.getElementById('wish-text-input').value.trim();
-  if(!text){alert('Name your wish first — be specific about what it is.');return;}
+  if(!text){alert('Name your wish first, be specific about what it is.');return;}
   if(!canMakeWish()){
     if(!APP.isPro)document.getElementById('paywall').classList.add('on');
     return;
@@ -4969,9 +4969,9 @@ async function submitWish(){
   const astroCtx=buildAstroContext(sign,'today');
   const astroStr=astroContextToPrompt(astroCtx);
 
-  const prompt=`${astroStr}\n\nWISH CATEGORY: ${domain.label}\nRELEVANT ASTROLOGICAL DOMAIN: ${domain.hint}\n\nTHE WISH, IN THEIR OWN WORDS: "${text}"\n\nGive an honest astrological reading on whether the current cosmic timing favors this specific wish. Reference real transits and aspects relevant to this domain. Then close with a short, poetic line that seals this wish with the cosmos — as if it has now been formally set into motion, regardless of the timing read. 3-4 paragraphs.`;
+  const prompt=`${astroStr}\n\nWISH CATEGORY: ${domain.label}\nRELEVANT ASTROLOGICAL DOMAIN: ${domain.hint}\n\nTHE WISH, IN THEIR OWN WORDS: "${text}"\n\nGive an honest astrological reading on whether the current cosmic timing favors this specific wish. Reference real transits and aspects relevant to this domain. Then close with a short, poetic line that seals this wish with the cosmos, as if it has now been formally set into motion, regardless of the timing read. 3-4 paragraphs.`;
 
-  const system=`You are Kairoscope, performing a sacred kairos-seeking ritual. Someone has named a specific, personal wish and wants to know if right now is the moment for it. Give an honest, technically grounded astrological assessment using the real current transits and domain-specific influences provided — never vague, never generic. Be truthful if timing looks difficult; do not promise outcomes. But always end with one short, poetic sealing line that gives the moment ritual weight — as though the wish has now been spoken into motion with the cosmos, whatever the timing read says. Gender-neutral. No markdown.`;
+  const system=`You are Kairoscope, performing a sacred kairos-seeking ritual. Someone has named a specific, personal wish and wants to know if right now is the moment for it. Give an honest, technically grounded astrological assessment using the real current transits and domain-specific influences provided, never vague, never generic. Be truthful if timing looks difficult; do not promise outcomes. But always end with one short, poetic sealing line that gives the moment ritual weight, as though the wish has now been spoken into motion with the cosmos, whatever the timing read says. Gender-neutral. No markdown. Do not use em dashes anywhere, use a comma or period instead.`;
 
   try{
     const txt=await callAI(prompt,system);
@@ -5298,7 +5298,7 @@ function buildChartCtx(){
 }
 
 const SYSTEMS={
-  h:`You are Kairoscope — a master astrologer and poetic cosmic guide with deep knowledge of traditional and modern astrology. You will be given the user's zodiac sign, current planetary positions, active transits, moon phase, and natal chart if available.
+  h:`You are Kairoscope, a master astrologer and poetic cosmic guide with deep knowledge of traditional and modern astrology. You will be given the user's zodiac sign, current planetary positions, active transits, moon phase, and natal chart if available.
 
 Write a horoscope reading that a serious astrology devotee would find genuinely insightful. Use REAL astrological technique:
 - Reference specific planets by name and their current signs
@@ -5309,27 +5309,28 @@ Write a horoscope reading that a serious astrology devotee would find genuinely 
 - If retrograde planets are present, address their influence
 - If natal chart is provided, speak to how current transits are activating their personal planets
 
-Your voice is lyrical, intimate, and profound — never generic. Gender-neutral. No clichés like "the universe is sending you a message." 4-5 rich paragraphs.
+Your voice is lyrical, intimate, and profound, never generic. Gender-neutral. No clichés like "the universe is sending you a message." 4-5 rich paragraphs.
 
 CRITICAL FORMATTING RULES:
 - NO markdown whatsoever. No ##, no **, no *, no --, no bullet points.
+- Do not use em dashes anywhere in your writing. Use a comma, period, or colon instead.
 - Use PLAIN TEXT only.
 - Section labels must be written exactly as shown, in plain uppercase, followed by a colon and space.
 
 Structure EXACTLY like this:
-COSMIC THEME: [One powerful sentence — the single astrological truth of this moment]
+COSMIC THEME: [One powerful sentence, the single astrological truth of this moment]
 
-FOCUS: [2-3 sentences — the primary planetary influence and what it activates]
+FOCUS: [2-3 sentences, the primary planetary influence and what it activates]
 
-GUIDANCE: [2-3 sentences — specific wisdom drawn from the aspects and houses]
+GUIDANCE: [2-3 sentences, specific wisdom drawn from the aspects and houses]
 
-FULL READING: [4-5 rich paragraphs weaving all planetary influences into a full narrative — deeply personal, technically grounded, poetically expressed]`,
+FULL READING: [4-5 rich paragraphs weaving all planetary influences into a full narrative, deeply personal, technically grounded, poetically expressed]`,
 
-  d:`You are Kairoscope — a depth psychologist and dream analyst with knowledge of Jungian archetypes, mythological symbolism, and the unconscious. Interpret the dream weaving symbol analysis, emotional undercurrents, and what psychological threshold the dreamer stands at. Reference the archetypal energy of each symbol. Connect to their astrological nature if provided. End with one quiet question for reflection. 4-5 paragraphs. Poetic, intelligent, gender-neutral. NO markdown — no ##, no **, no bullet points. Plain text only.`,
+  d:`You are Kairoscope, a depth psychologist and dream analyst with knowledge of Jungian archetypes, mythological symbolism, and the unconscious. Interpret the dream weaving symbol analysis, emotional undercurrents, and what psychological threshold the dreamer stands at. Reference the archetypal energy of each symbol. Connect to their astrological nature if provided. End with one quiet question for reflection. 4-5 paragraphs. Poetic, intelligent, gender-neutral. NO markdown, no ##, no **, no bullet points. Plain text only. Do not use em dashes anywhere, use a comma or period instead.`,
 
-  c:`You are Kairoscope — weave current planetary transits and the user's dream into one unified vision. Find the resonance: how does the sky mirror what the unconscious is processing? Show how the same message arrives from two different directions — the cosmos above and the psyche below. Name the specific planets involved. End with one sentence of distilled guidance — the kairos. 4-5 paragraphs. Deeply personal, technically grounded, poetically expressed. NO markdown — no ##, no **, no bullet points. Plain text only.`,
+  c:`You are Kairoscope, weaving current planetary transits and the user's dream into one unified vision. Find the resonance: how does the sky mirror what the unconscious is processing? Show how the same message arrives from two different directions, the cosmos above and the psyche below. Name the specific planets involved. End with one sentence of distilled guidance, the kairos. 4-5 paragraphs. Deeply personal, technically grounded, poetically expressed. NO markdown, no ##, no **, no bullet points. Plain text only. Do not use em dashes anywhere, use a comma or period instead.`,
 
-  patterns:`You are Kairoscope — a dream pattern analyst and astrologer. The user has provided their dream journal. Find recurring symbols, emotional undercurrents, and archetypal patterns across their dreams. Connect to their astrological nature — how does their natal chart explain these recurring themes? What is their subconscious processing over time? End with one guiding insight. 4-5 paragraphs. Deeply personal, poetic.`
+  patterns:`You are Kairoscope, a dream pattern analyst and astrologer. The user has provided their dream journal. Find recurring symbols, emotional undercurrents, and archetypal patterns across their dreams. Connect to their astrological nature, how does their natal chart explain these recurring themes? What is their subconscious processing over time? End with one guiding insight. 4-5 paragraphs. Deeply personal, poetic. Do not use em dashes anywhere, use a comma or period instead.`
 };
 
 async function translateText(text,targetLang){
@@ -5392,12 +5393,12 @@ async function doReading(type){
   const latestDream=(()=>{const dreams=getDreams();return dreams&&dreams.length>0?(dreams[0].dream||dreams[0].text||'none given'):'none given';})();
   const combinedDream=combinedDreamEl?combinedDreamEl.value.trim()||latestDream:latestDream;
   const PROMPTS={
-    h:`${fullAstroPrompt}\n\nWrite a ${APP.period} horoscope reading for ${APP.sh}. Today is ${TODAY}. Make it genuinely insightful for a serious astrology devotee — technically grounded and poetically expressed.`,
+    h:`${fullAstroPrompt}\n\nWrite a ${APP.period} horoscope reading for ${APP.sh}. Today is ${TODAY}. Make it genuinely insightful for a serious astrology devotee, technically grounded and poetically expressed.`,
     d:`SIGN: ${APP.sh||'unknown'}. Today: ${TODAY}. Moon: ${moonData.emoji} ${moonData.name}.${chartCtx}\n\nDREAM TO INTERPRET: "${dreamText}"\n\nInterpret this dream with depth and astrological awareness.`,
     c:`${fullAstroPrompt}\n\nDREAM: "${combinedDream}"\n\nToday is ${TODAY}. Weave the current planetary transits and this dream into one unified insight. Show how the cosmos and the unconscious are delivering the same message.`
   };
   const HEADS={
-    h:[ZI[APP.sh]||'◈',`${APP.sh}${APP.isPro&&c.moon?' · '+c.moon+' Moon':''} — ${APP.period.toUpperCase()}`,TODAY],
+    h:[ZI[APP.sh]||'◈',`${APP.sh}${APP.isPro&&c.moon?' · '+c.moon+' Moon':''} · ${APP.period.toUpperCase()}`,TODAY],
     d:['◇','DREAM INTERPRETATION',`${moonData.emoji} ${moonData.name}`],
     c:[(ZI[APP.sc]||'◈')+' ◈',`${APP.sc} — STARS & DREAMS`,TODAY]
   };
