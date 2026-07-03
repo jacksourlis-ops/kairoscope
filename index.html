@@ -460,7 +460,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .modal-inner{width:100%;max-width:520px;display:flex;flex-direction:column;gap:1.25rem;padding-bottom:3rem}
 .modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:.5px solid var(--border);padding-bottom:1rem}
 .modal-title{font-family:'Cinzel',serif;font-size:17px;letter-spacing:.15em;color:var(--gold)}
-.modal-close{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:5px 14px;color:var(--muted);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+.modal-close{background:rgba(200,175,255,0.1);border:1px solid rgba(200,175,255,0.4);border-radius:20px;padding:8px 16px;color:rgba(230,220,255,0.95);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+.modal-close:hover{background:rgba(200,175,255,0.18)}
 .modal-close:hover{border-color:var(--border2);color:var(--gold)}
 .modal-section{display:flex;flex-direction:column;gap:.5rem}
 .modal-section h3{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--gold);margin-bottom:2px}
@@ -488,6 +489,29 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <button id="cycle-btn" class="theme-toggle" onclick="cycleTheme()">cycle phases</button>
   <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)"><option value="English">🇬🇧 English</option><option value="French">🇫🇷 Français</option><option value="Spanish">🇪🇸 Español</option><option value="Portuguese">🇧🇷 Português</option><option value="German">🇩🇪 Deutsch</option><option value="Italian">🇮🇹 Italiano</option><option value="Greek">🇬🇷 Ελληνικά</option><option value="Japanese">🇯🇵 日本語</option><option value="Korean">🇰🇷 한국어</option><option value="Chinese">🇨🇳 中文</option><option value="Hindi">🇮🇳 हिन्दी</option><option value="Arabic">🇸🇦 العربية</option><option value="Dutch">🇳🇱 Nederlands</option><option value="Polish">🇵🇱 Polski</option><option value="Turkish">🇹🇷 Türkçe</option><option value="Swedish">🇸🇪 Svenska</option></select>
 </div>
+<script>
+(function(){
+  var overlaySelectors=['#journal-screen','#dream-dictionary-screen','#wish-screen','#sleep-screen','#conn-screen','#tutorial-screen','#restore-purchase','#cancel-survey','#kairos-day-modal'];
+  function anyOverlayVisible(){
+    for(var i=0;i<overlaySelectors.length;i++){
+      var el=document.querySelector(overlaySelectors[i]);
+      if(el && window.getComputedStyle(el).display!=='none') return true;
+    }
+    if(document.querySelector('.modal-overlay.on')) return true;
+    if(document.querySelector('.paywall.on')) return true;
+    return false;
+  }
+  function sync(){
+    var banner=document.getElementById('moon-banner');
+    if(banner) banner.style.display=anyOverlayVisible()?'none':'';
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var observer=new MutationObserver(sync);
+    observer.observe(document.body,{attributes:true,attributeFilter:['style','class'],subtree:true,childList:true});
+    sync();
+  });
+})();
+</script>
 
 <div class="wrap">
   <div class="site-header">
