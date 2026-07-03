@@ -541,6 +541,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     </div>
   </div>
 
+  <div id="welcome-back-line" style="display:none;text-align:center;font-family:'Crimson Pro',serif;font-size:13.5px;color:rgba(200,190,220,0.6);font-style:italic;margin:.4rem 0 .8rem"></div>
+
   <!-- API KEY -->
   <!-- CONTROLS -->
   <div class="ctrl-row">
@@ -5506,15 +5508,28 @@ function exportSingleDay(dateKey){
     if(sid){
       fetch('/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid})})
         .then(r=>r.json())
-        .then(d=>{if(d.customerId)localStorage.setItem('k_stripe_customer',d.customerId);})
+        .then(async d=>{
+          if(d.customerId){
+            localStorage.setItem('k_stripe_customer',d.customerId);
+            try{
+              const nres=await fetch('/api/get-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customerId:d.customerId})});
+              const ndata=await nres.json();
+              if(nres.ok&&ndata.name){
+                localStorage.setItem('k_cosmic_name',ndata.name);
+                const nameEl=document.getElementById('welcome-pro-name');
+                if(nameEl)nameEl.textContent='You are '+ndata.name+'.';
+              }
+            }catch(e){}
+          }
+        })
         .catch(()=>{});
     }
     setTimeout(()=>{
       const msg=document.createElement('div');
       msg.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(4,2,16,0.97);border:.5px solid rgba(200,175,255,0.4);border-radius:12px;padding:2rem 2.5rem;text-align:center;z-index:300;font-family:Cinzel,serif;color:var(--gold);letter-spacing:.15em;font-size:13px;line-height:2.2';
-      msg.innerHTML='✦ WELCOME TO PRO ✦<br><span style="font-size:11px;color:var(--muted);font-family:Crimson Pro,serif;font-style:italic;letter-spacing:.05em">The cosmos is now fully yours</span>';
+      msg.innerHTML='✦ WELCOME TO PRO ✦<br><span id="welcome-pro-name" style="font-size:11px;color:var(--muted);font-family:Crimson Pro,serif;font-style:italic;letter-spacing:.05em">The cosmos is now fully yours</span>';
       document.body.appendChild(msg);
-      setTimeout(()=>msg.remove(),4000);
+      setTimeout(()=>msg.remove(),4500);
     },600);
   }
   if(params.get('cancelled')==='true'){
@@ -6016,7 +6031,18 @@ setTimeout(loadBirthData,100);
     }
   }
 })();
-renderActiveRightNow();renderBirthdayBanner();
+renderActiveRightNow();renderBirthdayBanner();renderWelcomeBackLine();
+function renderWelcomeBackLine(){
+  const el=document.getElementById('welcome-back-line');
+  if(!el)return;
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('success')==='true')return;
+  if(!APP.isPro)return;
+  const name=localStorage.getItem('k_cosmic_name');
+  if(!name)return;
+  el.textContent='Welcome back, '+name+'.';
+  el.style.display='block';
+}
 if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
 </script>
 <!-- PRIVACY POLICY MODAL -->
@@ -6108,6 +6134,13 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
   <div class="modal-inner">
     <div class="modal-header"><div class="modal-title">🪐 ACCOUNT</div><button class="modal-close" onclick="closeModal('account')">✕ CLOSE</button></div>
 
+    <div class="modal-section" style="text-align:center">
+      <div class="faq-q">YOUR COSMIC NAME</div>
+      <div id="cosmic-name-display" style="font-family:'Cinzel',serif;font-size:19px;letter-spacing:.08em;color:var(--gold);margin:.5rem 0;min-height:1.4em">—</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:12.5px;color:rgba(200,190,220,0.55);font-style:italic">Yours alone, no one else in Kairoscope shares it. Follows you across every device.</div>
+    </div>
+    <div class="modal-divider"></div>
+
     <div class="modal-section">
       <div class="faq-q">SUBSCRIPTION</div>
       <div class="faq-a">Manage your plan, update your card, or cancel any time.<br><br>
@@ -6155,7 +6188,40 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
 </div>
 
 <script>
-function openModal(id){document.getElementById('modal-'+id).classList.add('on');document.body.style.overflow='hidden';}
+function openModal(id){document.getElementById('modal-'+id).classList.add('on');document.body.style.overflow='hidden';if(id==='account')loadCosmicName();}
+
+async function loadCosmicName(){
+  const el=document.getElementById('cosmic-name-display');
+  if(!el)return;
+  if(!APP.isPro){
+    el.textContent='—';
+    el.nextElementSibling.textContent='Available once you go Pro.';
+    return;
+  }
+  const cached=localStorage.getItem('k_cosmic_name');
+  if(cached){el.textContent=cached;return;}
+  const customerId=localStorage.getItem('k_stripe_customer');
+  if(!customerId){
+    el.textContent='—';
+    el.nextElementSibling.textContent='Restore your purchase first to claim your name.';
+    return;
+  }
+  el.textContent='Claiming your name...';
+  try{
+    const res=await fetch('/api/get-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customerId})});
+    const data=await res.json();
+    if(res.ok&&data.name){
+      el.textContent=data.name;
+      localStorage.setItem('k_cosmic_name',data.name);
+    } else {
+      el.textContent='—';
+      el.nextElementSibling.textContent=data.error||'Could not load your name right now.';
+    }
+  }catch(e){
+    el.textContent='—';
+    el.nextElementSibling.textContent='Could not load your name right now.';
+  }
+}
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('on');document.body.style.overflow='';}
 document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('on');document.body.style.overflow='';}});});
 </script>
