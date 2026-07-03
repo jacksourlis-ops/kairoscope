@@ -313,7 +313,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 /* TABS */
 .tabs{display:flex;gap:6px;margin-bottom:1.25rem}
-.tab{flex:1;padding:12px 4px 10px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.12);border-radius:10px;color:rgba(200,175,255,0.45);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.1em;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.2}
+.tab{flex:1;padding:12px 4px 10px;background:rgba(200,175,255,0.04);border:.5px solid rgba(210,175,80,0.3);border-radius:10px;color:rgba(220,210,240,0.65);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.1em;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.2}
 .tab.on{background:rgba(210,175,80,0.1);border-color:rgba(210,175,80,0.4);color:var(--gold)}
 .tab:hover:not(.on){background:rgba(200,175,255,0.08);border-color:rgba(200,175,255,0.22);color:rgba(200,175,255,0.75)}
 .tab-icon{font-size:20px;line-height:1}
@@ -362,7 +362,9 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 /* BUTTONS */
 .reveal-btn{width:100%;padding:13px;background:var(--card);border:.5px solid var(--border2);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;cursor:pointer;transition:all .2s}
 .reveal-btn:hover{background:var(--bg3);border-color:var(--gold)}
-.reveal-btn:disabled{opacity:.3;cursor:default}
+.reveal-btn:disabled{opacity:.5;cursor:default}
+#btn-d:not(:disabled){background:var(--gold);border-color:var(--gold);color:#1a1408;font-weight:600}
+#btn-d:not(:disabled):hover{background:var(--gold2);border-color:var(--gold2)}
 
 /* RESULT BOX */
 .result-box{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:1.25rem;display:none;flex-direction:column;gap:10px}
@@ -787,7 +789,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
   <!-- DREAM LIST -->
   <div id="journal-list"></div>
-  <div id="journal-empty" style="text-align:center;padding:2rem 1rem;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.25);font-style:italic;line-height:1.8">
+  <div id="journal-empty" style="text-align:center;padding:2rem 1rem;font-family:'Crimson Pro',serif;font-size:15px;color:rgba(200,175,255,0.65);font-style:italic;line-height:1.8">
     Your dream journal is empty.<br>
     <span style="font-size:13px;opacity:.7">Tap above to record your first dream.</span>
   </div>
@@ -2725,7 +2727,7 @@ function renderPeople(){
   const people=getPeople();
   el.innerHTML='';
   if(people.length===0){
-    el.innerHTML='<div style="font-family:Georgia,serif;font-size:13px;color:rgba(200,175,255,0.25);text-align:center;padding:.5rem 0;font-style:italic">No one in your sky yet</div>';
+    el.innerHTML='<div style="font-family:Georgia,serif;font-size:13px;color:rgba(200,175,255,0.6);text-align:center;padding:.5rem 0;font-style:italic">No one in your sky yet</div>';
     return;
   }
   people.forEach(p=>{
@@ -3955,8 +3957,8 @@ function refreshJournal(){
     if(empty){
       empty.style.display='block';
       empty.innerHTML = dreams.length
-        ? `No dream logged today yet.<br><span style="font-size:13px;opacity:.7">Tap above to record tonight's — or open the calendar above to revisit a past one.</span>`
-        : `Your dream journal is empty.<br><span style="font-size:13px;opacity:.7">Tap above to record your first dream.</span>`;
+        ? `No dream logged today yet.<br><span style="font-size:13px;color:rgba(200,175,255,0.5)">Tap above to record tonight's, or open the calendar above to revisit a past one.</span>`
+        : `Your dream journal is empty.<br><span style="font-size:13px;color:rgba(200,175,255,0.5)">Tap above to record your first dream.</span>`;
     }
     return;
   }
