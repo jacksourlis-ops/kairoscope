@@ -521,6 +521,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div style="display:flex;gap:6px;align-items:center">
       <button class="sound-btn" id="sound-btn" onclick="toggleSound()">♫ ambient off</button>
       <button class="sound-btn" onclick="openTutorial()" title="How Kairoscope works" style="padding:5px 11px">?</button>
+      <button class="sound-btn" onclick="openModal('account')" title="Account" style="padding:5px 11px">🪐</button>
     </div>
     <div class="pill" id="main-pill">◈ <span id="free-count">5</span> free readings remaining this month</div>
   </div>
@@ -1015,7 +1016,8 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 <div id="restore-purchase" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.92);z-index:10003;align-items:center;justify-content:center">
   <div style="background:rgba(8,5,22,0.97);border:.5px solid rgba(200,175,255,0.3);border-radius:14px;padding:1.75rem 1.5rem;max-width:340px;width:88%;text-align:center;font-family:'Crimson Pro',serif">
     <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.12em;color:var(--gold);margin-bottom:.6rem">RESTORE PURCHASE</div>
-    <div style="font-size:12.5px;color:rgba(220,210,240,0.8);margin-bottom:1rem;line-height:1.5">Enter the email you subscribed with. We'll check with Stripe and restore your Pro access.</div>
+    <div style="font-size:12.5px;color:rgba(220,210,240,0.8);margin-bottom:.5rem;line-height:1.5">Enter the email you subscribed with. We'll check with Stripe and restore your Pro access.</div>
+    <div style="font-size:11px;color:rgba(200,190,220,0.5);margin-bottom:1rem;font-style:italic;line-height:1.4">Not sure which one? Search your inbox for a receipt from Stripe, that's the email on file.</div>
     <input type="email" id="restore-email" placeholder="you@email.com" style="width:100%;box-sizing:border-box;padding:.65rem .75rem;border-radius:8px;border:.5px solid rgba(200,175,255,0.25);background:rgba(200,175,255,0.06);color:rgba(225,215,245,0.92);font-family:'Crimson Pro',serif;font-size:13px;margin-bottom:1rem">
     <div id="restore-msg" style="font-size:11.5px;margin-bottom:.8rem;display:none"></div>
     <div style="display:flex;gap:10px;justify-content:center">
@@ -4522,7 +4524,7 @@ async function submitRestorePurchase(){
       msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';msg.textContent='Pro restored. Welcome back.';
       setTimeout(()=>{closeRestorePurchase();document.getElementById('paywall').classList.remove('on');location.reload();},1400);
     } else {
-      msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='No active subscription found for that email.';
+      msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='No active subscription found for that email. Double check your inbox for a Stripe receipt, or email hello@kairoscope.app if you\'re stuck.';
     }
   }catch(e){
     msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='Something went wrong, try again.';
@@ -4576,6 +4578,112 @@ function checkTempProExpiry(){
   }
 }
 checkTempProExpiry();
+
+// ============================================================
+// CARRY MY KAIROS — export/import journal, dreams, and readings
+// (deliberately excludes subscription/credit state — that's handled
+// separately via Restore Purchase, never trusted from a file)
+// ============================================================
+const KAIROS_EXPORT_SINGLE_KEYS=['k_bdate','k_btime','k_bcity','k_bcity_coords','k_people','k_lang','k_dream_today'];
+
+function exportKairos(){
+  const btn=document.getElementById('carry-kairos-btn');
+  const msg=document.getElementById('carry-kairos-msg');
+  btn.disabled=true;btn.textContent='Preparing...';
+  msg.style.display='none';
+
+  const data={};
+  KAIROS_EXPORT_SINGLE_KEYS.forEach(k=>{
+    const v=localStorage.getItem(k);
+    if(v!==null)data[k]=v;
+  });
+  Object.keys(localStorage).filter(k=>k.startsWith('k_kairos_')).forEach(k=>{
+    data[k]=localStorage.getItem(k);
+  });
+
+  const payload={kairoscopeExport:true,version:1,exportedAt:new Date().toISOString(),data};
+  const json=JSON.stringify(payload,null,2);
+  const filename='kairoscope-backup-'+new Date().toLocaleDateString('en-CA')+'.json';
+  const blob=new Blob([json],{type:'application/json'});
+
+  const resetBtn=()=>{btn.disabled=false;btn.textContent='✦ PREPARE MY FILE ✦';};
+
+  let file=null;
+  try{ file=new File([blob],filename,{type:'application/json'}); }catch(e){}
+
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:'Kairoscope backup'}).then(()=>{
+      msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';
+      msg.textContent='Sent. Save it somewhere you can reach from your new phone.';
+    }).catch(err=>{
+      if(err&&err.name!=='AbortError'){
+        downloadKairosFile(blob,filename,msg);
+      }
+    }).finally(resetBtn);
+  } else {
+    downloadKairosFile(blob,filename,msg);
+    resetBtn();
+  }
+}
+
+function downloadKairosFile(blob,filename,msg){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+  msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';
+  msg.textContent='Your file has been saved. Email it to yourself, or upload it to Google Drive or iCloud, then open Kairoscope on your new phone.';
+}
+
+function importKairos(event){
+  const file=event.target.files[0];
+  const msg=document.getElementById('restore-kairos-msg');
+  if(!file)return;
+  msg.style.display='none';
+
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const payload=JSON.parse(e.target.result);
+      if(!payload||!payload.kairoscopeExport||!payload.data){
+        msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';
+        msg.textContent="That doesn't look like a Kairos file. Try again, or reach out if you're stuck.";
+        return;
+      }
+      const data=payload.data;
+
+      Object.keys(data).forEach(key=>{
+        if(key.startsWith('k_kairos_')){
+          let existing={};
+          try{const e2=localStorage.getItem(key);if(e2)existing=JSON.parse(e2);}catch(err){}
+          let incoming={};
+          try{incoming=JSON.parse(data[key]);}catch(err){incoming={};}
+          localStorage.setItem(key,JSON.stringify(Object.assign({},existing,incoming)));
+        } else if(key==='k_dreams'){
+          let existing=[];
+          try{existing=JSON.parse(localStorage.getItem('k_dreams')||'[]');}catch(err){}
+          let incoming=[];
+          try{incoming=JSON.parse(data[key]||'[]');}catch(err){}
+          const byId={};
+          existing.forEach(d=>{if(d&&d.id!=null)byId[d.id]=d;});
+          incoming.forEach(d=>{if(d&&d.id!=null)byId[d.id]=d;});
+          const mergedDreams=Object.values(byId).sort((a,b)=>new Date(b.date)-new Date(a.date));
+          localStorage.setItem('k_dreams',JSON.stringify(mergedDreams));
+        } else {
+          localStorage.setItem(key,data[key]);
+        }
+      });
+
+      msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';
+      msg.textContent='Welcome back. Your journal and readings have been restored.';
+      setTimeout(()=>location.reload(),1600);
+    }catch(err){
+      msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';
+      msg.textContent="That doesn't look like a Kairos file. Try again, or reach out if you're stuck.";
+    }
+  };
+  reader.readAsText(file);
+}
 
 // ============================================================
 // BIRTHDAY — free bonus wish on the user's solar return
@@ -5937,7 +6045,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">WHAT ARE THE AMBIENT SOUNDS?</div><div class="faq-a">The ambient sound is wind chimes with a subtle cosmic resonance underneath. It is designed to deepen the reading experience without distracting from it. You can turn it on or off any time using the button at the top of the app.</div></div>
     <div class="modal-divider"></div>
-    <div class="modal-section"><div class="faq-q">HOW DO I CANCEL?</div><div class="faq-a">Cancel any time. Your Pro access runs until the end of your billing period, no matter when you cancel.<br><br><button onclick="manageSubscription(this)" style="margin-top:6px;background:rgba(200,175,255,0.1);border:.5px solid rgba(200,175,255,0.4);border-radius:8px;padding:9px 16px;color:rgba(230,220,255,0.95);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">MANAGE SUBSCRIPTION</button><br><br>If you ever have trouble, email hello@kairoscope.app and we will sort it out personally.</div></div>
+    <div class="modal-section"><div class="faq-q">HOW DO I CANCEL?</div><div class="faq-a">Cancel any time. Your Pro access runs until the end of your billing period, no matter when you cancel.<br><br>Manage your subscription any time from the 🪐 account icon at the top of the app.<br><br>If you ever have trouble, email hello@kairoscope.app and we will sort it out personally.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">HOW DOES THE COMBINED READING WORK?</div><div class="faq-a">The Combined reading is where Kairoscope goes deepest. It takes your dream from the night before and layers it against the current planetary positions, your natal chart, and the moon phase — then looks for resonance between what your unconscious created while you slept and what the cosmos is doing right now. Often they are saying the same thing from different directions. The combined reading finds that convergence and names it.</div></div>
@@ -5965,7 +6073,48 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     <div class="modal-section"><div class="faq-q">✨ PATTERNS OVER PREDICTIONS</div><div class="faq-a">The real value of Kairoscope grows over time. As you build your dream journal and track your readings, patterns emerge across your entries, your moods, and the cosmic cycles above you. Not fortune telling — self knowledge.</div></div>
     <div class="modal-divider"></div>
     <div class="modal-section"><div class="faq-q">🇨🇦 BUILT IN CANADA</div><div class="faq-a">Kairoscope is independently built and operated in Canada. We answer to our users, not to investors. Just a thoughtfully made app for people who take their inner life seriously.</div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-account">
+  <div class="modal-inner">
+    <div class="modal-header"><div class="modal-title">🪐 ACCOUNT</div><button class="modal-close" onclick="closeModal('account')">✕ CLOSE</button></div>
+
+    <div class="modal-section">
+      <div class="faq-q">SUBSCRIPTION</div>
+      <div class="faq-a">Manage your plan, update your card, or cancel any time.<br><br>
+        <button onclick="manageSubscription(this)" style="margin-top:6px;background:rgba(200,175,255,0.1);border:.5px solid rgba(200,175,255,0.4);border-radius:8px;padding:9px 16px;color:rgba(230,220,255,0.95);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">MANAGE SUBSCRIPTION</button>
+      </div>
+    </div>
     <div class="modal-divider"></div>
+
+    <div class="modal-section">
+      <div class="faq-q">RESTORE PURCHASE</div>
+      <div class="faq-a">Got a new phone? Restore your Pro access using the email you subscribed with.<br><br>
+        <button onclick="openRestorePurchase()" style="margin-top:6px;background:rgba(210,175,80,0.1);border:.5px solid var(--border2);border-radius:8px;padding:9px 16px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">RESTORE PURCHASE</button>
+      </div>
+    </div>
+    <div class="modal-divider"></div>
+
+    <div class="modal-section">
+      <div class="faq-q">CARRY MY KAIROS</div>
+      <div class="faq-a">Save your journal, dreams, and readings into one file you can bring to your new phone.<br><br>
+        <button id="carry-kairos-btn" onclick="exportKairos()" style="margin-top:6px;background:rgba(210,175,80,0.1);border:.5px solid var(--border2);border-radius:8px;padding:9px 16px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">✦ PREPARE MY FILE ✦</button>
+        <div id="carry-kairos-msg" style="font-size:11.5px;margin-top:.6rem;display:none;font-style:italic"></div>
+      </div>
+    </div>
+    <div class="modal-divider"></div>
+
+    <div class="modal-section">
+      <div class="faq-q">RESTORE MY KAIROS</div>
+      <div class="faq-a">On a new phone? Choose the file you saved from your old one to bring your history back.<br><br>
+        <button onclick="document.getElementById('restore-kairos-file').click()" style="margin-top:6px;background:rgba(200,175,255,0.1);border:.5px solid rgba(200,175,255,0.4);border-radius:8px;padding:9px 16px;color:rgba(230,220,255,0.95);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">CHOOSE FILE</button>
+        <input type="file" id="restore-kairos-file" accept=".json,application/json" style="display:none" onchange="importKairos(event)">
+        <div id="restore-kairos-msg" style="font-size:11.5px;margin-top:.6rem;display:none;font-style:italic"></div>
+      </div>
+    </div>
+    <div class="modal-divider"></div>
+
     <div class="modal-section" style="text-align:center">
       <div style="font-family:'Crimson Pro',serif;font-size:11px;color:rgba(200,190,220,0.45);font-style:italic;margin-bottom:.5rem">Have a support code from our team?</div>
       <div style="display:flex;gap:6px;justify-content:center;max-width:280px;margin:0 auto">
