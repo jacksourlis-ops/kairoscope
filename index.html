@@ -297,7 +297,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 /* CONTROLS */
 .ctrl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;gap:8px;flex-wrap:wrap}
-.sound-btn{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:5px 12px;color:var(--muted);font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.1em;cursor:pointer;transition:all .2s;white-space:nowrap}
+.sound-btn{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:6px 13px;color:var(--muted);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;cursor:pointer;transition:all .2s;white-space:nowrap}
 .sound-btn:hover,.sound-btn.on{border-color:var(--border2);color:var(--gold)}
 .sound-pick{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
 .sound-pick:hover{border-color:var(--border2);color:var(--gold)}
@@ -459,7 +459,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .modal-overlay.on{display:flex;animation:fadeup .3s ease}
 .modal-inner{width:100%;max-width:520px;display:flex;flex-direction:column;gap:1.25rem;padding-bottom:3rem}
 .modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:.5px solid var(--border);padding-bottom:1rem}
-.modal-title{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.2em;color:var(--gold)}
+.modal-title{font-family:'Cinzel',serif;font-size:17px;letter-spacing:.15em;color:var(--gold)}
 .modal-close{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:5px 14px;color:var(--muted);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
 .modal-close:hover{border-color:var(--border2);color:var(--gold)}
 .modal-section{display:flex;flex-direction:column;gap:.5rem}
@@ -1009,20 +1009,20 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <button class="pw-cta" onclick="activatePro()">✦ UNLOCK MY FULL STORY ✦</button>
   <button class="pw-dismiss" onclick="document.getElementById('paywall').classList.remove('on')">maybe later</button>
   <div style="text-align:center;margin-top:.6rem">
-    <span onclick="openRestorePurchase()" style="font-family:'Crimson Pro',serif;font-size:11.5px;color:rgba(200,190,220,0.55);font-style:italic;cursor:pointer;text-decoration:underline">Already subscribed? Restore purchase</span>
+    <span onclick="openRestorePurchase()" style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(200,190,220,0.65);font-style:italic;cursor:pointer;text-decoration:underline">Already subscribed? Restore purchase</span>
   </div>
 </div>
 
 <div id="restore-purchase" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.92);z-index:10003;align-items:center;justify-content:center">
   <div style="background:rgba(8,5,22,0.97);border:.5px solid rgba(200,175,255,0.3);border-radius:14px;padding:1.75rem 1.5rem;max-width:340px;width:88%;text-align:center;font-family:'Crimson Pro',serif">
-    <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.12em;color:var(--gold);margin-bottom:.6rem">RESTORE PURCHASE</div>
-    <div style="font-size:12.5px;color:rgba(220,210,240,0.8);margin-bottom:.5rem;line-height:1.5">Enter the email you subscribed with. We'll check with Stripe and restore your Pro access.</div>
-    <div style="font-size:11px;color:rgba(200,190,220,0.5);margin-bottom:1rem;font-style:italic;line-height:1.4">Not sure which one? Search your inbox for a receipt from Stripe, that's the email on file.</div>
-    <input type="email" id="restore-email" placeholder="you@email.com" style="width:100%;box-sizing:border-box;padding:.65rem .75rem;border-radius:8px;border:.5px solid rgba(200,175,255,0.25);background:rgba(200,175,255,0.06);color:rgba(225,215,245,0.92);font-family:'Crimson Pro',serif;font-size:13px;margin-bottom:1rem">
-    <div id="restore-msg" style="font-size:11.5px;margin-bottom:.8rem;display:none"></div>
+    <div style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.12em;color:var(--gold);margin-bottom:.7rem">RESTORE PURCHASE</div>
+    <div style="font-size:15px;color:rgba(220,210,240,0.9);margin-bottom:.6rem;line-height:1.55">Enter the email you subscribed with. We'll check with Stripe and restore your Pro access.</div>
+    <div style="font-size:13px;color:rgba(200,190,220,0.6);margin-bottom:1rem;font-style:italic;line-height:1.5">Not sure which one? Search your inbox for a receipt from Stripe, that's the email on file.</div>
+    <input type="email" id="restore-email" placeholder="you@email.com" style="width:100%;box-sizing:border-box;padding:.7rem .8rem;border-radius:8px;border:.5px solid rgba(200,175,255,0.25);background:rgba(200,175,255,0.06);color:rgba(225,215,245,0.95);font-family:'Crimson Pro',serif;font-size:15px;margin-bottom:1rem">
+    <div id="restore-msg" style="font-size:13.5px;margin-bottom:.8rem;display:none;line-height:1.5"></div>
     <div style="display:flex;gap:10px;justify-content:center">
       <button id="restore-submit-btn" onclick="submitRestorePurchase()" style="background:rgba(210,175,80,0.12);border:.5px solid var(--border2);border-radius:8px;padding:10px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;cursor:pointer">CHECK</button>
-      <button onclick="closeRestorePurchase()" style="background:transparent;border:none;color:rgba(200,190,220,0.6);font-family:'Crimson Pro',serif;font-size:12px;font-style:italic;cursor:pointer">cancel</button>
+      <button onclick="closeRestorePurchase()" style="background:transparent;border:none;color:rgba(200,190,220,0.65);font-family:'Crimson Pro',serif;font-size:14px;font-style:italic;cursor:pointer">cancel</button>
     </div>
   </div>
 </div>
@@ -6100,7 +6100,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
       <div class="faq-q">CARRY MY KAIROS</div>
       <div class="faq-a">Save your journal, dreams, and readings into one file you can bring to your new phone.<br><br>
         <button id="carry-kairos-btn" onclick="exportKairos()" style="margin-top:6px;background:rgba(210,175,80,0.1);border:.5px solid var(--border2);border-radius:8px;padding:9px 16px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">✦ PREPARE MY FILE ✦</button>
-        <div id="carry-kairos-msg" style="font-size:11.5px;margin-top:.6rem;display:none;font-style:italic"></div>
+        <div id="carry-kairos-msg" style="font-size:14px;margin-top:.6rem;display:none;font-style:italic;line-height:1.5"></div>
       </div>
     </div>
     <div class="modal-divider"></div>
@@ -6110,18 +6110,18 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
       <div class="faq-a">On a new phone? Choose the file you saved from your old one to bring your history back.<br><br>
         <button onclick="document.getElementById('restore-kairos-file').click()" style="margin-top:6px;background:rgba(200,175,255,0.1);border:.5px solid rgba(200,175,255,0.4);border-radius:8px;padding:9px 16px;color:rgba(230,220,255,0.95);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">CHOOSE FILE</button>
         <input type="file" id="restore-kairos-file" accept=".json,application/json" style="display:none" onchange="importKairos(event)">
-        <div id="restore-kairos-msg" style="font-size:11.5px;margin-top:.6rem;display:none;font-style:italic"></div>
+        <div id="restore-kairos-msg" style="font-size:14px;margin-top:.6rem;display:none;font-style:italic;line-height:1.5"></div>
       </div>
     </div>
     <div class="modal-divider"></div>
 
     <div class="modal-section" style="text-align:center">
-      <div style="font-family:'Crimson Pro',serif;font-size:11px;color:rgba(200,190,220,0.45);font-style:italic;margin-bottom:.5rem">Have a support code from our team?</div>
-      <div style="display:flex;gap:6px;justify-content:center;max-width:280px;margin:0 auto">
-        <input type="text" id="support-code-input" placeholder="KAI-XXXXXXXX" style="flex:1;box-sizing:border-box;padding:.5rem .6rem;border-radius:6px;border:.5px solid rgba(200,175,255,0.2);background:rgba(200,175,255,0.05);color:rgba(225,215,245,0.85);font-family:'Crimson Pro',serif;font-size:12px;text-transform:uppercase">
-        <button id="support-code-btn" onclick="redeemSupportCode()" style="background:rgba(210,175,80,0.1);border:.5px solid rgba(210,175,80,0.3);border-radius:6px;padding:.5rem .8rem;color:var(--gold);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer">REDEEM</button>
+      <div style="font-family:'Crimson Pro',serif;font-size:13.5px;color:rgba(200,190,220,0.6);font-style:italic;margin-bottom:.6rem">Have a support code from our team?</div>
+      <div style="display:flex;gap:6px;justify-content:center;max-width:300px;margin:0 auto">
+        <input type="text" id="support-code-input" placeholder="KAI-XXXXXXXX" style="flex:1;box-sizing:border-box;padding:.6rem .7rem;border-radius:6px;border:.5px solid rgba(200,175,255,0.2);background:rgba(200,175,255,0.05);color:rgba(225,215,245,0.9);font-family:'Crimson Pro',serif;font-size:14px;text-transform:uppercase">
+        <button id="support-code-btn" onclick="redeemSupportCode()" style="background:rgba(210,175,80,0.1);border:.5px solid rgba(210,175,80,0.3);border-radius:6px;padding:.6rem .9rem;color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;cursor:pointer">REDEEM</button>
       </div>
-      <div id="support-code-msg" style="font-size:11px;margin-top:.5rem;display:none"></div>
+      <div id="support-code-msg" style="font-size:13px;margin-top:.5rem;display:none;line-height:1.5"></div>
     </div>
   </div>
 </div>
