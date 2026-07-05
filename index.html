@@ -6142,6 +6142,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
   <div class="modal-inner">
     <div class="modal-header"><div class="modal-title">🪐 ACCOUNT</div><button class="modal-close" onclick="closeModal('account')">✕ CLOSE</button></div>
 
+    <div id="account-pro-top" style="display:none">
     <div class="modal-section" style="text-align:center">
       <div class="faq-q">YOUR COSMIC NAME</div>
       <div id="cosmic-name-display" style="font-family:'Cinzel',serif;font-size:19px;letter-spacing:.08em;color:var(--gold);margin:.5rem 0;min-height:1.4em">—</div>
@@ -6160,6 +6161,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
       </div>
     </div>
     <div class="modal-divider"></div>
+    </div>
 
     <div class="modal-section">
       <div class="faq-q">RESTORE PURCHASE</div>
@@ -6169,6 +6171,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     </div>
     <div class="modal-divider"></div>
 
+    <div id="account-pro-bottom" style="display:none">
     <div class="modal-section">
       <div class="faq-q">CARRY MY KAIROS</div>
       <div class="faq-a">Save your journal, dreams, and readings into one file you can bring to your new phone.<br><br>
@@ -6187,6 +6190,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
       </div>
     </div>
     <div class="modal-divider"></div>
+    </div>
 
     <div class="modal-section" style="text-align:center">
       <div style="font-family:'Crimson Pro',serif;font-size:13.5px;color:rgba(200,190,220,0.6);font-style:italic;margin-bottom:.6rem">Have a support code from our team?</div>
@@ -6200,7 +6204,17 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
 </div>
 
 <script>
-function openModal(id){document.getElementById('modal-'+id).classList.add('on');document.body.style.overflow='hidden';if(id==='account')loadCosmicName();}
+function openModal(id){
+  document.getElementById('modal-'+id).classList.add('on');
+  document.body.style.overflow='hidden';
+  if(id==='account'){
+    loadCosmicName();
+    const top=document.getElementById('account-pro-top');
+    const bottom=document.getElementById('account-pro-bottom');
+    if(top)top.style.display=APP.isPro?'block':'none';
+    if(bottom)bottom.style.display=APP.isPro?'block':'none';
+  }
+}
 
 async function loadCosmicName(){
   const el=document.getElementById('cosmic-name-display');
