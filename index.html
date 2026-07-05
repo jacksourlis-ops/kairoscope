@@ -4551,7 +4551,15 @@ async function submitRestorePurchase(){
       localStorage.setItem('k_stripe_customer',data.customerId);
       setTier('pro');
       msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';msg.textContent='Pro restored. Welcome back.';
-      setTimeout(()=>{closeRestorePurchase();document.getElementById('paywall').classList.remove('on');location.reload();},1400);
+      try{
+        const nres=await fetch('/api/get-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customerId:data.customerId})});
+        const ndata=await nres.json();
+        if(nres.ok&&ndata.name){
+          localStorage.setItem('k_cosmic_name',ndata.name);
+          msg.textContent='Pro restored. Welcome back, '+ndata.name+'.';
+        }
+      }catch(e){}
+      setTimeout(()=>{closeRestorePurchase();document.getElementById('paywall').classList.remove('on');location.reload();},1800);
     } else {
       msg.style.display='block';msg.style.color='rgba(220,140,140,0.9)';msg.textContent='No active subscription found for that email. Double check your inbox for a Stripe receipt, or email hello@kairoscope.app if you\'re stuck.';
     }
