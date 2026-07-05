@@ -6138,6 +6138,9 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
       <div class="faq-q">YOUR COSMIC NAME</div>
       <div id="cosmic-name-display" style="font-family:'Cinzel',serif;font-size:19px;letter-spacing:.08em;color:var(--gold);margin:.5rem 0;min-height:1.4em">—</div>
       <div style="font-family:'Crimson Pro',serif;font-size:12.5px;color:rgba(200,190,220,0.55);font-style:italic">Yours alone, no one else in Kairoscope shares it. Follows you across every device.</div>
+      <div id="cosmic-name-reroll-wrap" style="margin-top:.7rem;display:none">
+        <span id="cosmic-name-reroll-btn" onclick="rerollCosmicName()" style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,190,220,0.6);font-style:italic;cursor:pointer;text-decoration:underline">Not feeling it? Try again</span>
+      </div>
     </div>
     <div class="modal-divider"></div>
 
@@ -6192,14 +6195,20 @@ function openModal(id){document.getElementById('modal-'+id).classList.add('on');
 
 async function loadCosmicName(){
   const el=document.getElementById('cosmic-name-display');
+  const rerollWrap=document.getElementById('cosmic-name-reroll-wrap');
   if(!el)return;
+  if(rerollWrap)rerollWrap.style.display='none';
   if(!APP.isPro){
     el.textContent='—';
     el.nextElementSibling.textContent='Available once you go Pro.';
     return;
   }
   const cached=localStorage.getItem('k_cosmic_name');
-  if(cached){el.textContent=cached;return;}
+  if(cached){
+    el.textContent=cached;
+    if(rerollWrap)rerollWrap.style.display='block';
+    return;
+  }
   const customerId=localStorage.getItem('k_stripe_customer');
   if(!customerId){
     el.textContent='—';
@@ -6213,6 +6222,7 @@ async function loadCosmicName(){
     if(res.ok&&data.name){
       el.textContent=data.name;
       localStorage.setItem('k_cosmic_name',data.name);
+      if(rerollWrap)rerollWrap.style.display='block';
     } else {
       el.textContent='—';
       el.nextElementSibling.textContent=data.error||'Could not load your name right now.';
@@ -6220,7 +6230,26 @@ async function loadCosmicName(){
   }catch(e){
     el.textContent='—';
     el.nextElementSibling.textContent='Could not load your name right now.';
+
   }
+}
+
+async function rerollCosmicName(){
+  const el=document.getElementById('cosmic-name-display');
+  const btn=document.getElementById('cosmic-name-reroll-btn');
+  const customerId=localStorage.getItem('k_stripe_customer');
+  if(!el||!customerId)return;
+  const prevText=btn?btn.textContent:'';
+  if(btn){btn.textContent='Asking the stars...';btn.style.cursor='default';}
+  try{
+    const res=await fetch('/api/get-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customerId,reroll:true})});
+    const data=await res.json();
+    if(res.ok&&data.name){
+      el.textContent=data.name;
+      localStorage.setItem('k_cosmic_name',data.name);
+    }
+  }catch(e){}
+  if(btn){btn.textContent=prevText;btn.style.cursor='pointer';}
 }
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('on');document.body.style.overflow='';}
 document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('on');document.body.style.overflow='';}});});
