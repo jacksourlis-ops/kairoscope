@@ -3,6 +3,10 @@
 // uniqueness check, same lightweight infrastructure as support codes.
 // Verifies an active Pro subscription before assigning, so this can't be
 // farmed by anyone without a real subscription.
+//
+// Supports an optional reroll: pass { customerId, reroll: true } to
+// release the current name back into the pool and claim a fresh one.
+// Unlimited, no cap, someone can reroll as many times as they want.
 
 const ADJECTIVES = [
   'Lunar','Silver','Celestial','Starlit','Amber','Nova','Cosmic','Velvet',
@@ -17,12 +21,45 @@ const NOUNS = [
   'Stargazer','Owl','Fox','Wolf','Raven','Starling','Voyager','Ghost',
   'Echo','Mirage','Tide','Spark','Whisper','Riddle','Sage','Mystic',
   'Pilgrim','Drifter','Rambler','Firefly','Lantern','Compass','Anchor',
-  'Sailor','Astronaut','Witch','Prophet','Poet','Painter','Dancer',
+  'Sailor','Astronaut','Weaver','Watcher','Poet','Painter','Dancer',
   'Alchemist','Nightingale','Hermit'
 ];
 // 'Moonbeam' is deliberately excluded from this pool. It's reserved
 // separately for a specific account, assigned by hand through the staff
 // panel, never through this random generator.
+
+async function redisCommand(url, token, command) {
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(command)
+  });
+  return r.json();
+}
+
+async function claimNewName(redisUrl, redisToken, customerId, avoid) {
+  let name = null;
+  for (let i = 0; i < 50; i++) {
+    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+    const candidate = `${adj} ${noun}`;
+    if (avoid && candidate.toLowerCase() === avoid.toLowerCase()) continue;
+    const claimData = await redisCommand(redisUrl, redisToken, ['SETNX', `nickname:claimed:${candidate.toLowerCase()}`, customerId]);
+    if (claimData.result === 1) {
+      name = candidate;
+      break;
+    }
+  }
+  // Pool exhausted (extremely unlikely, ~1,600 combinations deep),
+  // fall back to a numbered variant so it can never actually run out.
+  if (!name) {
+    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+    name = `${adj} ${noun} ${Math.floor(Math.random() * 9000) + 1000}`;
+    await redisCommand(redisUrl, redisToken, ['SET', `nickname:claimed:${name.toLowerCase()}`, customerId]);
+  }
+  return name;
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -36,7 +73,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Not configured' });
   }
 
-  const { customerId } = req.body || {};
+  const { customerId, reroll } = req.body || {};
   if (!customerId || typeof customerId !== 'string') {
     return res.status(400).json({ error: 'customerId required' });
   }
@@ -63,55 +100,21 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'No active Pro subscription found for this customer' });
     }
 
-    // Already has a name? Always return the same one, permanently.
-    const existingRes = await fetch(redisUrl, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(['GET', `nickname:by-customer:${customerId}`])
-    });
-    const existing = await existingRes.json();
-    if (existing.result) {
+    const existing = await redisCommand(redisUrl, redisToken, ['GET', `nickname:by-customer:${customerId}`]);
+
+    if (existing.result && !reroll) {
       return res.status(200).json({ name: existing.result, isNew: false });
     }
 
-    // Try to claim a fresh, unique combination. SETNX only succeeds if
-    // the key doesn't already exist, that's what guarantees uniqueness.
-    let name = null;
-    for (let i = 0; i < 50; i++) {
-      const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-      const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-      const candidate = `${adj} ${noun}`;
-      const claimRes = await fetch(redisUrl, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(['SETNX', `nickname:claimed:${candidate.toLowerCase()}`, customerId])
-      });
-      const claimData = await claimRes.json();
-      if (claimData.result === 1) {
-        name = candidate;
-        break;
-      }
+    // If rerolling and they already had a name, release it back to the
+    // pool so someone else can eventually get it.
+    if (reroll && existing.result) {
+      await redisCommand(redisUrl, redisToken, ['DEL', `nickname:claimed:${existing.result.toLowerCase()}`]);
     }
 
-    // Pool exhausted (extremely unlikely, ~1,600 combinations deep),
-    // fall back to a numbered variant so it can never actually run out.
-    if (!name) {
-      const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-      const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-      name = `${adj} ${noun} ${Math.floor(Math.random() * 9000) + 1000}`;
-      await fetch(redisUrl, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(['SET', `nickname:claimed:${name.toLowerCase()}`, customerId])
-      });
-    }
+    const name = await claimNewName(redisUrl, redisToken, customerId, reroll ? existing.result : null);
 
-    // Bind it to this customer permanently, no expiry.
-    await fetch(redisUrl, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${redisToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(['SET', `nickname:by-customer:${customerId}`, name])
-    });
+    await redisCommand(redisUrl, redisToken, ['SET', `nickname:by-customer:${customerId}`, name]);
 
     return res.status(200).json({ name, isNew: true });
   } catch (err) {
