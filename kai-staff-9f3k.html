@@ -42,7 +42,50 @@
   <button id="go" onclick="generate()">Generate Code</button>
 
   <div id="result"></div>
+
+  <hr style="margin:2rem 0;border:none;border-top:1px solid rgba(225,215,245,0.12)">
+
+  <h1 style="font-size:12px">✦ RESERVE A SPECIFIC NAME ✦</h1>
+  <label>Customer ID</label>
+  <input type="text" id="reserve-customer-id" placeholder="cus_...">
+  <label>Name to assign</label>
+  <input type="text" id="reserve-name" placeholder="Moonbeam">
+  <button id="reserve-go" onclick="reserveName()">Reserve Name</button>
+  <div id="reserve-result"></div>
 </div>
+
+<script>
+async function reserveName(){
+  const pw=document.getElementById('pw').value;
+  const customerId=document.getElementById('reserve-customer-id').value.trim();
+  const name=document.getElementById('reserve-name').value.trim();
+  const btn=document.getElementById('reserve-go');
+  const result=document.getElementById('reserve-result');
+  if(!pw){alert('Enter the password');return;}
+  if(!customerId||!name){alert('Enter both a customer ID and a name');return;}
+  btn.disabled=true;btn.textContent='Reserving...';
+  result.className='';result.removeAttribute('style');
+  try{
+    const res=await fetch('/api/reserve-name',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pw,customerId,name})
+    });
+    const data=await res.json();
+    if(!res.ok){
+      result.className='err';
+      result.textContent=data.error||'Something went wrong';
+    } else {
+      result.className='ok';
+      result.textContent='Reserved: '+data.name;
+    }
+  }catch(e){
+    result.className='err';
+    result.textContent='Network error, try again';
+  }
+  btn.disabled=false;btn.textContent='Reserve Name';
+}
+</script>
 
 <script>
 async function generate(){
