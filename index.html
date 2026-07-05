@@ -6148,6 +6148,7 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
       <div style="font-family:'Crimson Pro',serif;font-size:12.5px;color:rgba(200,190,220,0.55);font-style:italic">Yours alone, no one else in Kairoscope shares it. Follows you across every device.</div>
       <div id="cosmic-name-reroll-wrap" style="margin-top:.7rem;display:none">
         <span id="cosmic-name-reroll-btn" onclick="rerollCosmicName()" style="font-family:'Crimson Pro',serif;font-size:13px;color:rgba(200,190,220,0.6);font-style:italic;cursor:pointer;text-decoration:underline">Not feeling it? Try again</span>
+        <div style="margin-top:.4rem"><span onclick="resyncCosmicName()" style="font-family:'Crimson Pro',serif;font-size:11.5px;color:rgba(200,190,220,0.4);font-style:italic;cursor:pointer;text-decoration:underline">Name looks wrong? Resync</span></div>
       </div>
     </div>
     <div class="modal-divider"></div>
@@ -6258,6 +6259,14 @@ async function rerollCosmicName(){
     }
   }catch(e){}
   if(btn){btn.textContent=prevText;btn.style.cursor='pointer';}
+}
+
+async function resyncCosmicName(){
+  const el=document.getElementById('cosmic-name-display');
+  if(!el)return;
+  el.textContent='Checking...';
+  localStorage.removeItem('k_cosmic_name');
+  await loadCosmicName();
 }
 function closeModal(id){document.getElementById('modal-'+id).classList.remove('on');document.body.style.overflow='';}
 document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('on');document.body.style.overflow='';}});});
