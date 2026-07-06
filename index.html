@@ -5545,7 +5545,17 @@ function exportSingleDay(dateKey){
   }
   if(params.get('portal_return')==='true'){
     window.history.replaceState({},'',window.location.pathname);
-    setTimeout(()=>openCancelSurvey(),700);
+    const customerId=localStorage.getItem('k_stripe_customer');
+    if(customerId){
+      fetch('/api/check-subscription',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customerId})})
+        .then(r=>r.json())
+        .then(d=>{
+          if(!d.active){
+            setTimeout(()=>openCancelSurvey(),700);
+          }
+        })
+        .catch(()=>{});
+    }
   }
 })();
 // ============================================================
