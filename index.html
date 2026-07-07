@@ -1035,7 +1035,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
     <div class="pw-feat">Pattern analysis, symbols recurring across your dream journal</div>
     <div class="pw-feat">Export your journal, your story, always yours to keep</div>
   </div>
-  <button class="pw-cta" onclick="activatePro()">✦ UNLOCK MY FULL STORY ✦</button>
+  <button class="pw-cta" id="pw-cta-btn" onclick="activatePro()">✦ UNLOCK MY FULL STORY ✦</button>
   <button class="pw-dismiss" onclick="document.getElementById('paywall').classList.remove('on')">maybe later</button>
   <div style="text-align:center;margin-top:.6rem">
     <span onclick="openRestorePurchase()" style="font-family:'Crimson Pro',serif;font-size:14px;color:rgba(200,190,220,0.65);font-style:italic;cursor:pointer;text-decoration:underline">Already subscribed? Restore purchase</span>
@@ -6050,6 +6050,113 @@ setTimeout(loadBirthData,100);
   }
 })();
 renderActiveRightNow();renderBirthdayBanner();renderWelcomeBackLine();
+
+// ============================================================
+// GOOGLE PLAY BILLING — Digital Goods API purchase flow.
+// Only exists and only runs inside the Android app itself.
+// Never affects iOS, never affects the website.
+// ============================================================
+const PLAY_BILLING_PRODUCT_ID='kairoscope_pro_monthly';
+
+function isAndroidTWA(){
+  return document.referrer.startsWith('android-app://');
+}
+
+function playBillingAvailable(){
+  return 'getDigitalGoodsService' in window;
+}
+
+async function getPlayBillingService(){
+  if(!playBillingAvailable())return null;
+  try{
+    return await window.getDigitalGoodsService('https://play.google.com/billing');
+  }catch(e){
+    return null;
+  }
+}
+
+async function purchaseProViaPlayBilling(){
+  const service=await getPlayBillingService();
+  if(!service){
+    alert('Play Billing is not available on this device. Please try again from the Kairoscope Android app.');
+    return;
+  }
+  const btn=document.getElementById('pw-cta-btn');
+  if(btn){btn.disabled=true;btn.textContent='✦ PREPARING YOUR MOMENT ✦';}
+  try{
+    const paymentMethods=[{supportedMethods:'https://play.google.com/billing',data:{sku:PLAY_BILLING_PRODUCT_ID}}];
+    const paymentDetails={total:{label:'Kairoscope Pro',amount:{currency:'USD',value:'0'}}};
+    const request=new PaymentRequest(paymentMethods,paymentDetails);
+    const response=await request.show();
+    const token=response.details.token;
+    await response.complete('success');
+    await service.acknowledge(token,'repeat');
+
+    const verifyRes=await fetch('/api/verify-play-purchase',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({purchaseToken:token,productId:PLAY_BILLING_PRODUCT_ID})
+    });
+    const verifyData=await verifyRes.json();
+    if(verifyRes.ok&&verifyData.active){
+      localStorage.setItem('k_pro','true');
+      localStorage.setItem('k_play_purchase_token',token);
+      setTier('pro');
+      try{
+        const nres=await fetch('/api/get-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({purchaseToken:token,productId:PLAY_BILLING_PRODUCT_ID})});
+        const ndata=await nres.json();
+        if(nres.ok&&ndata.name)localStorage.setItem('k_cosmic_name',ndata.name);
+      }catch(e){}
+      document.getElementById('paywall').classList.remove('on');
+      location.reload();
+    } else {
+      alert("Your purchase went through but we couldn't confirm it yet. Please reopen the app in a moment, or contact hello@kairoscope.app if it doesn't resolve.");
+    }
+  }catch(e){
+    if(e.name!=='AbortError'){
+      alert('Something went wrong with the purchase. Please try again.');
+    }
+  }
+  if(btn){btn.disabled=false;btn.textContent='✦ UNLOCK MY FULL STORY ✦';}
+}
+
+async function checkExistingPlayPurchase(){
+  if(localStorage.getItem('k_pro')==='true')return;
+  const service=await getPlayBillingService();
+  if(!service)return;
+  try{
+    const purchases=await service.listPurchases();
+    if(purchases&&purchases.length){
+      const token=purchases[0].purchaseToken||purchases[0].token;
+      const verifyRes=await fetch('/api/verify-play-purchase',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({purchaseToken:token,productId:PLAY_BILLING_PRODUCT_ID})
+      });
+      const verifyData=await verifyRes.json();
+      if(verifyRes.ok&&verifyData.active){
+        localStorage.setItem('k_pro','true');
+        localStorage.setItem('k_play_purchase_token',token);
+        setTier('pro');
+        if(!localStorage.getItem('k_cosmic_name')){
+          try{
+            const nres=await fetch('/api/get-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({purchaseToken:token,productId:PLAY_BILLING_PRODUCT_ID})});
+            const ndata=await nres.json();
+            if(nres.ok&&ndata.name)localStorage.setItem('k_cosmic_name',ndata.name);
+          }catch(e){}
+        }
+      }
+    }
+  }catch(e){}
+}
+
+(function(){
+  if(isAndroidTWA()){
+    const btn=document.getElementById('pw-cta-btn');
+    if(btn)btn.onclick=purchaseProViaPlayBilling;
+    checkExistingPlayPurchase();
+  }
+})();
 function renderWelcomeBackLine(){
   const el=document.getElementById('welcome-back-line');
   if(!el)return;
