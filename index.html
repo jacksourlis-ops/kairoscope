@@ -6344,12 +6344,27 @@ async function loadCosmicName(){
     return;
   }
   const cached=localStorage.getItem('k_cosmic_name');
+  const customerId=localStorage.getItem('k_stripe_customer');
+
   if(cached){
     el.textContent=cached;
     if(rerollWrap)rerollWrap.style.display=localStorage.getItem('k_cosmic_name_confirmed')?'none':'block';
+    // Show the cached name instantly, but always quietly double check
+    // with the server in the background. If staff ever reassign a name
+    // (like a reserved one), this self-corrects automatically, no
+    // manual clearing or console commands ever needed.
+    if(customerId){
+      try{
+        const res=await fetch('/api/get-nickname',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customerId})});
+        const data=await res.json();
+        if(res.ok&&data.name&&data.name!==cached){
+          el.textContent=data.name;
+          localStorage.setItem('k_cosmic_name',data.name);
+        }
+      }catch(e){}
+    }
     return;
   }
-  const customerId=localStorage.getItem('k_stripe_customer');
   if(!customerId){
     el.textContent='—';
     el.nextElementSibling.textContent='Restore your purchase first to claim your name.';
