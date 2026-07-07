@@ -1,8 +1,7 @@
 // api/reserve-name.js — Password-protected. Manually assigns a specific
-// name to a specific customer ID, bypassing the random pool entirely.
+// name to a specific Stripe customer, bypassing the random pool entirely.
 // Used for reserved names like "Moonbeam" that should never be handed
-// out automatically. Releases the customer's current name (if any) and
-// the target name's current claim (if any) before reassigning.
+// out automatically.
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -23,6 +22,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'customerId and name are both required' });
   }
 
+  const identityKey = `stripe_${customerId}`;
+
   async function redisCommand(command) {
     const r = await fetch(redisUrl, {
       method: 'POST',
@@ -33,18 +34,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Release this customer's current name, if they have one.
-    const existing = await redisCommand(['GET', `nickname:by-customer:${customerId}`]);
+    const existing = await redisCommand(['GET', `nickname:by-customer:${identityKey}`]);
     if (existing.result) {
       await redisCommand(['DEL', `nickname:claimed:${existing.result.toLowerCase()}`]);
     }
 
-    // Release the target name from whoever (if anyone) currently holds it.
     await redisCommand(['DEL', `nickname:claimed:${name.toLowerCase()}`]);
-
-    // Assign it.
-    await redisCommand(['SET', `nickname:claimed:${name.toLowerCase()}`, customerId]);
-    await redisCommand(['SET', `nickname:by-customer:${customerId}`, name]);
+    await redisCommand(['SET', `nickname:claimed:${name.toLowerCase()}`, identityKey]);
+    await redisCommand(['SET', `nickname:by-customer:${identityKey}`, name]);
 
     return res.status(200).json({ ok: true, name });
   } catch (err) {
