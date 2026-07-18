@@ -6067,10 +6067,42 @@ function playBillingAvailable(){
 }
 
 async function getPlayBillingService(){
-  if(!playBillingAvailable())return null;
+
+  console.log("===== PLAY BILLING DEBUG =====");
+
+  console.log("document.referrer:", document.referrer);
+  console.log("userAgent:", navigator.userAgent);
+  console.log("getDigitalGoodsService:", window.getDigitalGoodsService);
+
+  if(!playBillingAvailable()){
+    alert(
+      "Digital Goods API is NOT available.\n\n" +
+      "Referrer:\n" + document.referrer + "\n\n" +
+      "User Agent:\n" + navigator.userAgent
+    );
+    return null;
+  }
+
   try{
-    return await window.getDigitalGoodsService('https://play.google.com/billing');
+
+    const service = await window.getDigitalGoodsService(
+      "https://play.google.com/billing"
+    );
+
+    console.log("Billing service acquired:", service);
+
+    return service;
+
   }catch(e){
+
+    console.error("Digital Goods Error:", e);
+
+    alert(
+      "Digital Goods API failed.\n\n" +
+      "Name: " + (e.name || "Unknown") + "\n\n" +
+      "Message: " + (e.message || "No message")
+    );
+
     return null;
   }
 }
