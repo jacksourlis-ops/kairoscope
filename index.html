@@ -6067,13 +6067,6 @@ function playBillingAvailable(){
 }
 
 async function getPlayBillingService(){
-
-  console.log("===== PLAY BILLING DEBUG =====");
-
-  console.log("document.referrer:", document.referrer);
-  console.log("userAgent:", navigator.userAgent);
-  console.log("getDigitalGoodsService:", window.getDigitalGoodsService);
-
   if(!playBillingAvailable()){
     alert(
       "Digital Goods API is NOT available.\n\n" +
@@ -6082,6 +6075,33 @@ async function getPlayBillingService(){
     );
     return null;
   }
+
+  try{
+    const service = await window.getDigitalGoodsService(
+      "https://play.google.com/billing"
+    );
+
+    if(!service){
+      alert(
+        "Digital Goods service resolved to NULL.\n\n" +
+        "Referrer:\n" + document.referrer + "\n\n" +
+        "User Agent:\n" + navigator.userAgent
+      );
+      return null;
+    }
+
+    return service;
+
+  }catch(e){
+    alert(
+      "Digital Goods API failed.\n\n" +
+      "Name: " + (e.name || "Unknown") + "\n\n" +
+      "Message: " + (e.message || "No message") + "\n\n" +
+      "Referrer:\n" + document.referrer
+    );
+    return null;
+  }
+}
 
   try{
 
