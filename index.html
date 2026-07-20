@@ -6101,31 +6101,7 @@ async function getPlayBillingService(){
     );
     return null;
   }
-}
 
-  try{
-
-    const service = await window.getDigitalGoodsService(
-      "https://play.google.com/billing"
-    );
-
-    console.log("Billing service acquired:", service);
-
-    return service;
-
-  }catch(e){
-
-    console.error("Digital Goods Error:", e);
-
-    alert(
-      "Digital Goods API failed.\n\n" +
-      "Name: " + (e.name || "Unknown") + "\n\n" +
-      "Message: " + (e.message || "No message")
-    );
-
-    return null;
-  }
-}
 
 async function purchaseProViaPlayBilling(){
   const service=await getPlayBillingService();
