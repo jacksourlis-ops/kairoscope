@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "app.kairoscope.www",
       "sha256_cert_fingerprints": [
-        "6F:7B:28:74:61:F9:2E:72:89:FE:7A:BF:63:D0:5A:77:10:32:45:BD:D0:B2:9E:F3:3F:34:48:CA:9A:A0:BF:1F"
+        "6F:7B:28:74:61:F9:2E:72:89:FE:7A:BF:63:D0:5A:77:10:32:45:BD:D0:B2:9E:F3:3F:34:48:CA:9A:A0:BF:1F",
+        "F2:21:CA:D0:BF:13:C4:0A:66:0F:01:D8:00:91:B9:F1:FB:A5:AA:43:46:50:03:66:B8:86:B9:13:68:14:69:4D"
       ]
     }
   }
