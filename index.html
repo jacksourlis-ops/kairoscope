@@ -472,6 +472,85 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .modal-divider{height:.5px;background:var(--border)}
 .faq-q{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
 .faq-a{font-family:'Crimson Pro',serif;font-size:15px;color:var(--text2);line-height:1.75}
+/* DESKTOP LANDING PAGE */
+#desktop-landing {
+display: none;
+position: fixed;
+top: 0; left: 0;
+width: 100vw; height: 100vh;
+background: #03020d;
+z-index: 9999;
+align-items: center;
+justify-content: center;
+}
+#desktop-starfield {
+position: absolute;
+top: 0; left: 0;
+width: 100%; height: 100%;
+}
+.landing-content {
+position: relative;
+z-index: 1;
+text-align: center;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 1.5rem;
+}
+.landing-logo {
+width: 120px;
+height: 120px;
+object-fit: contain;
+}
+.landing-title {
+font-family: 'Cinzel', serif;
+font-size: clamp(2rem, 5vw, 4rem);
+letter-spacing: .35em;
+color: #c8af50;
+margin: 0;
+font-weight: 400;
+}
+.landing-tagline {
+font-family: 'Crimson Pro', serif;
+font-size: clamp(1rem, 2vw, 1.4rem);
+font-style: italic;
+color: rgba(200,175,255,0.7);
+letter-spacing: .15em;
+margin: 0;
+}
+.landing-badges {
+display: flex;
+gap: 1.5rem;
+align-items: center;
+flex-wrap: wrap;
+justify-content: center;
+margin-top: 1rem;
+}
+.badge-link { display: block; }
+.badge-google { height: 60px; }
+.badge-apple-wrap {
+position: relative;
+display: inline-block;
+}
+.badge-apple {
+height: 42px;
+filter: grayscale(1) opacity(0.35);
+display: block;
+}
+.badge-coming-soon {
+position: absolute;
+top: 50%; left: 50%;
+transform: translate(-50%, -50%);
+font-family: 'Cinzel', serif;
+font-size: 9px;
+letter-spacing: .12em;
+color: rgba(200,175,255,0.6);
+white-space: nowrap;
+pointer-events: none;
+}
+@media (min-width: 768px) {
+#desktop-landing { display: flex; }
+}
 </style>
 
   <!-- PWA -->
@@ -484,6 +563,23 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
   <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
+   <div id="desktop-landing">
+<canvas id="desktop-starfield"></canvas>
+<div class="landing-content">
+<img src="/icon-192.png" alt="Kairoscope" class="landing-logo">
+<h1 class="landing-title">KAIROSCOPE</h1>
+<p class="landing-tagline">See Your Moment</p>
+<div class="landing-badges">
+<a href="https://play.google.com/store/apps/details?id=app.kairoscope.www" target="_blank" class="badge-link">
+<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" class="badge-google">
+</a>
+<div class="badge-apple-wrap">
+<img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="Download on the App Store" class="badge-apple">
+<div class="badge-coming-soon">Coming Soon</div>
+</div>
+</div>
+</div>
+</div>
 <canvas id="starfield"></canvas>
 
 <div class="moon-banner" id="moon-banner">
