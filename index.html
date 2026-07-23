@@ -1302,7 +1302,7 @@ function stripMarkdown(text){
 function parseStructuredReading(text){
   text=stripMarkdown(text);
   const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
-  const LABELS=['COSMIC THEME','LOVE','CAREER','MONEY','LUCK','KEY TAKEAWAYS'];
+  const LABELS=['COSMIC THEME','LOVE & RELATIONSHIPS','CAREER & BUSINESS','HEALTH & WELLNESS','MONEY & FINANCES','TRAVEL & LUCK','HOME & FAMILY','FRIENDSHIPS & GOALS','KEY TAKEAWAYS'];
   const pattern=new RegExp('(?:^|\\n)('+LABELS.join('|')+'):\\s*','g');
   const matches=[...text.matchAll(pattern)];
   if(matches.length>=3){
@@ -1332,13 +1332,25 @@ function showStructuredResult(box,icon,title,sub,text,lockMsg){
   const s=parseStructuredReading(text);
   let bodyHtml;
   if(s&&s.structured){
+    const SECTION_ICONS={
+      'LOVE & RELATIONSHIPS':'\u2661',
+      'CAREER & BUSINESS':'\ud83d\udcbc',
+      'HEALTH & WELLNESS':'\u2727',
+      'MONEY & FINANCES':'\u2726',
+      'TRAVEL & LUCK':'\u2708',
+      'HOME & FAMILY':'\ud83c\udfe0',
+      'FRIENDSHIPS & GOALS':'\ud83e\udd1d',
+      'KEY TAKEAWAYS':'\u25c8'
+    };
     const sh=s.sections.map(sec=>{
+      const ic=SECTION_ICONS[sec.label];
+      const labelHtml=ic?`${ic} ${sec.label}`:sec.label;
       if(sec.label==='KEY TAKEAWAYS'){
         const items=sec.text.split(/\n+/).map(l=>l.trim()).filter(l=>l.length>0);
         const li=items.map(it=>`<li>${it}</li>`).join('');
-        return `<div class="rs-section rs-takeaways"><div class="rs-label">${sec.label}</div><ul class="rs-bullet-list">${li}</ul></div>`;
+        return `<div class="rs-section rs-takeaways"><div class="rs-label">${labelHtml}</div><ul class="rs-bullet-list">${li}</ul></div>`;
       }
-      return `<div class="rs-section"><div class="rs-label">${sec.label}</div><div class="rs-text">${sec.text}</div></div>`;
+      return `<div class="rs-section"><div class="rs-label">${labelHtml}</div><div class="rs-text">${sec.text}</div></div>`;
     }).join('');
     bodyHtml=`<div class="reading-sections">${sh}</div>`;
   }else if(s&&s.sections.length>=2){
@@ -5485,7 +5497,7 @@ function buildChartCtx(){
 const SYSTEMS={
   h:`You are Kairoscope, a master astrologer and poetic cosmic guide with deep knowledge of traditional and modern astrology. You will be given the user's zodiac sign, current planetary positions, active transits, moon phase, and natal chart if available.
 
-Write a horoscope reading that a serious astrology devotee would find genuinely insightful, and that a newcomer would still find clear and easy to read. Use REAL astrological technique:
+Write a horoscope reading with real depth, the kind a serious astrology devotee returns to daily, not a shallow surface-level blurb. Use REAL astrological technique throughout every section:
 - Reference specific planets by name and their current signs
 - Mention actual aspects (conjunctions, trines, squares, oppositions, sextiles) and what they mean
 - Speak to the element (Fire/Earth/Air/Water) and modality (Cardinal/Fixed/Mutable) of the sign
@@ -5493,32 +5505,41 @@ Write a horoscope reading that a serious astrology devotee would find genuinely 
 - Mention the moon phase and its emotional tone
 - If retrograde planets are present, address their influence
 - If natal chart is provided, speak to how current transits are activating their personal planets
+- In each life-area section, ground the insight in the correct astrological house for that area
 
-Your voice is lyrical, intimate, and profound, never generic. Gender-neutral. No cliches like "the universe is sending you a message." Each life-area section should be clear and grounded, give the person something concrete to notice or act on, not just abstract poetry.
+Your voice is lyrical, intimate, and profound, never generic. Gender-neutral. No cliches like "the universe is sending you a message." Every section should feel like it was written specifically for this moment and this sign, grounded in real technique, not interchangeable filler.
 
 CRITICAL FORMATTING RULES:
-- NO markdown whatsoever. No ##, no **, no *, no --, no bullet symbols like bullet or dash-as-bullet.
+- NO markdown whatsoever. No ##, no **, no *, no --, no bullet symbols.
 - Do not use em dashes anywhere in your writing. Use a comma, period, or colon instead.
 - Use PLAIN TEXT only.
 - Section labels must be written exactly as shown below, in plain uppercase, followed by a colon and space, each starting on its own line.
-- LOVE, CAREER, MONEY, and LUCK must each be 2 to 3 sentences.
-- KEY TAKEAWAYS must be exactly 3 to 4 short bullet lines, each starting with a hyphen and a space, one clear insight per line, no more than 14 words each.
+- COSMIC THEME is a full paragraph of 3-4 sentences, the astrological scene of this exact moment, not just a single sentence teaser.
+- Each of the seven life-area sections below must be 3 to 4 sentences with real depth and specific astrological reasoning grounded in that section's house, not a short generic blurb.
+- KEY TAKEAWAYS must be exactly 4 to 5 short bullet lines, each starting with a hyphen and a space, one clear and specific actionable insight per line, no more than 16 words each.
 
 Structure EXACTLY like this, in this order:
-COSMIC THEME: [One powerful sentence, the single astrological truth of this moment]
+COSMIC THEME: [3-4 sentences, the astrological scene of this moment]
 
-LOVE: [2-3 sentences on relationships and connection right now]
+LOVE & RELATIONSHIPS: [3-4 sentences, romance, dating and partnership, grounded in the 5th and 7th houses]
 
-CAREER: [2-3 sentences on work, ambition, and direction right now]
+CAREER & BUSINESS: [3-4 sentences, professional life, ambition and reputation, grounded in the 10th house]
 
-MONEY: [2-3 sentences on finances, resources, and material matters right now]
+HEALTH & WELLNESS: [3-4 sentences, physical and mental wellbeing, routines and daily habits, grounded in the 6th house]
 
-LUCK: [2-3 sentences on fortunate timing, opportunities, or where ease is available right now]
+MONEY & FINANCES: [3-4 sentences, income, wealth and material resources, grounded in the 2nd house]
+
+TRAVEL & LUCK: [3-4 sentences, philosophy, higher learning, long-distance travel and fortunate timing, grounded in the 9th house]
+
+HOME & FAMILY: [3-4 sentences, domestic life and emotional foundations, grounded in the 4th house]
+
+FRIENDSHIPS & GOALS: [3-4 sentences, social circles, community and long-term aspirations, grounded in the 11th house]
 
 KEY TAKEAWAYS:
-- [short, specific insight]
-- [short, specific insight]
-- [short, specific insight]`,
+- [specific, actionable insight]
+- [specific, actionable insight]
+- [specific, actionable insight]
+- [specific, actionable insight]`,
 
   d:`You are Kairoscope, a depth psychologist and dream analyst with knowledge of Jungian archetypes, mythological symbolism, and the unconscious. Interpret the dream weaving symbol analysis, emotional undercurrents, and what psychological threshold the dreamer stands at. Reference the archetypal energy of each symbol. Connect to their astrological nature if provided. End with one quiet question for reflection. 4-5 paragraphs. Poetic, intelligent, gender-neutral. NO markdown, no ##, no **, no bullet points. Plain text only. Do not use em dashes anywhere, use a comma or period instead.`,
 
@@ -5536,7 +5557,7 @@ async function callAI(prompt,system){
   const res=await fetch('/api/chat',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system,messages:[{role:'user',content:prompt}]})
+    body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1600,system,messages:[{role:'user',content:prompt}]})
   });
   const data=await res.json();
   if(data.error)throw new Error(data.error.message);
