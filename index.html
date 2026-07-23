@@ -259,6 +259,11 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .rs-expand:hover{border-color:var(--border2);color:var(--gold)}
 .rs-full{display:none;margin-top:8px;font-family:'Crimson Pro',serif;font-size:15px;color:var(--text);line-height:1.88}
 .rs-full.on{display:block;animation:fadeup .3s ease}
+.rs-bullet-list{list-style:none;padding:0;margin:4px 0 0;display:flex;flex-direction:column;gap:6px}
+.rs-bullet-list li{font-family:'Crimson Pro',serif;font-size:15px;color:var(--text);line-height:1.6;padding-left:1.1em;position:relative}
+.rs-bullet-list li::before{content:'\25c8';position:absolute;left:0;top:.15em;color:var(--gold);font-size:10px}
+.rs-takeaways{background:rgba(210,175,80,0.06);border-color:rgba(210,175,80,0.25)}
+.rs-takeaways .rs-label{color:var(--gold)}
 .example-dreams{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.5rem}
 .dream-example{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;font-style:italic}
 .dream-example:hover{border-color:var(--border2);color:var(--gold)}
@@ -1297,6 +1302,20 @@ function stripMarkdown(text){
 function parseStructuredReading(text){
   text=stripMarkdown(text);
   const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
+  const LABELS=['COSMIC THEME','LOVE','CAREER','MONEY','LUCK','KEY TAKEAWAYS'];
+  const pattern=new RegExp('(?:^|\\n)('+LABELS.join('|')+'):\\s*','g');
+  const matches=[...text.matchAll(pattern)];
+  if(matches.length>=3){
+    const sections=[];
+    for(let i=0;i<matches.length;i++){
+      const label=matches[i][1];
+      const start=matches[i].index+matches[i][0].length;
+      const end=i+1<matches.length?matches[i+1].index:text.length;
+      const chunk=text.slice(start,end).trim();
+      sections.push({label,text:chunk});
+    }
+    return{sections,full:text,structured:true};
+  }
   const paragraphs=text.split(/\n\n+/).filter(p=>p.trim().length>20);
   if(paragraphs.length<2)return null;
   const sections=[];
@@ -1304,7 +1323,7 @@ function parseStructuredReading(text){
   if(m)sections.push({label:T.cosmicTheme||'COSMIC THEME',text:m[1].trim()});
   if(paragraphs.length>1)sections.push({label:T.focus||'FOCUS',text:paragraphs[1].trim().slice(0,180)+(paragraphs[1].length>180?'...':'')});
   if(paragraphs.length>2)sections.push({label:T.guidance||'GUIDANCE',text:paragraphs[2].trim().slice(0,180)+(paragraphs[2].length>180?'...':'')});
-  return{sections,full:text};
+  return{sections,full:text,structured:false};
 }
 function showStructuredResult(box,icon,title,sub,text,lockMsg){
   box.classList.add('on');
@@ -1312,18 +1331,35 @@ function showStructuredResult(box,icon,title,sub,text,lockMsg){
   const lockHtml=lockMsg?`<div class="reading-lock">${lockMsg}</div>`:'';
   const s=parseStructuredReading(text);
   let bodyHtml;
-  if(s&&s.sections.length>=2){
+  if(s&&s.structured){
+    const sh=s.sections.map(sec=>{
+      if(sec.label==='KEY TAKEAWAYS'){
+        const items=sec.text.split(/\n+/).map(l=>l.trim()).filter(l=>l.length>0);
+        const li=items.map(it=>`<li>${it}</li>`).join('');
+        return `<div class="rs-section rs-takeaways"><div class="rs-label">${sec.label}</div><ul class="rs-bullet-list">${li}</ul></div>`;
+      }
+      return `<div class="rs-section"><div class="rs-label">${sec.label}</div><div class="rs-text">${sec.text}</div></div>`;
+    }).join('');
+    bodyHtml=`<div class="reading-sections">${sh}</div>`;
+  }else if(s&&s.sections.length>=2){
     const sh=s.sections.map(sec=>`<div class="rs-section"><div class="rs-label">${sec.label}</div><div class="rs-text">${sec.text}</div></div>`).join('');
-    const expandLbl=T.readFullReading||'↓ READ FULL READING';
-    const collapseLbl=T.collapse||'↑ COLLAPSE';
+    const expandLbl=T.readFullReading||'\u2193 READ FULL READING';
+    const collapseLbl=T.collapse||'\u2191 COLLAPSE';
     bodyHtml=`<div class="reading-sections">${sh}</div><button class="rs-expand" onclick="this.nextElementSibling.classList.toggle('on');this.textContent=this.nextElementSibling.classList.contains('on')?'${collapseLbl}':'${expandLbl}'">${expandLbl}</button><div class="rs-full"></div>`;
   }else{bodyHtml=`<div class="rbody"></div>`;}
-  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">· · ·</div>${bodyHtml}<div class="divider"></div>${lockHtml}`;
+  box.innerHTML=`<div class="rhead"><div class="ricon">${icon}</div><div><div class="rtitle">${title}</div><div class="rsub">${sub}</div></div></div><div class="orn">\u00b7 \u00b7 \u00b7</div>${bodyHtml}<div class="divider"></div>${lockHtml}`;
   chimeSound();
-  if(s&&s.sections.length>=2){const rf=box.querySelector('.rs-full');if(rf)revealWords(rf,text);box.querySelectorAll('.rs-text').forEach((el,i)=>{if(s.sections[i])el.textContent=s.sections[i].text;});}
-  else{revealWords(box.querySelector('.rbody'),text);}
+  if(s&&s.structured){
+    // fully rendered already, nothing further needed
+  }else if(s&&s.sections.length>=2){
+    const rf=box.querySelector('.rs-full');if(rf)revealWords(rf,text);
+    box.querySelectorAll('.rs-text').forEach((el,i)=>{if(s.sections[i])el.textContent=s.sections[i].text;});
+  }else{
+    revealWords(box.querySelector('.rbody'),text);
+  }
   box.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+
 function updatePaywallStats(){
   const r=parseInt(localStorage.getItem('k_readings_count')||'0');
   const d=getDreams().length;
@@ -5449,7 +5485,7 @@ function buildChartCtx(){
 const SYSTEMS={
   h:`You are Kairoscope, a master astrologer and poetic cosmic guide with deep knowledge of traditional and modern astrology. You will be given the user's zodiac sign, current planetary positions, active transits, moon phase, and natal chart if available.
 
-Write a horoscope reading that a serious astrology devotee would find genuinely insightful. Use REAL astrological technique:
+Write a horoscope reading that a serious astrology devotee would find genuinely insightful, and that a newcomer would still find clear and easy to read. Use REAL astrological technique:
 - Reference specific planets by name and their current signs
 - Mention actual aspects (conjunctions, trines, squares, oppositions, sextiles) and what they mean
 - Speak to the element (Fire/Earth/Air/Water) and modality (Cardinal/Fixed/Mutable) of the sign
@@ -5458,22 +5494,31 @@ Write a horoscope reading that a serious astrology devotee would find genuinely 
 - If retrograde planets are present, address their influence
 - If natal chart is provided, speak to how current transits are activating their personal planets
 
-Your voice is lyrical, intimate, and profound, never generic. Gender-neutral. No clichés like "the universe is sending you a message." 4-5 rich paragraphs.
+Your voice is lyrical, intimate, and profound, never generic. Gender-neutral. No cliches like "the universe is sending you a message." Each life-area section should be clear and grounded, give the person something concrete to notice or act on, not just abstract poetry.
 
 CRITICAL FORMATTING RULES:
-- NO markdown whatsoever. No ##, no **, no *, no --, no bullet points.
+- NO markdown whatsoever. No ##, no **, no *, no --, no bullet symbols like bullet or dash-as-bullet.
 - Do not use em dashes anywhere in your writing. Use a comma, period, or colon instead.
 - Use PLAIN TEXT only.
-- Section labels must be written exactly as shown, in plain uppercase, followed by a colon and space.
+- Section labels must be written exactly as shown below, in plain uppercase, followed by a colon and space, each starting on its own line.
+- LOVE, CAREER, MONEY, and LUCK must each be 2 to 3 sentences.
+- KEY TAKEAWAYS must be exactly 3 to 4 short bullet lines, each starting with a hyphen and a space, one clear insight per line, no more than 14 words each.
 
-Structure EXACTLY like this:
+Structure EXACTLY like this, in this order:
 COSMIC THEME: [One powerful sentence, the single astrological truth of this moment]
 
-FOCUS: [2-3 sentences, the primary planetary influence and what it activates]
+LOVE: [2-3 sentences on relationships and connection right now]
 
-GUIDANCE: [2-3 sentences, specific wisdom drawn from the aspects and houses]
+CAREER: [2-3 sentences on work, ambition, and direction right now]
 
-FULL READING: [4-5 rich paragraphs weaving all planetary influences into a full narrative, deeply personal, technically grounded, poetically expressed]`,
+MONEY: [2-3 sentences on finances, resources, and material matters right now]
+
+LUCK: [2-3 sentences on fortunate timing, opportunities, or where ease is available right now]
+
+KEY TAKEAWAYS:
+- [short, specific insight]
+- [short, specific insight]
+- [short, specific insight]`,
 
   d:`You are Kairoscope, a depth psychologist and dream analyst with knowledge of Jungian archetypes, mythological symbolism, and the unconscious. Interpret the dream weaving symbol analysis, emotional undercurrents, and what psychological threshold the dreamer stands at. Reference the archetypal energy of each symbol. Connect to their astrological nature if provided. End with one quiet question for reflection. 4-5 paragraphs. Poetic, intelligent, gender-neutral. NO markdown, no ##, no **, no bullet points. Plain text only. Do not use em dashes anywhere, use a comma or period instead.`,
 
