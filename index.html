@@ -6766,5 +6766,42 @@ if('serviceWorker' in navigator){
   }
 })();
 </script>
+<script>
+(function(){
+const canvas = document.getElementById('desktop-starfield');
+if(!canvas) return;
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resize(){
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
+function init(){
+resize();
+stars = Array.from({length:200}, () => ({
+x: Math.random() * canvas.width,
+y: Math.random() * canvas.height,
+r: Math.random() * 1.2 + 0.3,
+o: Math.random(),
+d: (Math.random() - 0.5) * 0.008
+}));
+}
+function draw(){
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+stars.forEach(s => {
+s.o += s.d;
+if(s.o <= 0 || s.o >= 1) s.d *= -1;
+ctx.beginPath();
+ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+ctx.fillStyle = `rgba(200,185,255,${s.o})`;
+ctx.fill();
+});
+requestAnimationFrame(draw);
+}
+window.addEventListener('resize', resize);
+init();
+draw();
+})();
+</script>
 </body>
 </html>
