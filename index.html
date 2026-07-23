@@ -6834,6 +6834,8 @@ ctx.clearRect(0, 0, canvas.width, canvas.height);
 stars.forEach(s => {
 s.o += s.d;
 if(s.o <= 0 || s.o >= 1) s.d *= -1;
+s.y += s.vy;
+if(s.y > canvas.height) s.y = 0;
 ctx.beginPath();
 ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
 ctx.fillStyle = `rgba(200,185,255,${s.o})`;
