@@ -658,6 +658,88 @@ letter-spacing: .05em;
 })();
 </script>
 
+<script>
+(function(){
+  var OVERLAY_IDS=['dream-entry-overlay','kairos-day-modal','wish-screen','dream-dictionary-screen','journal-screen','sleep-screen','conn-screen','tutorial-screen','restore-purchase','cancel-survey'];
+
+  function isVisible(el){
+    return el.classList.contains('on') || window.getComputedStyle(el).display!=='none';
+  }
+
+  function getOpenOverlays(){
+    var open=[];
+    OVERLAY_IDS.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el && isVisible(el)) open.push(el);
+    });
+    document.querySelectorAll('.modal-overlay.on').forEach(function(el){ open.push(el); });
+    var pw=document.getElementById('paywall');
+    if(pw && pw.classList.contains('on')) open.push(pw);
+    return open;
+  }
+
+  function closeTopOverlay(el){
+    if(!el) return;
+    var id=el.id;
+    var closers={
+      'journal-screen':function(){ if(typeof closeJournal==='function') closeJournal(); },
+      'dream-dictionary-screen':function(){ if(typeof closeDreamDictionary==='function') closeDreamDictionary(); },
+      'wish-screen':function(){ if(typeof closeWishScreen==='function') closeWishScreen(); },
+      'sleep-screen':function(){ if(typeof closeSleep==='function') closeSleep(); },
+      'conn-screen':function(){ if(typeof closeConnections==='function') closeConnections(); },
+      'tutorial-screen':function(){ if(typeof closeTutorial==='function') closeTutorial(); },
+      'restore-purchase':function(){ if(typeof closeRestorePurchase==='function') closeRestorePurchase(); },
+      'cancel-survey':function(){ if(typeof closeCancelSurvey==='function') closeCancelSurvey(); },
+      'dream-entry-overlay':function(){ if(typeof closeDreamEntry==='function') closeDreamEntry(); },
+      'kairos-day-modal':function(){ el.remove(); },
+      'paywall':function(){ el.classList.remove('on'); }
+    };
+    if(closers[id]){ closers[id](); return; }
+    if(el.classList.contains('modal-overlay')){
+      var modalId=id.replace(/^modal-/,'');
+      if(typeof closeModal==='function'){ closeModal(modalId); return; }
+    }
+    el.classList.remove('on');
+    el.style.display='none';
+  }
+
+  var trackedCount=0;
+  var suppressSync=false;
+
+  function syncHistory(){
+    if(suppressSync) return;
+    var openNow=getOpenOverlays().length;
+    if(openNow>trackedCount){
+      trackedCount++;
+      history.pushState({kairoscopeOverlay:true},'',location.href);
+    } else if(openNow<trackedCount){
+      trackedCount--;
+      suppressSync=true;
+      history.back();
+      setTimeout(function(){ suppressSync=false; },60);
+    }
+  }
+
+  window.addEventListener('popstate',function(){
+    var open=getOpenOverlays();
+    if(open.length>0){
+      suppressSync=true;
+      closeTopOverlay(open[open.length-1]);
+      trackedCount=Math.max(0,open.length-1);
+      setTimeout(function(){ suppressSync=false; },60);
+    } else {
+      trackedCount=0;
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var observer=new MutationObserver(syncHistory);
+    observer.observe(document.body,{attributes:true,attributeFilter:['style','class'],subtree:true,childList:true});
+    syncHistory();
+  });
+})();
+</script>
+
 <div class="wrap">
   <div class="site-header">
     <div class="logo-wrap">
