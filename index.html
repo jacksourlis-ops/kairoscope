@@ -720,7 +720,7 @@ letter-spacing: .05em;
     }
   }
 
-  window.addEventListener('popstate',function(){
+  window.addEventListener('popstate',function(e){
     var open=getOpenOverlays();
     if(open.length>0){
       suppressSync=true;
@@ -729,6 +729,9 @@ letter-spacing: .05em;
       setTimeout(function(){ suppressSync=false; },60);
     } else {
       trackedCount=0;
+      if(e.state && e.state.kairoscopeTab && typeof switchTab==='function'){
+        switchTab(e.state.kairoscopeTab,null,true);
+      }
     }
   });
 
@@ -805,9 +808,9 @@ letter-spacing: .05em;
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab on" onclick="switchTab('h',this)"><span class="tab-icon">☽</span><span class="tab-lbl">HOROSCOPE</span></button>
-    <button class="tab" onclick="switchTab('d',this)"><span class="tab-icon">💭</span><span class="tab-lbl">DREAM</span></button>
-    <button class="tab" onclick="switchTab('j',this)"><span class="tab-icon">◎</span><span class="tab-lbl">JOURNAL</span></button>
+    <button class="tab on" id="tab-btn-h" onclick="switchTab('h',this)"><span class="tab-icon">☽</span><span class="tab-lbl">HOROSCOPE</span></button>
+    <button class="tab" id="tab-btn-d" onclick="switchTab('d',this)"><span class="tab-icon">💭</span><span class="tab-lbl">DREAM</span></button>
+    <button class="tab" id="tab-btn-j" onclick="switchTab('j',this)"><span class="tab-icon">◎</span><span class="tab-lbl">JOURNAL</span></button>
   </div>
 
   <!-- HOROSCOPE -->
@@ -5381,12 +5384,20 @@ renderWishStarsIndicator();
 const __dictLockInit=document.getElementById('dict-btn-lock');
 if(__dictLockInit) __dictLockInit.style.display = APP.isPro ? 'none' : 'flex';
 
-function switchTab(id,el){
+var CURRENT_TAB='h';
+function switchTab(id,el,fromPop){
+  if(!el) el=document.getElementById('tab-btn-'+id);
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  el.classList.add('on');document.getElementById('panel-'+id).classList.add('on');
+  if(el) el.classList.add('on');
+  document.getElementById('panel-'+id).classList.add('on');
   if(id==='j')refreshJournal();
+  if(!fromPop && id!==CURRENT_TAB){
+    history.pushState({kairoscopeTab:id},'',location.href);
+  }
+  CURRENT_TAB=id;
 }
+history.replaceState({kairoscopeTab:'h'},'',location.href);
 
 function getLockedSign(){
   // Pro: locked to calculated natal Sun once birth data resolves it
