@@ -2694,7 +2694,7 @@ function applyLanguageToSleep(){
   const sLabels=[T.holy,T.pink,T.brown,T.ocean];
   sPills.forEach((p,i)=>{if(sLabels[i])p.textContent=sLabels[i];});
   const wPills=document.querySelectorAll('#sleep-wake-pills .sleep-pill');
-  const wLabels=[T.holyW||'Holy Light',T.tibetanW||'Tibetan Singing Bowl',T.crystalW||'Crystal Bells',T.genesisW||'Genesis Drone',T.auroraW||'Aurora Strings',T.cosmicpulseW||'Cosmic Pulse'];
+  const wLabels=[T.holyW||'Holy Light',T.tibetanW||'Tibetan Singing Bowl',T.crystalW||'Crystal Bells',T.genesisW||'Genesis Drone',T.auroraW||'Aurora Strings'];
   wPills.forEach((p,i)=>{if(wLabels[i])p.textContent=wLabels[i];});
 }
 
@@ -3277,9 +3277,6 @@ function playWakeSound_impl(ctx,master,ns,sound){
     [55,82.5,110,165,220].forEach((f,i)=>{const o=sleepOsc(f);const o2=sleepOsc(f*2);const env=sleepGain(0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(220,ctx.currentTime);filter.frequency.linearRampToValueAtTime(1000,ctx.currentTime+15);const delay=i*5;env.gain.setValueAtTime(0,ctx.currentTime+delay);env.gain.linearRampToValueAtTime(0.32/(i*0.5+1),ctx.currentTime+delay+8);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(ctx.currentTime+delay);o2.start(ctx.currentTime+delay);ns.push(o,o2);});
   } else if(sound==='aurora'){
     [[130.81,196.00],[196.00,293.66],[261.63,392.00]].forEach(([f1,f2],i)=>{[f1,f2].forEach(freq=>{const o=sleepOsc(freq,'sawtooth');const o2=sleepOsc(freq);const env=sleepGain(0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=600+i*200;const t=ctx.currentTime+i*7;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.06,t+5);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(t);o2.start(t);ns.push(o,o2);});});
-  } else if(sound==='cosmicpulse'){
-    function pulse(){if(!alive)return;[60,90,120].forEach((f,i)=>{const o=sleepOsc(f);const env=sleepGain(0);const t=ctx.currentTime+i*0.08;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.75/(i+1),t+0.1);env.gain.exponentialRampToValueAtTime(0.001,t+1.8);o.connect(env);env.connect(master);o.start(t);o.stop(t+2);ns.push(o);});setTimeout(pulse,2800);}
-    pulse();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
   }
 }
 
@@ -3290,7 +3287,7 @@ let previewCtx = null;
 let previewMaster = null;
 let currentPreviewing = null;
 
-const WAKE_SOUND_IDS = ['holy','tibetan','crystal','genesis','aurora','cosmicpulse'];
+const WAKE_SOUND_IDS = ['holy','tibetan','crystal','genesis','aurora'];
 const SLEEP_SOUND_IDS = ['fanhum','pink','brown','ocean'];
 
 function pOscP(ctx,f,type='sine'){const o=ctx.createOscillator();o.type=type;o.frequency.value=f;return o;}
@@ -3325,9 +3322,6 @@ function playWakePreviewSound(ctx, master, ns, sound){
     [55,82.5,110,165,220].forEach((f,i)=>{const o=pOscP(ctx,f);const o2=pOscP(ctx,f*2);const env=pGainP(ctx,0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(220,ctx.currentTime);filter.frequency.linearRampToValueAtTime(1000,ctx.currentTime+15);const delay=i*5;env.gain.setValueAtTime(0,ctx.currentTime+delay);env.gain.linearRampToValueAtTime(0.32/(i*0.5+1),ctx.currentTime+delay+8);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(ctx.currentTime+delay);o2.start(ctx.currentTime+delay);ns.push(o,o2);});
   } else if(sound==='aurora'){
     [[130.81,196.00],[196.00,293.66],[261.63,392.00]].forEach(([f1,f2],i)=>{[f1,f2].forEach(freq=>{const o=pOscP(ctx,freq,'sawtooth');const o2=pOscP(ctx,freq*1.0015,'sawtooth');const env=pGainP(ctx,0);const filter=ctx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=600+i*200;const t=ctx.currentTime+i*7;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.06,t+5);o.connect(filter);o2.connect(filter);filter.connect(env);env.connect(master);o.start(t);o2.start(t);ns.push(o,o2);});});
-  } else if(sound==='cosmicpulse'){
-    function pulse(){if(!alive)return;[60,90,120].forEach((f,i)=>{const o=pOscP(ctx,f);const env=pGainP(ctx,0);const t=ctx.currentTime+i*0.08;env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(0.75/(i+1),t+0.1);env.gain.exponentialRampToValueAtTime(0.001,t+1.8);o.connect(env);env.connect(master);o.start(t);o.stop(t+2);ns.push(o);});setTimeout(pulse,2800);}
-    pulse();ns.push({stop:()=>{alive=false;},disconnect:()=>{}});
   }
 }
 
@@ -6743,10 +6737,6 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
       <div style="display:flex;align-items:center;gap:6px;width:100%">
         <button class="sleep-pill" data-wake="aurora"     onclick="selectWakeSound(this,'aurora')"     style="flex:1;text-align:left">Aurora Strings</button>
         <button onclick="toggleWakePreview('aurora')"    id="prev-wake-aurora"    style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;width:100%">
-        <button class="sleep-pill" data-wake="cosmicpulse" onclick="selectWakeSound(this,'cosmicpulse')" style="flex:1;text-align:left">Cosmic Pulse</button>
-        <button onclick="toggleWakePreview('cosmicpulse')" id="prev-wake-cosmicpulse" style="background:rgba(200,175,255,0.07);border:.5px solid rgba(200,175,255,0.2);border-radius:6px;padding:6px 12px;color:rgba(220,205,255,0.92);font-size:11px;cursor:pointer;flex-shrink:0">▶</button>
       </div>
     </div>
 
