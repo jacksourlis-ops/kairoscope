@@ -403,8 +403,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .birth-input{width:100%;background:var(--input-bg);border:.5px solid rgba(210,175,80,0.2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Crimson Pro',serif;font-size:14px;transition:all .3s}
 .birth-input:focus{outline:none;border-color:rgba(210,175,80,0.5)}
 .birth-input::placeholder{color:var(--muted)}
-.chart-cards{display:none;flex-direction:column;margin-top:6px}
+.chart-cards{display:none;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:4px}
 .chart-cards.on{display:flex}
+.chart-planet-list{display:none;flex-direction:column;margin-top:6px}
+.chart-planet-list.on{display:flex}
 .chart-row{display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-bottom:.5px solid rgba(200,175,255,0.08)}
 .chart-row:last-child{border-bottom:none}
 .chart-row-planet{display:flex;align-items:center;gap:9px;font-family:Cinzel,serif;font-size:11px;letter-spacing:.06em;color:rgba(220,210,240,0.7);flex:1}
@@ -929,9 +931,11 @@ letter-spacing: .05em;
         </div>
         <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" onchange="citySelected(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
         <div class="chart-cards" id="chart-cards">
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">☀️</span>Sun</span><span class="chart-row-value" id="cv-sun">—</span><span class="chart-row-deg" id="cd-sun"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">🌙</span>Moon</span><span class="chart-row-value" id="cv-moon">—</span><span class="chart-row-deg" id="cd-moon"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">⬆️</span>Rising</span><span class="chart-row-value" id="cv-rise">—</span><span class="chart-row-deg" id="cd-rise"></span></div>
+          <div class="cc"><div class="cc-icon">☀️</div><div class="cc-lbl">SUN</div><div class="cc-val" id="cv-sun">—</div><div class="cc-deg" id="cd-sun"></div></div>
+          <div class="cc"><div class="cc-icon">🌙</div><div class="cc-lbl">MOON</div><div class="cc-val" id="cv-moon">—</div><div class="cc-deg" id="cd-moon"></div></div>
+          <div class="cc"><div class="cc-icon">⬆️</div><div class="cc-lbl">RISING</div><div class="cc-val" id="cv-rise">—</div><div class="cc-deg" id="cd-rise"></div></div>
+        </div>
+        <div class="chart-planet-list" id="chart-planet-list">
           <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">☿</span>Mercury</span><span class="chart-row-value" id="cv-mercury">—</span><span class="chart-row-deg" id="cd-mercury"></span></div>
           <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♀</span>Venus</span><span class="chart-row-value" id="cv-venus">—</span><span class="chart-row-deg" id="cd-venus"></span></div>
           <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♂</span>Mars</span><span class="chart-row-value" id="cv-mars">—</span><span class="chart-row-deg" id="cd-mars"></span></div>
@@ -4726,6 +4730,7 @@ function calcChart(){
     document.getElementById('cd-rise').textContent='';
   }
   document.getElementById('chart-cards').classList.add('on');
+  document.getElementById('chart-planet-list').classList.add('on');
   // Pro: once birth data resolves a Sun sign, that becomes the designated sign — overrides manual grid pick
   if(APP.isPro&&APP.chart.sun){
     APP.sh=APP.chart.sun;
