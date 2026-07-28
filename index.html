@@ -289,8 +289,24 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .audio-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:var(--muted);font-style:italic;margin-left:4px}
 
 /* HEADER */
-.site-header{text-align:center;padding:1.75rem 0 1.25rem;border-bottom:.5px solid var(--border);margin-bottom:1.25rem;transition:border-color 1.2s}
+.site-header{position:relative;text-align:center;padding:1.75rem 0 1.25rem;border-bottom:.5px solid var(--border);margin-bottom:1.25rem;transition:border-color 1.2s}
 .logo-wrap{display:flex;flex-direction:column;align-items:center;gap:.75rem}
+#hamburger-btn{position:absolute;top:1.75rem;left:0;width:38px;height:38px;background:rgba(210,175,80,0.08);border:.5px solid rgba(210,175,80,0.35);border-radius:10px;color:var(--gold);font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:background .2s}
+#hamburger-btn:hover{background:rgba(210,175,80,0.16)}
+#nav-menu{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.7);z-index:10004;align-items:stretch;justify-content:flex-start}
+#nav-menu.on{display:flex}
+.nav-menu-panel{width:min(300px,82vw);height:100%;background:linear-gradient(180deg,#0d0a1c,#03020d);border-right:.5px solid rgba(210,175,80,0.25);box-shadow:20px 0 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;padding:1.5rem 1rem;box-sizing:border-box;overflow-y:auto;animation:navSlideIn .25s ease}
+@keyframes navSlideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+.nav-menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:.9rem;border-bottom:.5px solid rgba(210,175,80,0.2)}
+.nav-menu-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--gold)}
+.nav-menu-close{background:none;border:none;color:rgba(225,215,245,0.6);font-size:18px;cursor:pointer;line-height:1;padding:4px}
+.nav-menu-item{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;text-align:left;padding:12px 8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:rgba(225,215,245,0.88);cursor:pointer;border-radius:8px;transition:background .15s}
+.nav-menu-item:hover,.nav-menu-item:active{background:rgba(210,175,80,0.08)}
+.nav-menu-item .nmi-icon{width:20px;text-align:center;flex-shrink:0;font-size:14px}
+.nav-menu-divider{height:.5px;background:rgba(225,215,245,0.12);margin:.6rem 4px}
+.nav-menu-lang-row{display:flex;align-items:center;gap:12px;padding:10px 8px}
+.nav-menu-lang-row .lang-select{flex:1;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.2);color:rgba(225,215,245,0.9);border-radius:8px;padding:8px;font-size:12px}
+
 .logo-name{font-family:'Cinzel',serif;font-size:28px;font-weight:400;letter-spacing:.32em;color:var(--gold);line-height:1;transition:color 1.2s}
 .logo-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;color:rgba(220,210,255,0.78);transition:color 1.2s}
 
@@ -301,7 +317,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 
 /* CONTROLS */
-.ctrl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;gap:8px;flex-wrap:wrap}
+.ctrl-row{display:flex;justify-content:center;align-items:center;margin-bottom:.9rem;gap:8px;flex-wrap:wrap}
 .sound-btn{background:transparent;border:.5px solid var(--border);border-radius:20px;padding:6px 13px;color:var(--muted);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;cursor:pointer;transition:all .2s;white-space:nowrap}
 .sound-btn:hover,.sound-btn.on{border-color:var(--border2);color:var(--gold)}
 .sound-pick{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .2s}
@@ -631,12 +647,10 @@ letter-spacing: .05em;
 
 <div class="moon-banner" id="moon-banner">
   <span id="moon-display">🌙 detecting moon phase...</span>
-  <button id="cycle-btn" class="theme-toggle" onclick="cycleTheme()">cycle phases</button>
-  <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)"><option value="English">🇬🇧 English</option><option value="French">🇫🇷 Français</option><option value="Spanish">🇪🇸 Español</option><option value="Portuguese">🇧🇷 Português</option><option value="German">🇩🇪 Deutsch</option><option value="Italian">🇮🇹 Italiano</option><option value="Greek">🇬🇷 Ελληνικά</option><option value="Japanese">🇯🇵 日本語</option><option value="Korean">🇰🇷 한국어</option><option value="Chinese">🇨🇳 中文</option><option value="Hindi">🇮🇳 हिन्दी</option><option value="Arabic">🇸🇦 العربية</option><option value="Dutch">🇳🇱 Nederlands</option><option value="Polish">🇵🇱 Polski</option><option value="Turkish">🇹🇷 Türkçe</option><option value="Swedish">🇸🇪 Svenska</option></select>
 </div>
 <script>
 (function(){
-  var overlaySelectors=['#journal-screen','#dream-dictionary-screen','#wish-screen','#sleep-screen','#conn-screen','#tutorial-screen','#restore-purchase','#cancel-survey','#kairos-day-modal'];
+  var overlaySelectors=['#journal-screen','#dream-dictionary-screen','#wish-screen','#sleep-screen','#conn-screen','#tutorial-screen','#restore-purchase','#cancel-survey','#kairos-day-modal','#nav-menu.on'];
   function anyOverlayVisible(){
     for(var i=0;i<overlaySelectors.length;i++){
       var el=document.querySelector(overlaySelectors[i]);
@@ -660,7 +674,7 @@ letter-spacing: .05em;
 
 <script>
 (function(){
-  var OVERLAY_IDS=['dream-entry-overlay','kairos-day-modal','wish-screen','dream-dictionary-screen','journal-screen','sleep-screen','conn-screen','tutorial-screen','restore-purchase','cancel-survey'];
+  var OVERLAY_IDS=['dream-entry-overlay','kairos-day-modal','nav-menu','wish-screen','dream-dictionary-screen','journal-screen','sleep-screen','conn-screen','tutorial-screen','restore-purchase','cancel-survey'];
 
   function isVisible(el){
     return el.classList.contains('on') || window.getComputedStyle(el).display!=='none';
@@ -692,6 +706,7 @@ letter-spacing: .05em;
       'cancel-survey':function(){ if(typeof closeCancelSurvey==='function') closeCancelSurvey(); },
       'dream-entry-overlay':function(){ if(typeof closeDreamEntry==='function') closeDreamEntry(); },
       'kairos-day-modal':function(){ el.remove(); },
+      'nav-menu':function(){ if(typeof closeNavMenu==='function') closeNavMenu(); },
       'paywall':function(){ el.classList.remove('on'); }
     };
     if(closers[id]){ closers[id](); return; }
@@ -745,6 +760,7 @@ letter-spacing: .05em;
 
 <div class="wrap">
   <div class="site-header">
+    <button id="hamburger-btn" onclick="toggleNavMenu()" aria-label="Menu" title="Menu">☰</button>
     <div class="logo-wrap">
       <svg width="72" height="72" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -769,16 +785,41 @@ letter-spacing: .05em;
     </div>
   </div>
 
-  <div id="welcome-back-line" style="display:none;text-align:center;font-family:'Crimson Pro',serif;font-size:13.5px;color:rgba(200,190,220,0.6);font-style:italic;margin:.4rem 0 .8rem"></div>
+  <div id="nav-menu">
+  <div class="nav-menu-panel">
+    <div class="nav-menu-head">
+      <span class="nav-menu-title">MENU</span>
+      <button class="nav-menu-close" onclick="closeNavMenu()" aria-label="Close menu">✕</button>
+    </div>
+
+    <button class="nav-menu-item" onclick="closeNavMenu();openTutorial()"><span class="nmi-icon">?</span>How Kairoscope Works</button>
+    <button class="nav-menu-item" onclick="closeNavMenu();openModal('account')"><span class="nmi-icon">🪐</span>Account</button>
+
+    <div class="nav-menu-divider"></div>
+
+    <button class="nav-menu-item" onclick="closeNavMenu();openSleep()"><span class="nmi-icon">☾</span>Sleep Mode</button>
+    <button class="nav-menu-item" onclick="closeNavMenu();openConnections()"><span class="nmi-icon">✦</span>People in My Sky</button>
+    <button class="nav-menu-item" onclick="closeNavMenu();openWishScreen()"><span class="nmi-icon">✧</span>Seek Your Kairos</button>
+    <button class="nav-menu-item" onclick="closeNavMenu();openDreamDictionary()"><span class="nmi-icon">◎</span>Dream Symbol Guide</button>
+    <button class="nav-menu-item" onclick="closeNavMenu();openJournal()"><span class="nmi-icon">✦</span>My Dream Journal</button>
+
+    <div class="nav-menu-divider"></div>
+
+    <button class="nav-menu-item" id="cycle-btn" onclick="cycleTheme()"><span class="nmi-icon">🌓</span>cycle phases</button>
+    <button class="nav-menu-item" id="sound-btn" onclick="toggleSound()"><span class="nmi-icon">♫</span>ambient off</button>
+
+    <div class="nav-menu-lang-row">
+      <span class="nmi-icon">🌐</span>
+      <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)"><option value="English">🇬🇧 English</option><option value="French">🇫🇷 Français</option><option value="Spanish">🇪🇸 Español</option><option value="Portuguese">🇧🇷 Português</option><option value="German">🇩🇪 Deutsch</option><option value="Italian">🇮🇹 Italiano</option><option value="Greek">🇬🇷 Ελληνικά</option><option value="Japanese">🇯🇵 日本語</option><option value="Korean">🇰🇷 한국어</option><option value="Chinese">🇨🇳 中文</option><option value="Hindi">🇮🇳 हिन्दी</option><option value="Arabic">🇸🇦 العربية</option><option value="Dutch">🇳🇱 Nederlands</option><option value="Polish">🇵🇱 Polski</option><option value="Turkish">🇹🇷 Türkçe</option><option value="Swedish">🇸🇪 Svenska</option></select>
+    </div>
+  </div>
+</div>
+
+<div id="welcome-back-line" style="display:none;text-align:center;font-family:'Crimson Pro',serif;font-size:13.5px;color:rgba(200,190,220,0.6);font-style:italic;margin:.4rem 0 .8rem"></div>
 
   <!-- API KEY -->
   <!-- CONTROLS -->
   <div class="ctrl-row">
-    <div style="display:flex;gap:6px;align-items:center">
-      <button class="sound-btn" id="sound-btn" onclick="toggleSound()">♫ ambient off</button>
-      <button class="sound-btn" onclick="openTutorial()" title="How Kairoscope works" style="padding:6px 12px;color:var(--gold);border-color:rgba(210,175,80,0.45)">?</button>
-      <button class="sound-btn" onclick="openModal('account')" title="Account" style="padding:6px 12px;color:var(--gold);border-color:rgba(210,175,80,0.45)">🪐</button>
-    </div>
     <div class="pill" id="main-pill">◈ <span id="free-count">5</span> free readings remaining this month</div>
   </div>
   <div style="font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);font-style:italic;text-align:center;margin-bottom:.75rem;display:none" id="audio-label"></div>
@@ -994,8 +1035,8 @@ letter-spacing: .05em;
 
   <!-- CALENDAR -->
   <!-- CALENDAR TOGGLE -->
-  <button onclick="toggleCalendar()" id="cal-toggle-btn" style="width:100%;padding:13px;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.18);border-radius:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:rgba(210,195,255,0.78);cursor:pointer;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:8px">
-    <span>✦</span><span>your Kairos</span><span id="cal-toggle-arrow" style="opacity:.5">▾</span>
+  <button onclick="toggleCalendar()" id="cal-toggle-btn" style="width:100%;padding:16px 13px;background:linear-gradient(135deg,rgba(140,100,230,0.18),rgba(180,150,255,0.09));border:1px solid rgba(180,150,255,0.4);border-radius:14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;color:rgba(230,220,255,0.96);cursor:pointer;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 0 18px rgba(140,100,230,0.16);transition:all .2s">
+    <span style="font-size:13px">✦</span><span>Your Kairos Calendar</span><span id="cal-toggle-arrow" style="opacity:.85;font-size:13px;transition:transform .25s">▾</span>
   </button>
 
   <div id="dream-calendar" style="display:none;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.1);border-radius:12px;padding:.85rem;margin-bottom:.75rem">
@@ -1564,7 +1605,7 @@ const TRANSLATIONS={
     waxingGibbousEnergy:'WAXING GIBBOUS ENERGY',waningGibbousEnergy:'WANING GIBBOUS ENERGY',
     fullBirthChart:'FULL BIRTH CHART',dateOfBirth:'DATE OF BIRTH',timeOfBirth:'TIME OF BIRTH',cityOfBirth:'CITY OF BIRTH',
     dreamDictionary:'DREAM DICTIONARY',
-    yourKairos:'your Kairos',
+    yourKairos:'Your Kairos Calendar',
     combineBtn:'◈ COMBINE ◈',
     needBirthTime:'Need birth time',enterBirthCity:'Enter birth city',
     cosTheme:'COSMIC THEME',focus:'FOCUS',guidance:'GUIDANCE',
@@ -2414,7 +2455,7 @@ function applyLanguage(){
   const kairosBtn=document.getElementById('cal-toggle-btn');
   if(kairosBtn){
     const arrow=document.getElementById('cal-toggle-arrow');
-    kairosBtn.innerHTML=`<span>✦</span><span>${T.yourKairos||'your Kairos'}</span><span id="cal-toggle-arrow" style="opacity:.5">${arrow?arrow.textContent:'▾'}</span>`;
+    kairosBtn.innerHTML=`<span style="font-size:13px">✦</span><span>${T.yourKairos||'Your Kairos Calendar'}</span><span id="cal-toggle-arrow" style="opacity:.85;font-size:13px;transition:transform .25s">${arrow?arrow.textContent:'▾'}</span>`;
   }
 
   // Combine button
@@ -4021,7 +4062,10 @@ function toggleCalendar(){
   const arrow = document.getElementById('cal-toggle-arrow');
   const open = cal.style.display === 'block';
   cal.style.display = open ? 'none' : 'block';
-  if(arrow) arrow.textContent = open ? '▾' : '▴';
+  if(arrow){
+    arrow.textContent = open ? '▾' : '▴';
+    arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
   if(!open) renderCalendar();
 }
 
@@ -5058,9 +5102,20 @@ const TUTORIAL_STEPS=[
   {title:'SEEK YOUR KAIROS',body:"Speak a specific wish into the moment, three times a month. The stars will tell you honestly whether now is the time, then seal it either way. Each one is logged with a gold star on your calendar."},
   {title:'YOUR KAIROS CALENDAR',body:"Inside Journal, tap any marked day to step back into your day: your horoscope, your dream, your combined reading, your wish, exactly as it was. From there you can export your day as a .txt file, yours to keep."},
   {title:'INTERPRET OR COMBINE',body:"When you record a dream, you can interpret it on its own, or combine it with today's horoscope once you've pulled it, for the fullest reading. You can do both, once each, every day."},
-  {title:"YOU'RE READY",body:'That\'s everything. Tap the small "?" near the top any time you want to come back through this again.'}
+  {title:"YOU'RE READY",body:'That\'s everything. Tap the menu icon (☰) near the top any time you want to come back through this again.'}
 ];
 let tutorialStep=0;
+
+function openNavMenu(){
+  document.getElementById('nav-menu').classList.add('on');
+}
+function closeNavMenu(){
+  document.getElementById('nav-menu').classList.remove('on');
+}
+function toggleNavMenu(){
+  const el=document.getElementById('nav-menu');
+  if(el.classList.contains('on')) closeNavMenu(); else openNavMenu();
+}
 
 function openTutorial(){
   tutorialStep=0;
