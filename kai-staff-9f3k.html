@@ -46,8 +46,19 @@
   <hr style="margin:2rem 0;border:none;border-top:1px solid rgba(225,215,245,0.12)">
 
   <h1 style="font-size:12px">✦ RESERVE A SPECIFIC NAME ✦</h1>
-  <label>Customer ID</label>
-  <input type="text" id="reserve-customer-id" placeholder="cus_...">
+  <label>Identity type</label>
+  <select id="reserve-type" onchange="toggleReserveFields()">
+    <option value="stripe">Stripe customer</option>
+    <option value="play">Google Play purchase</option>
+  </select>
+  <div id="reserve-stripe-field">
+    <label>Customer ID</label>
+    <input type="text" id="reserve-customer-id" placeholder="cus_...">
+  </div>
+  <div id="reserve-play-field" style="display:none">
+    <label>Purchase Token</label>
+    <input type="text" id="reserve-purchase-token" placeholder="Play Billing purchase token">
+  </div>
   <label>Name to assign</label>
   <input type="text" id="reserve-name" placeholder="Moonbeam">
   <button id="reserve-go" onclick="reserveName()">Reserve Name</button>
@@ -55,21 +66,34 @@
 </div>
 
 <script>
+function toggleReserveFields(){
+  const type=document.getElementById('reserve-type').value;
+  document.getElementById('reserve-stripe-field').style.display = type==='stripe' ? 'block' : 'none';
+  document.getElementById('reserve-play-field').style.display = type==='play' ? 'block' : 'none';
+}
+
 async function reserveName(){
   const pw=document.getElementById('pw').value;
+  const type=document.getElementById('reserve-type').value;
   const customerId=document.getElementById('reserve-customer-id').value.trim();
+  const purchaseToken=document.getElementById('reserve-purchase-token').value.trim();
   const name=document.getElementById('reserve-name').value.trim();
   const btn=document.getElementById('reserve-go');
   const result=document.getElementById('reserve-result');
   if(!pw){alert('Enter the password');return;}
-  if(!customerId||!name){alert('Enter both a customer ID and a name');return;}
+  if(type==='stripe'&&!customerId){alert('Enter a customer ID');return;}
+  if(type==='play'&&!purchaseToken){alert('Enter a purchase token');return;}
+  if(!name){alert('Enter a name to assign');return;}
   btn.disabled=true;btn.textContent='Reserving...';
   result.className='';result.removeAttribute('style');
   try{
+    const payload={password:pw,name};
+    if(type==='stripe')payload.customerId=customerId;
+    else payload.purchaseToken=purchaseToken;
     const res=await fetch('/api/reserve-name',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:pw,customerId,name})
+      body:JSON.stringify(payload)
     });
     const data=await res.json();
     if(!res.ok){
