@@ -264,6 +264,21 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .rs-bullet-list li::before{content:'\25c8';position:absolute;left:0;top:.15em;color:var(--gold);font-size:10px}
 .rs-takeaways{background:rgba(210,175,80,0.06);border-color:rgba(210,175,80,0.25)}
 .rs-takeaways .rs-label{color:var(--gold)}
+.gauge-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:1rem;padding:.85rem .5rem;background:rgba(200,175,255,0.03);border:.5px solid rgba(200,175,255,0.12);border-radius:14px}
+.gauge-card{width:74px;display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:6px 2px;border-radius:10px;transition:background .15s}
+.gauge-card:hover,.gauge-card:active{background:rgba(210,175,80,0.08)}
+.gauge-svg{width:100%;height:auto;margin-bottom:1px}
+.gauge-icon{font-size:12px;margin-bottom:1px;opacity:.85}
+.gauge-label{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.07em;color:rgba(225,215,245,0.72);text-transform:uppercase}
+.gauge-score{font-family:'Crimson Pro',serif;font-size:11px;color:var(--gold);font-weight:600;margin-top:1px}
+.align-live-label{text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--gold);margin-bottom:.6rem}
+.align-teaser{display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:1rem;background:linear-gradient(135deg,rgba(210,175,80,0.1),rgba(210,175,80,0.04));border:1px solid rgba(210,175,80,0.3);border-radius:14px;cursor:pointer;transition:all .2s}
+.align-teaser:hover,.align-teaser:active{background:linear-gradient(135deg,rgba(210,175,80,0.16),rgba(210,175,80,0.07))}
+.align-teaser-icon{font-size:22px;color:var(--gold);flex-shrink:0}
+.align-teaser-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;color:var(--gold);margin-bottom:3px}
+.align-teaser-sub{font-family:'Crimson Pro',serif;font-size:13px;color:rgba(225,215,245,0.75);line-height:1.4}
+
+
 .example-dreams{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.5rem}
 .dream-example{background:var(--card);border:.5px solid var(--border);border-radius:20px;padding:4px 10px;font-family:'Crimson Pro',serif;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;font-style:italic}
 .dream-example:hover{border-color:var(--border2);color:var(--gold)}
@@ -856,6 +871,7 @@ letter-spacing: .05em;
 
   <!-- HOROSCOPE -->
   <div class="panel on" id="panel-h">
+    <div id="live-alignment-section"></div>
     <div><span class="lbl">YOUR SIGN</span>
       <div class="zodiac-grid" id="zg-h">
         <button class="zb" data-s="Aries" onclick="selSign(this,'zg-h','sh')"><span class="zs">♈</span><span class="zn">Aries</span></button>
@@ -1372,7 +1388,7 @@ const APP={
   free:getFreeCreditsOnLoad(),
   sh:'',sc:'',period:'today',
   sndOn:false,
-  chart:{sun:'',moon:'',rising:'',sunDeg:0,moonDeg:0,riseDeg:0,city:''},
+  chart:{sun:'',moon:'',rising:'',sunDeg:0,moonDeg:0,riseDeg:0,city:'',natalPlanets:null},
   lastDreamText:'',lastDreamInterp:'',
   currentPhase:localStorage.getItem('k_phase')||'full-moon',
   language:localStorage.getItem('k_lang')||'English',
@@ -1451,6 +1467,44 @@ function parseStructuredReading(text){
   if(paragraphs.length>2)sections.push({label:T.guidance||'GUIDANCE',text:paragraphs[2].trim().slice(0,180)+(paragraphs[2].length>180?'...':'')});
   return{sections,full:text,structured:false};
 }
+function renderGaugeGrid(scores){
+  if(!scores)return'';
+  const GAUGES=[
+    {key:'LOVE',icon:'\u2661',label:'Love',target:'rs-love'},
+    {key:'CAREER',icon:'\ud83d\udcbc',label:'Career',target:'rs-career'},
+    {key:'HEALTH',icon:'\u2727',label:'Health',target:'rs-health'},
+    {key:'MONEY',icon:'\u2726',label:'Money',target:'rs-money'},
+    {key:'LUCK',icon:'\u2708',label:'Luck',target:'rs-luck'},
+    {key:'HOME',icon:'\ud83c\udfe0',label:'Home',target:'rs-home'},
+    {key:'FRIENDSHIPS',icon:'\ud83e\udd1d',label:'Friends',target:'rs-friendships'}
+  ];
+  const cards=GAUGES.map(g=>{
+    const score=scores[g.key];
+    if(score===undefined)return'';
+    const angle=-90+((score-1)/9)*180;
+    return `<div class="gauge-card" onclick="var t=document.getElementById('${g.target}');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})">
+      <svg viewBox="0 0 100 62" class="gauge-svg">
+        <defs>
+          <linearGradient id="gaugeGrad-${g.key}" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c17a7a"/>
+            <stop offset="50%" stop-color="#d2af50"/>
+            <stop offset="100%" stop-color="#8fbf9f"/>
+          </linearGradient>
+        </defs>
+        <path d="M10,55 A40,40 0 0 1 90,55" fill="none" stroke="url(#gaugeGrad-${g.key})" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+        <g style="transform:rotate(${angle}deg);transform-origin:50px 55px;transition:transform .6s ease">
+          <line x1="50" y1="55" x2="50" y2="21" stroke="#f5eddc" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <circle cx="50" cy="55" r="4" fill="#f5eddc" stroke="#03020d" stroke-width="1"/>
+      </svg>
+      <div class="gauge-icon">${g.icon}</div>
+      <div class="gauge-label">${g.label}</div>
+      <div class="gauge-score">${score}/10</div>
+    </div>`;
+  }).join('');
+  return `<div class="gauge-grid">${cards}</div>`;
+}
+
 function showStructuredResult(box,icon,title,sub,text,lockMsg){
   box.classList.add('on');
   const T=TRANSLATIONS[APP.language]||TRANSLATIONS.English;
@@ -1468,15 +1522,25 @@ function showStructuredResult(box,icon,title,sub,text,lockMsg){
       'FRIENDSHIPS & GOALS':'\ud83e\udd1d',
       'KEY TAKEAWAYS':'\u25c8'
     };
+    const SECTION_IDS={
+      'LOVE & RELATIONSHIPS':'rs-love',
+      'CAREER & BUSINESS':'rs-career',
+      'HEALTH & WELLNESS':'rs-health',
+      'MONEY & FINANCES':'rs-money',
+      'TRAVEL & LUCK':'rs-luck',
+      'HOME & FAMILY':'rs-home',
+      'FRIENDSHIPS & GOALS':'rs-friendships'
+    };
     const sh=s.sections.map(sec=>{
       const ic=SECTION_ICONS[sec.label];
       const labelHtml=ic?`${ic} ${sec.label}`:sec.label;
+      const idAttr=SECTION_IDS[sec.label]?` id="${SECTION_IDS[sec.label]}"`:'';
       if(sec.label==='KEY TAKEAWAYS'){
         const items=sec.text.split(/\n+/).map(l=>l.trim()).filter(l=>l.length>0);
         const li=items.map(it=>`<li>${it}</li>`).join('');
-        return `<div class="rs-section rs-takeaways"><div class="rs-label">${labelHtml}</div><ul class="rs-bullet-list">${li}</ul></div>`;
+        return `<div class="rs-section rs-takeaways"${idAttr}><div class="rs-label">${labelHtml}</div><ul class="rs-bullet-list">${li}</ul></div>`;
       }
-      return `<div class="rs-section"><div class="rs-label">${labelHtml}</div><div class="rs-text">${sec.text}</div></div>`;
+      return `<div class="rs-section"${idAttr}><div class="rs-label">${labelHtml}</div><div class="rs-text">${sec.text}</div></div>`;
     }).join('');
     bodyHtml=`<div class="reading-sections">${sh}</div>`;
   }else if(s&&s.sections.length>=2){
@@ -4560,6 +4624,15 @@ function calcChart(){
   const ml=moonLongitude(jd);APP.chart.moonDeg=ml;APP.chart.moon=lonToSign(ml);
   document.getElementById('cv-moon').textContent=APP.chart.moon;
   document.getElementById('cd-moon').textContent=lonToDegMin(ml);
+  // Full natal chart (all bodies), reusing the same longitude functions used for current transits,
+  // just evaluated at the birth jd instead of now. Powers the live alignment gauges.
+  APP.chart.natalPlanets={
+    Sun:sl, Moon:ml,
+    Mercury:mercuryLongitude(jd), Venus:venusLongitude(jd), Mars:marsLongitude(jd),
+    Jupiter:jupiterLongitude(jd), Saturn:saturnLongitude(jd),
+    Uranus:uranusLongitude(jd), Neptune:neptuneLongitude(jd)
+  };
+  renderLiveAlignmentSection();
   // Try exact city, then partial match
   let coords=CITIES[city];
   console.log('city lookup: "'+city+'" found='+!!coords);
@@ -4717,6 +4790,77 @@ function getCurrentPlanets(){
     Neptune:{lon:neptuneLongitude(jd),name:'Neptune'},
   };
 }
+
+// Live alignment gauges: real transit-to-natal aspects, not AI-generated.
+// Each life area has traditional ruling planet(s). We check every current
+// aspect those rulers make to the person's actual natal chart right now,
+// score harmonious aspects up and challenging ones down. Pure math, updates
+// live, zero ongoing API cost.
+const ALIGNMENT_RULERS={
+  LOVE:['Venus','Mars'],
+  CAREER:['Saturn','Sun'],
+  HEALTH:['Mercury','Moon'],
+  MONEY:['Venus','Jupiter'],
+  LUCK:['Jupiter'],
+  HOME:['Moon','Saturn'],
+  FRIENDSHIPS:['Uranus','Jupiter']
+};
+const ALIGNMENT_BENEFICS=['Venus','Jupiter'];
+const ALIGNMENT_MALEFICS=['Mars','Saturn'];
+
+function computeLiveAlignment(){
+  if(!APP.chart||!APP.chart.natalPlanets)return null;
+  const transiting=getCurrentPlanets();
+  const natal=APP.chart.natalPlanets;
+  const scores={};
+  Object.keys(ALIGNMENT_RULERS).forEach(cat=>{
+    let score=5;
+    ALIGNMENT_RULERS[cat].forEach(rulerName=>{
+      const t=transiting[rulerName];
+      if(!t)return;
+      Object.keys(natal).forEach(natalName=>{
+        const asp=getAspect(t.lon,natal[natalName]);
+        if(asp==='trine'||asp==='sextile')score+=1;
+        else if(asp==='square'||asp==='opposite')score-=1;
+        else if(asp==='conjunct'){
+          if(ALIGNMENT_BENEFICS.includes(natalName))score+=1;
+          else if(ALIGNMENT_MALEFICS.includes(natalName))score-=1;
+        }
+      });
+    });
+    scores[cat]=Math.max(1,Math.min(10,Math.round(score)));
+  });
+  return scores;
+}
+
+function renderLiveAlignmentSection(){
+  const container=document.getElementById('live-alignment-section');
+  if(!container)return;
+  if(!APP.isPro){
+    container.innerHTML=`<div class="align-teaser" onclick="document.getElementById('paywall').classList.add('on')">
+      <div class="align-teaser-icon">\u2726</div>
+      <div class="align-teaser-text">
+        <div class="align-teaser-title">LIVE COSMIC ALIGNMENT</div>
+        <div class="align-teaser-sub">Real-time gauges for love, career, money, luck and more, calculated from your exact birth chart. Unlock with Pro.</div>
+      </div>
+    </div>`;
+    return;
+  }
+  if(!APP.chart||!APP.chart.natalPlanets){
+    container.innerHTML=`<div class="align-teaser" onclick="var b=document.getElementById('birth-h');if(b)b.scrollIntoView({behavior:'smooth',block:'start'})">
+      <div class="align-teaser-icon">\u2726</div>
+      <div class="align-teaser-text">
+        <div class="align-teaser-title">LIVE COSMIC ALIGNMENT</div>
+        <div class="align-teaser-sub">Add your birth date, time and city below to unlock your personal live alignment gauges.</div>
+      </div>
+    </div>`;
+    return;
+  }
+  const scores=computeLiveAlignment();
+  if(!scores){container.innerHTML='';return;}
+  container.innerHTML=`<div class="align-live-label">\u2726 YOUR LIVE ALIGNMENT \u2726</div>${renderGaugeGrid(scores)}`;
+}
+
 
 // Build full astrological context for reading
 function buildAstroContext(userSign, period){
@@ -5343,6 +5487,7 @@ function setTier(t){
   const dictLock=document.getElementById('dict-btn-lock');
   if(dictLock) dictLock.style.display = APP.isPro ? 'none' : 'flex';
   renderWishStarsIndicator();
+  renderLiveAlignmentSection();
 }
 async function activatePro(){
   const btn=document.querySelector('.pw-cta');
@@ -5659,7 +5804,6 @@ CRITICAL FORMATTING RULES:
 - COSMIC THEME is a full paragraph of 3-4 sentences, the astrological scene of this exact moment, not just a single sentence teaser.
 - Each of the seven life-area sections below must be 3 to 4 sentences with real depth and specific astrological reasoning grounded in that section's house, not a short generic blurb.
 - KEY TAKEAWAYS must be exactly 4 to 5 short bullet lines, each starting with a hyphen and a space, one clear and specific actionable insight per line, no more than 16 words each.
-
 Structure EXACTLY like this, in this order:
 COSMIC THEME: [3-4 sentences, the astrological scene of this moment]
 
@@ -6369,6 +6513,7 @@ window.addEventListener('load', updateMoonEnergy);
 if(!localStorage.getItem('k_first_visit'))localStorage.setItem('k_first_visit',Date.now());
 setTimeout(applyLanguage,50);
 setTimeout(loadBirthData,100);
+setTimeout(renderLiveAlignmentSection,150);
 
 // Restore last used signs
 (function(){
