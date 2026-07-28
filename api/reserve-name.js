@@ -1,7 +1,7 @@
 // api/reserve-name.js — Password-protected. Manually assigns a specific
-// name to a specific Stripe customer, bypassing the random pool entirely.
-// Used for reserved names like "Moonbeam" that should never be handed
-// out automatically.
+// name to a specific customer identity (Stripe OR Google Play), bypassing
+// the random pool entirely. Used for reserved names like "Moonbeam" that
+// should never be handed out automatically.
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -14,15 +14,18 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Not configured' });
   }
 
-  const { password, customerId, name } = req.body || {};
+  const { password, customerId, purchaseToken, name } = req.body || {};
   if (!password || password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Wrong password' });
   }
-  if (!customerId || !name) {
-    return res.status(400).json({ error: 'customerId and name are both required' });
+  if (!name || (!customerId && !purchaseToken)) {
+    return res.status(400).json({ error: 'name and either customerId or purchaseToken are required' });
+  }
+  if (customerId && purchaseToken) {
+    return res.status(400).json({ error: 'Provide only one of customerId or purchaseToken, not both' });
   }
 
-  const identityKey = `stripe_${customerId}`;
+  const identityKey = customerId ? `stripe_${customerId}` : `play_${purchaseToken}`;
 
   async function redisCommand(command) {
     const r = await fetch(redisUrl, {
@@ -43,7 +46,7 @@ export default async function handler(req, res) {
     await redisCommand(['SET', `nickname:claimed:${name.toLowerCase()}`, identityKey]);
     await redisCommand(['SET', `nickname:by-customer:${identityKey}`, name]);
 
-    return res.status(200).json({ ok: true, name });
+    return res.status(200).json({ ok: true, name, identityKey });
   } catch (err) {
     console.error('reserve-name.js error:', err);
     return res.status(500).json({ error: 'Something went wrong' });
