@@ -4744,61 +4744,84 @@ function calcChart(){
 
 
 
-
 // ============================================================
 // FULL PLANETARY CALCULATION ENGINE
 // ============================================================
+// Real elliptical Keplerian orbits (JPL/Standish published elements,
+// valid 1800-2050), not simplified circular approximations. Each
+// planet's true heliocentric position is computed by solving Kepler's
+// equation, then converted to a geocentric ecliptic longitude by
+// vector subtraction against Earth's own position at the same moment.
+// This correctly captures real orbital eccentricity and apparent
+// retrograde motion, which a single-term circular approximation cannot.
 
-// Mean orbital elements (simplified VSOP87)
-function mercuryLongitude(jd){
-  const T=(jd-2451545)/36525;
-  const L=norm360(252.2509+149472.6746*T);
-  const M=norm360(168.6562+479264.2855*T);
-  const Mr=toRad(M);
-  return norm360(L+6.7452*Math.sin(Mr)+0.4628*Math.sin(2*Mr));
+const PLANET_ELEMENTS={
+  Mercury:{a0:0.38709927,adot:0.00000037,e0:0.20563593,edot:0.00001906,i0:7.00497902,idot:-0.00594749,L0:252.25032350,Ldot:149472.67411175,peri0:77.45779628,peridot:0.16047689,node0:48.33076593,nodedot:-0.12534081},
+  Venus:{a0:0.72333566,adot:0.00000390,e0:0.00677672,edot:-0.00004107,i0:3.39467605,idot:-0.00078890,L0:181.97909950,Ldot:58517.81538729,peri0:131.60246718,peridot:0.00268329,node0:76.67984255,nodedot:-0.27769418},
+  Earth:{a0:1.00000261,adot:0.00000562,e0:0.01671123,edot:-0.00004392,i0:-0.00001531,idot:-0.01294668,L0:100.46457166,Ldot:35999.37244981,peri0:102.93768193,peridot:0.32327364,node0:0.0,nodedot:0.0},
+  Mars:{a0:1.52371034,adot:0.00001847,e0:0.09339410,edot:0.00007882,i0:1.84969142,idot:-0.00813131,L0:-4.55343205,Ldot:19140.30268499,peri0:-23.94362959,peridot:0.44441088,node0:49.55953891,nodedot:-0.29257343},
+  Jupiter:{a0:5.20288700,adot:-0.00011607,e0:0.04838624,edot:-0.00013253,i0:1.30439695,idot:-0.00183714,L0:34.39644051,Ldot:3034.74612775,peri0:14.72847983,peridot:0.21252668,node0:100.47390909,nodedot:0.20469106},
+  Saturn:{a0:9.53667594,adot:-0.00125060,e0:0.05386179,edot:-0.00050991,i0:2.48599187,idot:0.00193609,L0:49.95424423,Ldot:1222.49362201,peri0:92.59887831,peridot:-0.41897216,node0:113.66242448,nodedot:-0.28867794},
+  Uranus:{a0:19.18916464,adot:-0.00196176,e0:0.04725744,edot:-0.00004397,i0:0.77263783,idot:-0.00242939,L0:313.23810451,Ldot:428.48202785,peri0:170.95427630,peridot:0.40805281,node0:74.01692503,nodedot:0.04240589},
+  Neptune:{a0:30.06992276,adot:0.00026291,e0:0.00859048,edot:0.00005105,i0:1.77004347,idot:0.00035372,L0:-55.12002969,Ldot:218.45945325,peri0:44.96476227,peridot:-0.32241464,node0:131.78422574,nodedot:-0.00508664}
+};
+
+function solveKeplerEq(M,e){
+  let E=M;
+  for(let i=0;i<10;i++){
+    const dE=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));
+    E-=dE;
+    if(Math.abs(dE)<1e-10)break;
+  }
+  return E;
 }
-function venusLongitude(jd){
-  const T=(jd-2451545)/36525;
-  const L=norm360(181.9798+58517.8157*T);
-  const M=norm360(50.1327+115519.4700*T);
-  const Mr=toRad(M);
-  return norm360(L+0.7758*Math.sin(Mr)+0.0033*Math.sin(2*Mr));
+
+function keplerHeliocentric(el,T){
+  const a=el.a0+el.adot*T;
+  const e=el.e0+el.edot*T;
+  const i=toRad(el.i0+el.idot*T);
+  const L=el.L0+el.Ldot*T;
+  const peri=el.peri0+el.peridot*T;
+  const node=el.node0+el.nodedot*T;
+  const w=toRad(norm360(peri-node));
+  const nodeR=toRad(norm360(node));
+  let M=norm360(L-peri);
+  if(M>180)M-=360;
+  const E=solveKeplerEq(toRad(M),e);
+  const xOrb=a*(Math.cos(E)-e);
+  const yOrb=a*Math.sqrt(1-e*e)*Math.sin(E);
+  const cosW=Math.cos(w),sinW=Math.sin(w);
+  const cosNode=Math.cos(nodeR),sinNode=Math.sin(nodeR);
+  const cosI=Math.cos(i),sinI=Math.sin(i);
+  const xEcl=(cosW*cosNode-sinW*sinNode*cosI)*xOrb+(-sinW*cosNode-cosW*sinNode*cosI)*yOrb;
+  const yEcl=(cosW*sinNode+sinW*cosNode*cosI)*xOrb+(-sinW*sinNode+cosW*cosNode*cosI)*yOrb;
+  return {x:xEcl,y:yEcl};
 }
-function marsLongitude(jd){
+
+function keplerGeocentricLongitude(name,jd){
   const T=(jd-2451545)/36525;
-  const L=norm360(355.4330+19140.2939*T);
-  const M=norm360(319.5294+19139.8585*T);
-  const Mr=toRad(M);
-  return norm360(L+10.6912*Math.sin(Mr)+0.6228*Math.sin(2*Mr)+0.0503*Math.sin(3*Mr));
+  const p=keplerHeliocentric(PLANET_ELEMENTS[name],T);
+  const e=keplerHeliocentric(PLANET_ELEMENTS.Earth,T);
+  const dx=p.x-e.x,dy=p.y-e.y;
+  return norm360(toDeg(Math.atan2(dy,dx)));
 }
-function jupiterLongitude(jd){
-  const T=(jd-2451545)/36525;
-  const L=norm360(34.3515+3034.9057*T);
-  const M=norm360(20.9274+3034.6960*T);
-  const Mr=toRad(M);
-  return norm360(L+5.5549*Math.sin(Mr)+0.1683*Math.sin(2*Mr));
+
+function isRetrograde(name,jd){
+  const lonNow=keplerGeocentricLongitude(name,jd);
+  const lonPrev=keplerGeocentricLongitude(name,jd-1);
+  let diff=lonNow-lonPrev;
+  if(diff>180)diff-=360;
+  if(diff<-180)diff+=360;
+  return diff<0;
 }
-function saturnLongitude(jd){
-  const T=(jd-2451545)/36525;
-  const L=norm360(50.0774+1222.1138*T);
-  const M=norm360(317.3599+1222.1140*T);
-  const Mr=toRad(M);
-  return norm360(L+6.3585*Math.sin(Mr)+0.2204*Math.sin(2*Mr));
-}
-function uranusLongitude(jd){
-  const T=(jd-2451545)/36525;
-  const L=norm360(314.0550+428.4612*T);
-  const M=norm360(141.3736+428.4748*T);
-  const Mr=toRad(M);
-  return norm360(L+5.3042*Math.sin(Mr)+0.1534*Math.sin(2*Mr));
-}
-function neptuneLongitude(jd){
-  const T=(jd-2451545)/36525;
-  const L=norm360(304.3486+218.4581*T);
-  const M=norm360(256.2233+218.4699*T);
-  const Mr=toRad(M);
-  return norm360(L+1.0261*Math.sin(Mr));
-}
+
+function mercuryLongitude(jd){ return keplerGeocentricLongitude('Mercury',jd); }
+function venusLongitude(jd){ return keplerGeocentricLongitude('Venus',jd); }
+function marsLongitude(jd){ return keplerGeocentricLongitude('Mars',jd); }
+function jupiterLongitude(jd){ return keplerGeocentricLongitude('Jupiter',jd); }
+function saturnLongitude(jd){ return keplerGeocentricLongitude('Saturn',jd); }
+function uranusLongitude(jd){ return keplerGeocentricLongitude('Uranus',jd); }
+function neptuneLongitude(jd){ return keplerGeocentricLongitude('Neptune',jd); }
 
 // Sign data
 const SIGN_DATA={
@@ -5110,12 +5133,11 @@ function buildAstroContext(userSign, period){
   const moonSunAngle = norm360(planets.Moon.lon - planets.Sun.lon);
   const moonPhaseAngle = Math.round(moonSunAngle);
 
-  // Current retrograde planets (simplified — based on known 2025/2026 retrogrades)
-  const now = new Date();
-  const month = now.getMonth()+1;
+  // Current retrograde planets, calculated for real from actual planetary motion
   const retrograde = [];
-  // Mercury retrograde periods 2026: roughly Mar-Apr, Jul-Aug, Nov-Dec
-  if((month>=3&&month<=4)||(month>=7&&month<=8)||(month>=11&&month<=12)) retrograde.push('Mercury');
+  ['Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'].forEach(function(name){
+    if(isRetrograde(name, planets.jd)) retrograde.push(name);
+  });
 
   // Natal chart aspects if available
   const natal = APP.chart;
