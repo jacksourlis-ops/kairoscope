@@ -785,7 +785,7 @@ letter-spacing: .05em;
     </div>
   </div>
 
-  <div id="nav-menu">
+  <div id="nav-menu" onclick="if(event.target.id==='nav-menu')closeNavMenu()">
   <div class="nav-menu-panel">
     <div class="nav-menu-head">
       <span class="nav-menu-title">MENU</span>
@@ -805,7 +805,7 @@ letter-spacing: .05em;
 
     <div class="nav-menu-divider"></div>
 
-    <button class="nav-menu-item" id="cycle-btn" onclick="cycleTheme()"><span class="nmi-icon">🌓</span>cycle phases</button>
+    <button class="nav-menu-item" id="cycle-btn" onclick="closeNavMenu();cycleTheme()"><span class="nmi-icon">🌓</span>cycle phases</button>
     <button class="nav-menu-item" id="sound-btn" onclick="toggleSound()"><span class="nmi-icon">♫</span>ambient off</button>
 
     <div class="nav-menu-lang-row">
