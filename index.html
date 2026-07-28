@@ -190,6 +190,24 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 
 /* SLEEP MODE */
 .sleep-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9999;flex-direction:column;align-items:center;overflow-y:auto;padding:1.5rem 1.25rem 2rem}
+.houses-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#03020d;z-index:9999;flex-direction:column;align-items:center;overflow-y:auto;padding:1.5rem 1.25rem 2rem;color:#e8e0ff}
+.houses-screen.on{display:flex}
+.houses-intro{font-family:'Crimson Pro',serif;font-style:italic;font-size:13px;color:rgba(220,210,240,0.6);text-align:center;margin:1rem 0 1.25rem}
+.houses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 10px;max-width:340px;width:100%;margin:0 auto}
+.house-stone-cell{text-align:center;cursor:pointer;padding:4px 0}
+.house-stone-dot{width:56px;height:56px;border-radius:50%;margin:0 auto 6px;opacity:.6;filter:saturate(.6);box-shadow:0 0 0px rgba(0,0,0,0);transition:all .35s ease}
+.house-stone-cell:active .house-stone-dot{opacity:1;filter:saturate(1.15)}
+.house-stone-num{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:var(--gold)}
+.house-stone-name{font-family:'Crimson Pro',serif;font-size:11px;color:rgba(220,210,240,0.65);margin-top:1px}
+.house-detail-hero{width:76px;height:76px;border-radius:50%;margin:1rem auto 1rem}
+.house-detail-title{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.08em;color:var(--gold);text-align:center;margin-bottom:.3rem}
+.house-detail-ruler{font-family:'Crimson Pro',serif;font-style:italic;font-size:13px;color:rgba(220,210,240,0.55);text-align:center;margin-bottom:1.25rem}
+.house-detail-card{background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.14);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1rem;max-width:360px;width:100%;box-sizing:border-box}
+.house-detail-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;color:var(--gold);margin-bottom:.5rem}
+.house-detail-text{font-family:'Crimson Pro',serif;font-size:14.5px;color:rgba(225,215,245,0.88);line-height:1.6}
+.house-detail-planet-row{display:flex;justify-content:space-between;font-family:'Crimson Pro',serif;font-size:14px;color:rgba(225,215,245,0.85);padding:4px 0;border-bottom:.5px solid rgba(200,175,255,0.08)}
+.house-detail-planet-row:last-child{border-bottom:none}
+
 .sleep-screen.on{display:flex}
 
 .sleep-screen, .sleep-screen * {
@@ -665,7 +683,7 @@ letter-spacing: .05em;
 </div>
 <script>
 (function(){
-  var overlaySelectors=['#journal-screen','#dream-dictionary-screen','#wish-screen','#sleep-screen','#conn-screen','#tutorial-screen','#restore-purchase','#cancel-survey','#kairos-day-modal','#nav-menu.on'];
+  var overlaySelectors=['#journal-screen','#dream-dictionary-screen','#wish-screen','#sleep-screen','#conn-screen','#tutorial-screen','#restore-purchase','#cancel-survey','#kairos-day-modal','#nav-menu.on','#house-detail-screen.on','#houses-wheel-screen.on'];
   function anyOverlayVisible(){
     for(var i=0;i<overlaySelectors.length;i++){
       var el=document.querySelector(overlaySelectors[i]);
@@ -689,7 +707,7 @@ letter-spacing: .05em;
 
 <script>
 (function(){
-  var OVERLAY_IDS=['dream-entry-overlay','kairos-day-modal','nav-menu','wish-screen','dream-dictionary-screen','journal-screen','sleep-screen','conn-screen','tutorial-screen','restore-purchase','cancel-survey'];
+  var OVERLAY_IDS=['dream-entry-overlay','kairos-day-modal','nav-menu','house-detail-screen','houses-wheel-screen','wish-screen','dream-dictionary-screen','journal-screen','sleep-screen','conn-screen','tutorial-screen','restore-purchase','cancel-survey'];
 
   function isVisible(el){
     return el.classList.contains('on') || window.getComputedStyle(el).display!=='none';
@@ -722,6 +740,8 @@ letter-spacing: .05em;
       'dream-entry-overlay':function(){ if(typeof closeDreamEntry==='function') closeDreamEntry(); },
       'kairos-day-modal':function(){ el.remove(); },
       'nav-menu':function(){ if(typeof closeNavMenu==='function') closeNavMenu(); },
+      'house-detail-screen':function(){ if(typeof closeHouseDetail==='function') closeHouseDetail(); },
+      'houses-wheel-screen':function(){ if(typeof closeHousesWheel==='function') closeHousesWheel(); },
       'paywall':function(){ el.classList.remove('on'); }
     };
     if(closers[id]){ closers[id](); return; }
@@ -1346,6 +1366,25 @@ letter-spacing: .05em;
       <button onclick="closeRestorePurchase()" style="background:transparent;border:none;color:rgba(200,190,220,0.65);font-family:'Crimson Pro',serif;font-size:14px;font-style:italic;cursor:pointer">cancel</button>
     </div>
   </div>
+</div>
+
+<div class="houses-screen" id="houses-wheel-screen">
+  <div class="sleep-top">
+    <button class="nav-back-btn" onclick="closeHousesWheel()">← BACK</button>
+    <div class="sleep-phase-lbl">THE 12 HOUSES</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="houses-intro">Tap a stone to see your placement in that house</div>
+  <div class="houses-grid" id="houses-grid"></div>
+</div>
+
+<div class="houses-screen" id="house-detail-screen">
+  <div class="sleep-top">
+    <button class="nav-back-btn" onclick="closeHouseDetail()">← BACK</button>
+    <div class="sleep-phase-lbl" id="house-detail-lbl">HOUSE</div>
+    <div style="width:40px"></div>
+  </div>
+  <div id="house-detail-body"></div>
 </div>
 
 <div id="cancel-survey" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.92);z-index:10002;align-items:center;justify-content:center">
@@ -4864,6 +4903,109 @@ function computeLiveAlignment(){
   return scores;
 }
 
+// Twelve houses, whole-sign system: house 1 begins at whichever sign
+// holds the natal Ascendant, and each house is one full sign after that.
+const HOUSE_DATA=[
+  {n:1,name:'Self & Identity',ruler:['Mars'],meaning:'How you show up in the world: your body, your first impression, and your basic sense of who you are.',gem:'Ruby',c1:'#e8536e',c2:'#a01030',glow:'196,30,58'},
+  {n:2,name:'Money & Values',ruler:['Venus'],meaning:'Income, possessions, and what you consider valuable, including your own sense of self-worth.',gem:'Emerald',c1:'#2fbf82',c2:'#095c3a',glow:'11,102,68'},
+  {n:3,name:'Communication',ruler:['Mercury'],meaning:'How you think, speak, and connect close to home: siblings, everyday conversations, short trips.',gem:'Citrine',c1:'#f0c14b',c2:'#b3800c',glow:'212,160,23'},
+  {n:4,name:'Home & Family',ruler:['Moon'],meaning:'Your roots, upbringing, and the emotional foundation everything else in life is built on.',gem:'Aquamarine',c1:'#5fc9dc',c2:'#1f6b7a',glow:'46,139,158'},
+  {n:5,name:'Romance & Creativity',ruler:['Sun'],meaning:'Self-expression, romance, pleasure, and anything creative or playful you make just for its own sake.',gem:'Sunstone',c1:'#f3a94a',c2:'#b35e08',glow:'224,133,15'},
+  {n:6,name:'Health & Routine',ruler:['Mercury'],meaning:'Daily habits, physical wellbeing, and the discipline behind the ordinary work of everyday life.',gem:'Peridot',c1:'#a8d15a',c2:'#5c7e18',glow:'127,168,40'},
+  {n:7,name:'Partnerships',ruler:['Venus'],meaning:'Committed relationships, marriage, and close one-to-one partnerships of any kind, including business.',gem:'Tourmaline',c1:'#ef7fa3',c2:'#a52c53',glow:'212,84,126'},
+  {n:8,name:'Transformation',ruler:['Mars'],meaning:'Shared resources, deep change, intimacy, and whatever lies just beneath the surface.',gem:'Amethyst',c1:'#8b5cc9',c2:'#3f1f66',glow:'91,44,135'},
+  {n:9,name:'Philosophy & Travel',ruler:['Jupiter'],meaning:'Higher learning, belief systems, and the pull toward distant places, ideas, and perspectives.',gem:'Sapphire',c1:'#4a7fd6',c2:'#123564',glow:'30,78,156'},
+  {n:10,name:'Career & Reputation',ruler:['Saturn'],meaning:'Public standing, ambition, and the long-term legacy you are quietly building.',gem:'Onyx',c1:'#4a4a52',c2:'#18181c',glow:'46,46,51'},
+  {n:11,name:'Friendships & Goals',ruler:['Saturn'],meaning:'Community, social circles, and the hopes you hold for where your life is heading.',gem:'Turquoise',c1:'#3fd0d6',c2:'#106669',glow:'31,168,176'},
+  {n:12,name:'Spirituality',ruler:['Jupiter'],meaning:'The hidden, the spiritual, and whatever operates quietly beneath conscious awareness.',gem:'Iolite',c1:'#7a70c4',c2:'#2e2860',glow:'66,60,130'}
+];
+
+function getHouseSignAndPlanets(houseNum){
+  if(!APP.chart||APP.chart.riseDeg===undefined||APP.chart.riseDeg===null)return null;
+  const ascSignIdx=Math.floor(norm360(APP.chart.riseDeg)/30);
+  const houseSignIdx=(ascSignIdx+(houseNum-1))%12;
+  const sign=SIGNS[houseSignIdx];
+  const planetsInHouse=[];
+  if(APP.chart.natalPlanets){
+    Object.keys(APP.chart.natalPlanets).forEach(name=>{
+      const lon=APP.chart.natalPlanets[name];
+      if(Math.floor(norm360(lon)/30)===houseSignIdx){
+        planetsInHouse.push({name:name,deg:lonToDegMin(lon)});
+      }
+    });
+  }
+  return {sign:sign,planets:planetsInHouse};
+}
+
+function computeHouseScore(houseNum){
+  if(!APP.chart||!APP.chart.natalPlanets)return null;
+  const house=HOUSE_DATA[houseNum-1];
+  const transiting=getCurrentPlanets();
+  const natal=APP.chart.natalPlanets;
+  let score=5;
+  house.ruler.forEach(rulerName=>{
+    const t=transiting[rulerName];
+    if(!t)return;
+    Object.keys(natal).forEach(natalName=>{
+      const asp=getAspect(t.lon,natal[natalName]);
+      if(asp==='trine'||asp==='sextile')score+=1;
+      else if(asp==='square'||asp==='opposite')score-=1;
+      else if(asp==='conjunct'){
+        if(ALIGNMENT_BENEFICS.includes(natalName))score+=1;
+        else if(ALIGNMENT_MALEFICS.includes(natalName))score-=1;
+      }
+    });
+  });
+  return Math.max(1,Math.min(10,Math.round(score)));
+}
+
+function renderHousesGrid(){
+  const grid=document.getElementById('houses-grid');
+  if(!grid)return;
+  grid.innerHTML=HOUSE_DATA.map(function(h){
+    return '<div class="house-stone-cell" onclick="openHouseDetail('+h.n+')">'
+      +'<div class="house-stone-dot" style="background:radial-gradient(circle at 35% 30%,'+h.c1+','+h.c2+');box-shadow:0 0 14px rgba('+h.glow+',0.5)"></div>'
+      +'<div class="house-stone-num">'+h.n+'</div>'
+      +'<div class="house-stone-name">'+h.gem+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function openHousesWheel(){
+  renderHousesGrid();
+  document.getElementById('houses-wheel-screen').classList.add('on');
+}
+function closeHousesWheel(){
+  document.getElementById('houses-wheel-screen').classList.remove('on');
+}
+
+function openHouseDetail(houseNum){
+  const h=HOUSE_DATA[houseNum-1];
+  const info=getHouseSignAndPlanets(houseNum);
+  const score=computeHouseScore(houseNum);
+  document.getElementById('house-detail-lbl').textContent='HOUSE '+houseNum;
+  const c=alignmentGoldColor(score||5);
+  const scoreColor='hsl('+c.h+','+c.s+'%,'+c.l+'%)';
+  let planetsHtml='<div class="house-detail-text">No natal planets fall here.</div>';
+  if(info&&info.planets.length){
+    planetsHtml=info.planets.map(function(p){
+      return '<div class="house-detail-planet-row"><span>'+p.name+'</span><span>'+p.deg+'</span></div>';
+    }).join('');
+  }
+  document.getElementById('house-detail-body').innerHTML=
+    '<div class="house-detail-hero" style="background:radial-gradient(circle at 35% 30%,'+h.c1+','+h.c2+');box-shadow:0 0 22px rgba('+h.glow+',0.6)"></div>'
+    +'<div class="house-detail-title">'+h.n+'th House \u00b7 '+h.name+'</div>'
+    +'<div class="house-detail-ruler">Ruled by '+h.ruler.join(' & ')+' \u00b7 '+h.gem+'</div>'
+    +'<div class="house-detail-card"><div class="house-detail-label">YOUR PLACEMENT</div><div class="house-detail-text">'+(info?('This house falls in '+info.sign+' for you.'):'Add your birth time and city to see your placement here.')+'</div></div>'
+    +'<div class="house-detail-card"><div class="house-detail-label">PLANETS HERE</div>'+planetsHtml+'</div>'
+    +'<div class="house-detail-card"><div class="house-detail-label">LIVE ALIGNMENT</div><div class="house-detail-text" style="color:'+scoreColor+';font-size:20px;font-weight:600">'+(score||'\u2014')+'/10</div></div>'
+    +'<div class="house-detail-card"><div class="house-detail-label">WHAT THIS HOUSE MEANS</div><div class="house-detail-text">'+h.meaning+'</div></div>';
+  document.getElementById('house-detail-screen').classList.add('on');
+}
+function closeHouseDetail(){
+  document.getElementById('house-detail-screen').classList.remove('on');
+}
+
 function renderLiveAlignmentSection(){
   const container=document.getElementById('live-alignment-section');
   if(!container)return;
@@ -4889,7 +5031,7 @@ function renderLiveAlignmentSection(){
   }
   const scores=computeLiveAlignment();
   if(!scores){container.innerHTML='';return;}
-  container.innerHTML=`<div class="align-live-label">\u2726 YOUR LIVE ALIGNMENT \u2726</div>${renderGaugeGrid(scores)}`;
+  container.innerHTML=`<div class="align-live-label">\u2726 YOUR LIVE ALIGNMENT \u2726</div>${renderGaugeGrid(scores)}<button class="houses-link-btn" onclick="openHousesWheel()">\u2726 Explore All 12 Houses \u2726</button>`;
 }
 
 
