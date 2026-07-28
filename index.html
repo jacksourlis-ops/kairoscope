@@ -903,6 +903,13 @@ letter-spacing: .05em;
           <div class="cc"><div class="cc-icon">☀️</div><div class="cc-lbl">SUN</div><div class="cc-val" id="cv-sun">—</div><div class="cc-deg" id="cd-sun"></div></div>
           <div class="cc"><div class="cc-icon">🌙</div><div class="cc-lbl">MOON</div><div class="cc-val" id="cv-moon">—</div><div class="cc-deg" id="cd-moon"></div></div>
           <div class="cc"><div class="cc-icon">⬆️</div><div class="cc-lbl">RISING</div><div class="cc-val" id="cv-rise">—</div><div class="cc-deg" id="cd-rise"></div></div>
+          <div class="cc"><div class="cc-icon">☿</div><div class="cc-lbl">MERCURY</div><div class="cc-val" id="cv-mercury">—</div><div class="cc-deg" id="cd-mercury"></div></div>
+          <div class="cc"><div class="cc-icon">♀</div><div class="cc-lbl">VENUS</div><div class="cc-val" id="cv-venus">—</div><div class="cc-deg" id="cd-venus"></div></div>
+          <div class="cc"><div class="cc-icon">♂</div><div class="cc-lbl">MARS</div><div class="cc-val" id="cv-mars">—</div><div class="cc-deg" id="cd-mars"></div></div>
+          <div class="cc"><div class="cc-icon">♃</div><div class="cc-lbl">JUPITER</div><div class="cc-val" id="cv-jupiter">—</div><div class="cc-deg" id="cd-jupiter"></div></div>
+          <div class="cc"><div class="cc-icon">♄</div><div class="cc-lbl">SATURN</div><div class="cc-val" id="cv-saturn">—</div><div class="cc-deg" id="cd-saturn"></div></div>
+          <div class="cc"><div class="cc-icon">♅</div><div class="cc-lbl">URANUS</div><div class="cc-val" id="cv-uranus">—</div><div class="cc-deg" id="cd-uranus"></div></div>
+          <div class="cc"><div class="cc-icon">♆</div><div class="cc-lbl">NEPTUNE</div><div class="cc-val" id="cv-neptune">—</div><div class="cc-deg" id="cd-neptune"></div></div>
         </div>
       </div>
     </div>
@@ -4632,6 +4639,13 @@ function calcChart(){
     Jupiter:jupiterLongitude(jd), Saturn:saturnLongitude(jd),
     Uranus:uranusLongitude(jd), Neptune:neptuneLongitude(jd)
   };
+  ['Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'].forEach(function(name){
+    var lon=APP.chart.natalPlanets[name];
+    var valEl=document.getElementById('cv-'+name.toLowerCase());
+    var degEl=document.getElementById('cd-'+name.toLowerCase());
+    if(valEl)valEl.textContent=lonToSign(lon);
+    if(degEl)degEl.textContent=lonToDegMin(lon);
+  });
   renderLiveAlignmentSection();
   // Try exact city, then partial match
   let coords=CITIES[city];
