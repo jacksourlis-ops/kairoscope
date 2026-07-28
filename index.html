@@ -1474,6 +1474,16 @@ function parseStructuredReading(text){
   if(paragraphs.length>2)sections.push({label:T.guidance||'GUIDANCE',text:paragraphs[2].trim().slice(0,180)+(paragraphs[2].length>180?'...':'')});
   return{sections,full:text,structured:false};
 }
+function alignmentGoldColor(score){
+  var t=(score-1)/9;
+  var lowR=100,lowG=88,lowB=62;
+  var highR=248,highG=216,highB=140;
+  var r=Math.round(lowR+(highR-lowR)*t);
+  var g=Math.round(lowG+(highG-lowG)*t);
+  var b=Math.round(lowB+(highB-lowB)*t);
+  return {r:r,g:g,b:b,t:t};
+}
+
 function renderGaugeGrid(scores){
   if(!scores)return'';
   const GAUGES=[
@@ -1481,7 +1491,7 @@ function renderGaugeGrid(scores){
     {key:'CAREER',icon:'\ud83d\udcbc',label:'Career',target:'rs-career'},
     {key:'HEALTH',icon:'\u2727',label:'Health',target:'rs-health'},
     {key:'MONEY',icon:'\u2726',label:'Money',target:'rs-money'},
-    {key:'LUCK',icon:'🍀',label:'Luck',target:'rs-luck'},
+    {key:'LUCK',icon:'\ud83c\udf40',label:'Luck',target:'rs-luck'},
     {key:'HOME',icon:'\ud83c\udfe0',label:'Home',target:'rs-home'},
     {key:'FRIENDSHIPS',icon:'\ud83e\udd1d',label:'Friends',target:'rs-friendships'}
   ];
@@ -1489,20 +1499,20 @@ function renderGaugeGrid(scores){
     const score=scores[g.key];
     if(score===undefined)return'';
     const angle=-90+((score-1)/9)*180;
+    const c=alignmentGoldColor(score);
+    const arcColor='rgb('+c.r+','+c.g+','+c.b+')';
+    const arcOpacity=(0.55+c.t*0.4).toFixed(2);
+    const glowBlur=(2+c.t*9).toFixed(1);
+    const glowOpacity=(0.15+c.t*0.55).toFixed(2);
+    const glowStyle='filter:drop-shadow(0 0 '+glowBlur+'px rgba('+c.r+','+c.g+','+c.b+','+glowOpacity+'))';
     return `<div class="gauge-card" onclick="var t=document.getElementById('${g.target}');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})">
-      <svg viewBox="0 0 100 62" class="gauge-svg">
-        <defs>
-          <linearGradient id="gaugeGrad-${g.key}" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#c17a7a"/>
-            <stop offset="50%" stop-color="#d2af50"/>
-            <stop offset="100%" stop-color="#8fbf9f"/>
-          </linearGradient>
-        </defs>
-        <path d="M10,55 A40,40 0 0 1 90,55" fill="none" stroke="url(#gaugeGrad-${g.key})" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+      <svg viewBox="0 0 100 62" class="gauge-svg" style="${glowStyle}">
+        <path d="M10,55 A40,40 0 0 1 90,55" fill="none" stroke="rgba(225,215,245,0.14)" stroke-width="7" stroke-linecap="round"/>
+        <path d="M10,55 A40,40 0 0 1 90,55" fill="none" stroke="${arcColor}" stroke-width="7" stroke-linecap="round" opacity="${arcOpacity}"/>
         <g style="transform:rotate(${angle}deg);transform-origin:50px 55px;transition:transform .6s ease">
-          <line x1="50" y1="55" x2="50" y2="21" stroke="#f5eddc" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="50" y1="55" x2="50" y2="21" stroke="${arcColor}" stroke-width="2.5" stroke-linecap="round"/>
         </g>
-        <circle cx="50" cy="55" r="4" fill="#f5eddc" stroke="#03020d" stroke-width="1"/>
+        <circle cx="50" cy="55" r="4" fill="${arcColor}" stroke="#03020d" stroke-width="1"/>
       </svg>
       <div class="gauge-icon">${g.icon}</div>
       <div class="gauge-label">${g.label}</div>
