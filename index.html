@@ -1501,12 +1501,22 @@ function renderGaugeGrid(scores){
     const angle=-90+((score-1)/9)*180;
     const c=alignmentGoldColor(score);
     const arcColor='rgb('+c.r+','+c.g+','+c.b+')';
-    const arcOpacity=(0.55+c.t*0.4).toFixed(2);
-    const glowBlur=(2+c.t*9).toFixed(1);
-    const glowOpacity=(0.15+c.t*0.55).toFixed(2);
-    const glowStyle='filter:drop-shadow(0 0 '+glowBlur+'px rgba('+c.r+','+c.g+','+c.b+','+glowOpacity+'))';
+    const arcOpacity=(0.6+c.t*0.4).toFixed(2);
+    const glowBlurA=(3+c.t*14).toFixed(1);
+    const glowBlurB=(1+c.t*6).toFixed(1);
+    const glowOpacityA=(0.18+c.t*0.65).toFixed(2);
+    const glowOpacityB=(0.25+c.t*0.55).toFixed(2);
+    const glowStyle='filter:drop-shadow(0 0 '+glowBlurA+'px rgba('+c.r+','+c.g+','+c.b+','+glowOpacityA+')) drop-shadow(0 0 '+glowBlurB+'px rgba('+c.r+','+c.g+','+c.b+','+glowOpacityB+'))';
+    const washOpacity=(0.06+c.t*0.22).toFixed(2);
     return `<div class="gauge-card" onclick="var t=document.getElementById('${g.target}');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})">
       <svg viewBox="0 0 100 62" class="gauge-svg" style="${glowStyle}">
+        <defs>
+          <radialGradient id="gaugeWash-${g.key}" cx="50%" cy="88%" r="65%">
+            <stop offset="0%" stop-color="${arcColor}" stop-opacity="${washOpacity}"/>
+            <stop offset="100%" stop-color="${arcColor}" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="55" r="42" fill="url(#gaugeWash-${g.key})"/>
         <path d="M10,55 A40,40 0 0 1 90,55" fill="none" stroke="rgba(225,215,245,0.14)" stroke-width="7" stroke-linecap="round"/>
         <path d="M10,55 A40,40 0 0 1 90,55" fill="none" stroke="${arcColor}" stroke-width="7" stroke-linecap="round" opacity="${arcOpacity}"/>
         <g style="transform:rotate(${angle}deg);transform-origin:50px 55px;transition:transform .6s ease">
