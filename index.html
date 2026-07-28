@@ -683,7 +683,7 @@ letter-spacing: .05em;
 </div>
 <script>
 (function(){
-  var overlaySelectors=['#journal-screen','#dream-dictionary-screen','#wish-screen','#sleep-screen','#conn-screen','#tutorial-screen','#restore-purchase','#cancel-survey','#kairos-day-modal','#nav-menu.on','#house-detail-screen.on','#houses-wheel-screen.on'];
+  var overlaySelectors=['#journal-screen','#dream-dictionary-screen','#wish-screen','#sleep-screen','#conn-screen','#tutorial-screen','#restore-purchase','#cancel-survey','#kairos-day-modal','#nav-menu.on','#houses-wheel-screen.on'];
   function anyOverlayVisible(){
     for(var i=0;i<overlaySelectors.length;i++){
       var el=document.querySelector(overlaySelectors[i]);
@@ -707,7 +707,7 @@ letter-spacing: .05em;
 
 <script>
 (function(){
-  var OVERLAY_IDS=['dream-entry-overlay','kairos-day-modal','nav-menu','house-detail-screen','houses-wheel-screen','wish-screen','dream-dictionary-screen','journal-screen','sleep-screen','conn-screen','tutorial-screen','restore-purchase','cancel-survey'];
+  var OVERLAY_IDS=['dream-entry-overlay','kairos-day-modal','nav-menu','houses-wheel-screen','wish-screen','dream-dictionary-screen','journal-screen','sleep-screen','conn-screen','tutorial-screen','restore-purchase','cancel-survey'];
 
   function isVisible(el){
     return el.classList.contains('on') || window.getComputedStyle(el).display!=='none';
@@ -740,7 +740,6 @@ letter-spacing: .05em;
       'dream-entry-overlay':function(){ if(typeof closeDreamEntry==='function') closeDreamEntry(); },
       'kairos-day-modal':function(){ el.remove(); },
       'nav-menu':function(){ if(typeof closeNavMenu==='function') closeNavMenu(); },
-      'house-detail-screen':function(){ if(typeof closeHouseDetail==='function') closeHouseDetail(); },
       'houses-wheel-screen':function(){ if(typeof closeHousesWheel==='function') closeHousesWheel(); },
       'paywall':function(){ el.classList.remove('on'); }
     };
@@ -891,7 +890,6 @@ letter-spacing: .05em;
 
   <!-- HOROSCOPE -->
   <div class="panel on" id="panel-h">
-    <div id="live-alignment-section"></div>
     <div><span class="lbl">YOUR SIGN</span>
       <div class="zodiac-grid" id="zg-h">
         <button class="zb" data-s="Aries" onclick="selSign(this,'zg-h','sh')"><span class="zs">♈</span><span class="zn">Aries</span></button>
@@ -933,6 +931,7 @@ letter-spacing: .05em;
         </div>
       </div>
     </div>
+    <div id="live-alignment-section"></div>
     <div><span class="lbl">PERIOD</span>
       <div class="period-row">
         <button class="pb on" data-p="today" onclick="selPeriod(this)">Today</button>
@@ -1374,17 +1373,9 @@ letter-spacing: .05em;
     <div class="sleep-phase-lbl">THE 12 HOUSES</div>
     <div style="width:40px"></div>
   </div>
-  <div class="houses-intro">Tap a stone to see your placement in that house</div>
-  <div class="houses-grid" id="houses-grid"></div>
-</div>
-
-<div class="houses-screen" id="house-detail-screen">
-  <div class="sleep-top">
-    <button class="nav-back-btn" onclick="closeHouseDetail()">← BACK</button>
-    <div class="sleep-phase-lbl" id="house-detail-lbl">HOUSE</div>
-    <div style="width:40px"></div>
-  </div>
-  <div id="house-detail-body"></div>
+  <div class="houses-intro">Tap a house to reveal your placement</div>
+  <div id="houses-pie-wrap"></div>
+  <div id="house-info-panel"></div>
 </div>
 
 <div id="cancel-survey" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,2,13,0.92);z-index:10002;align-items:center;justify-content:center">
@@ -4959,40 +4950,58 @@ function computeHouseScore(houseNum){
   return Math.max(1,Math.min(10,Math.round(score)));
 }
 
-function renderHousesGrid(){
-  const grid=document.getElementById('houses-grid');
-  if(!grid)return;
-  grid.innerHTML=HOUSE_DATA.map(function(h){
-    return '<div class="house-stone-cell" onclick="openHouseDetail('+h.n+')">'
-      +'<div class="house-stone-dot" style="background:radial-gradient(circle at 35% 30%,'+h.c1+','+h.c2+');box-shadow:0 0 14px rgba('+h.glow+',0.5)"></div>'
-      +'<div class="house-stone-num">'+h.n+'</div>'
-      +'<div class="house-stone-name">'+h.gem+'</div>'
-      +'</div>';
+let housesSelected=null;
+
+function polarPoint(cx,cy,r,angleDeg){
+  var rad=(angleDeg*Math.PI)/180;
+  return {x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)};
+}
+
+function wedgePathD(index,radius){
+  var cx=100,cy=100;
+  var a1=-90+index*30;
+  var a2=-90+(index+1)*30;
+  var p1=polarPoint(cx,cy,radius,a1);
+  var p2=polarPoint(cx,cy,radius,a2);
+  return 'M '+cx+','+cy+' L '+p1.x.toFixed(1)+','+p1.y.toFixed(1)+' A '+radius+','+radius+' 0 0,1 '+p2.x.toFixed(1)+','+p2.y.toFixed(1)+' Z';
+}
+
+function renderHousesPie(){
+  var wrap=document.getElementById('houses-pie-wrap');
+  if(!wrap)return;
+  var normalR=78,magR=98;
+  var wedges=HOUSE_DATA.map(function(h,i){
+    var isSel=housesSelected===h.n;
+    var r=isSel?magR:normalR;
+    var glowAlpha=isSel?0.9:0.22;
+    var glowBlur=isSel?16:2;
+    var fillOpacity=isSel?1:0.68;
+    var mid=-90+i*30+15;
+    var labelR=r*0.68;
+    var labelPos=polarPoint(100,100,labelR,mid);
+    return '<g class="house-wedge" onclick="event.stopPropagation();selectHouse('+h.n+')">'
+      +'<path d="'+wedgePathD(i,r)+'" fill="'+h.c1+'" opacity="'+fillOpacity+'" stroke="#03020d" stroke-width="1.2" style="transition:d .35s ease,opacity .35s ease;filter:drop-shadow(0 0 '+glowBlur+'px rgba('+h.glow+','+glowAlpha+'))"/>'
+      +'<text x="'+labelPos.x.toFixed(1)+'" y="'+labelPos.y.toFixed(1)+'" text-anchor="middle" dominant-baseline="central" style="font-family:Cinzel,serif;font-size:'+(isSel?15:11)+'px;font-weight:600;fill:#03020d;pointer-events:none;transition:font-size .35s ease">'+h.n+'</text>'
+      +'</g>';
   }).join('');
+  wrap.innerHTML='<svg viewBox="0 0 200 200" style="width:100%;max-width:280px;margin:0 auto;display:block" onclick="deselectHouse()">'+wedges+'</svg>';
 }
 
-function openHousesWheel(){
-  renderHousesGrid();
-  document.getElementById('houses-wheel-screen').classList.add('on');
-}
-function closeHousesWheel(){
-  document.getElementById('houses-wheel-screen').classList.remove('on');
-}
-
-function openHouseDetail(houseNum){
-  const h=HOUSE_DATA[houseNum-1];
-  const info=getHouseSignAndPlanets(houseNum);
-  const score=computeHouseScore(houseNum);
-  document.getElementById('house-detail-lbl').textContent='HOUSE '+houseNum;
-  const c=alignmentGoldColor(score||5);
-  const scoreColor='hsl('+c.h+','+c.s+'%,'+c.l+'%)';
-  let planetsHtml='<div class="house-detail-text">No natal planets fall here.</div>';
+function renderHouseInfoPanel(n){
+  var panel=document.getElementById('house-info-panel');
+  if(!panel)return;
+  var h=HOUSE_DATA[n-1];
+  var info=getHouseSignAndPlanets(n);
+  var score=computeHouseScore(n);
+  var c=alignmentGoldColor(score||5);
+  var scoreColor='hsl('+c.h+','+c.s+'%,'+c.l+'%)';
+  var planetsHtml='<div class="house-detail-text">No natal planets fall here.</div>';
   if(info&&info.planets.length){
     planetsHtml=info.planets.map(function(p){
       return '<div class="house-detail-planet-row"><span>'+p.name+'</span><span>'+p.deg+'</span></div>';
     }).join('');
   }
-  document.getElementById('house-detail-body').innerHTML=
+  panel.innerHTML=
     '<div class="house-detail-hero" style="background:radial-gradient(circle at 35% 30%,'+h.c1+','+h.c2+');box-shadow:0 0 22px rgba('+h.glow+',0.6)"></div>'
     +'<div class="house-detail-title">'+h.n+'th House \u00b7 '+h.name+'</div>'
     +'<div class="house-detail-ruler">Ruled by '+h.ruler.join(' & ')+' \u00b7 '+h.gem+'</div>'
@@ -5000,10 +5009,31 @@ function openHouseDetail(houseNum){
     +'<div class="house-detail-card"><div class="house-detail-label">PLANETS HERE</div>'+planetsHtml+'</div>'
     +'<div class="house-detail-card"><div class="house-detail-label">LIVE ALIGNMENT</div><div class="house-detail-text" style="color:'+scoreColor+';font-size:20px;font-weight:600">'+(score||'\u2014')+'/10</div></div>'
     +'<div class="house-detail-card"><div class="house-detail-label">WHAT THIS HOUSE MEANS</div><div class="house-detail-text">'+h.meaning+'</div></div>';
-  document.getElementById('house-detail-screen').classList.add('on');
 }
-function closeHouseDetail(){
-  document.getElementById('house-detail-screen').classList.remove('on');
+
+function selectHouse(n){
+  if(housesSelected===n){deselectHouse();return;}
+  housesSelected=n;
+  renderHousesPie();
+  renderHouseInfoPanel(n);
+}
+
+function deselectHouse(){
+  housesSelected=null;
+  renderHousesPie();
+  var panel=document.getElementById('house-info-panel');
+  if(panel)panel.innerHTML='';
+}
+
+function openHousesWheel(){
+  housesSelected=null;
+  renderHousesPie();
+  var panel=document.getElementById('house-info-panel');
+  if(panel)panel.innerHTML='';
+  document.getElementById('houses-wheel-screen').classList.add('on');
+}
+function closeHousesWheel(){
+  document.getElementById('houses-wheel-screen').classList.remove('on');
 }
 
 function renderLiveAlignmentSection(){
