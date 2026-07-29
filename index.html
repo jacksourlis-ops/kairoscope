@@ -289,6 +289,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .gauge-icon{font-size:10px;margin-bottom:1px;opacity:.85}
 .gauge-label{font-family:'Cinzel',serif;font-size:6px;letter-spacing:.04em;color:rgba(225,215,245,0.72);text-transform:uppercase;white-space:nowrap}
 .gauge-score{font-family:'Crimson Pro',serif;font-size:9px;color:var(--gold);font-weight:600;margin-top:1px}
+.accent-theme-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.accent-swatch{width:38px;height:38px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative}
+.accent-swatch.on{border-color:#fff8e8;box-shadow:0 0 0 2px rgba(0,0,0,0.4),0 0 12px rgba(255,255,255,0.3)}
+
 .align-live-label{text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--gold);margin-bottom:.6rem}
 .houses-link-btn{display:block;width:100%;margin-top:.85rem;padding:12px;background:linear-gradient(135deg,rgba(210,175,80,0.12),rgba(210,175,80,0.05));border:1px solid rgba(210,175,80,0.35);border-radius:12px;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.14em;color:var(--gold);cursor:pointer;transition:all .2s;box-shadow:0 0 14px rgba(210,175,80,0.1)}
 .houses-link-btn:hover,.houses-link-btn:active{background:linear-gradient(135deg,rgba(210,175,80,0.2),rgba(210,175,80,0.09))}
@@ -5074,6 +5078,51 @@ function closeHousesWheel(){
   document.getElementById('houses-wheel-screen').classList.remove('on');
 }
 
+const ACCENT_THEMES=[
+  {key:'default',label:'Gold',gold:'#f0d870',gold2:'#c8a040',gold3:'#a07828'},
+  {key:'ruby',label:'Ruby',gold:'#e8536e',gold2:'#c02f4a',gold3:'#a01030'},
+  {key:'emerald',label:'Emerald',gold:'#2fbf82',gold2:'#1a8a5c',gold3:'#095c3a'},
+  {key:'citrine',label:'Citrine',gold:'#f0c14b',gold2:'#d29e1f',gold3:'#b3800c'},
+  {key:'aquamarine',label:'Aquamarine',gold:'#5fc9dc',gold2:'#3a9ab0',gold3:'#1f6b7a'},
+  {key:'sunstone',label:'Sunstone',gold:'#f3a94a',gold2:'#d68120',gold3:'#b35e08'},
+  {key:'peridot',label:'Peridot',gold:'#a8d15a',gold2:'#82ab38',gold3:'#5c7e18'},
+  {key:'tourmaline',label:'Tourmaline',gold:'#ef7fa3',gold2:'#c9557f',gold3:'#a52c53'},
+  {key:'amethyst',label:'Amethyst',gold:'#8b5cc9',gold2:'#673c9e',gold3:'#3f1f66'},
+  {key:'sapphire',label:'Sapphire',gold:'#4a7fd6',gold2:'#2f5ba8',gold3:'#123564'},
+  {key:'turquoise',label:'Turquoise',gold:'#3fd0d6',gold2:'#249a9f',gold3:'#106669'},
+  {key:'iolite',label:'Iolite',gold:'#7a70c4',gold2:'#564a94',gold3:'#2e2860'}
+];
+
+function renderAccentThemePicker(){
+  const grid=document.getElementById('accent-theme-grid');
+  if(!grid)return;
+  const current=localStorage.getItem('k_accent')||'default';
+  grid.innerHTML=ACCENT_THEMES.map(function(t){
+    const onClass=t.key===current?' on':'';
+    return '<div class="accent-swatch'+onClass+'" style="background:'+t.gold+'" onclick="applyAccentTheme(\''+t.key+'\')" title="'+t.label+'"></div>';
+  }).join('');
+}
+
+function applyAccentTheme(key){
+  const theme=ACCENT_THEMES.find(function(t){return t.key===key;})||ACCENT_THEMES[0];
+  if(key==='default'){
+    document.body.style.removeProperty('--gold');
+    document.body.style.removeProperty('--gold2');
+    document.body.style.removeProperty('--gold3');
+  } else {
+    document.body.style.setProperty('--gold',theme.gold);
+    document.body.style.setProperty('--gold2',theme.gold2);
+    document.body.style.setProperty('--gold3',theme.gold3);
+  }
+  localStorage.setItem('k_accent',key);
+  renderAccentThemePicker();
+}
+
+function loadAccentTheme(){
+  const saved=localStorage.getItem('k_accent');
+  if(saved&&saved!=='default')applyAccentTheme(saved);
+}
+
 function renderLiveAlignmentSection(){
   const container=document.getElementById('live-alignment-section');
   if(!container)return;
@@ -6754,6 +6803,7 @@ if(!localStorage.getItem('k_first_visit'))localStorage.setItem('k_first_visit',D
 setTimeout(applyLanguage,50);
 setTimeout(loadBirthData,100);
 setTimeout(renderLiveAlignmentSection,150);
+loadAccentTheme();
 
 // Restore last used signs
 (function(){
@@ -7031,6 +7081,13 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
     <div class="modal-divider"></div>
 
     <div class="modal-section">
+      <div class="faq-q">YOUR COLOR</div>
+      <div class="faq-a" style="margin-bottom:.7rem">Make Kairoscope feel like yours. Pick an accent color, it replaces gold throughout the app.</div>
+      <div id="accent-theme-grid" class="accent-theme-grid"></div>
+    </div>
+    <div class="modal-divider"></div>
+
+    <div class="modal-section">
       <div class="faq-q">SUBSCRIPTION</div>
       <div class="faq-a">Manage your plan, update your card, or cancel any time.<br><br>
         <button onclick="manageSubscription(this)" style="margin-top:6px;background:rgba(200,175,255,0.1);border:.5px solid rgba(200,175,255,0.4);border-radius:8px;padding:9px 16px;color:rgba(230,220,255,0.95);font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;cursor:pointer">MANAGE SUBSCRIPTION</button>
@@ -7089,6 +7146,7 @@ function openModal(id){
     const bottom=document.getElementById('account-pro-bottom');
     if(top)top.style.display=APP.isPro?'block':'none';
     if(bottom)bottom.style.display=APP.isPro?'block':'none';
+    renderAccentThemePicker();
   }
 }
 
