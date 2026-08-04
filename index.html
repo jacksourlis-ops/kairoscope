@@ -3288,7 +3288,8 @@ async function getCompatibility(person){
     const data=JSON.parse(cached);
     title.textContent=`YOU & ${person.name.toUpperCase()}`;
     txt.textContent=data.text;
-    if(data.score!==null){scoreEl.style.display='flex';scoreNum.textContent=data.score+'%';}
+    const liveScoreCached=computeLiveCompatibilityScore(APP.chart,person.chart);
+    if(liveScoreCached!==null){scoreEl.style.display='flex';scoreNum.textContent=liveScoreCached+'%';}
     freeNote.textContent='This week\'s reading: refreshes next week ✦';
     return;
   }
@@ -3310,9 +3311,10 @@ async function getCompatibility(person){
 
   // Calculate score
   const score=calcCompatibilityScore(APP.chart,person.chart);
-  if(score!==null){
+  const liveScore=computeLiveCompatibilityScore(APP.chart,person.chart);
+  if(liveScore!==null){
     scoreEl.style.display='flex';
-    scoreNum.textContent=score+'%';
+    scoreNum.textContent=liveScore+'%';
   }
 
   // Build synastry context
@@ -4968,6 +4970,30 @@ function getHouseSignAndPlanets(houseNum){
     });
   }
   return {sign:sign,planets:planetsInHouse};
+}
+
+function computeLiveCompatibilityScore(chartA,chartB){
+  const base=calcCompatibilityScore(chartA,chartB);
+  if(base===null)return null;
+  const transiting=getCurrentPlanets();
+  let liveAdjust=0;
+  ['Venus','Mars','Moon'].forEach(function(rulerName){
+    const t=transiting[rulerName];
+    if(!t)return;
+    [chartA,chartB].forEach(function(chart){
+      [chart.sunDeg,chart.moonDeg,chart.riseDeg].forEach(function(natalDeg){
+        if(natalDeg===undefined)return;
+        const asp=getAspect(t.lon,natalDeg);
+        if(asp==='trine'||asp==='sextile')liveAdjust+=1;
+        else if(asp==='square'||asp==='opposite')liveAdjust-=1;
+        else if(asp==='conjunct'){
+          if(ALIGNMENT_BENEFICS.includes(rulerName))liveAdjust+=1;
+          else if(ALIGNMENT_MALEFICS.includes(rulerName))liveAdjust-=1;
+        }
+      });
+    });
+  });
+  return Math.min(99,Math.max(35,base+liveAdjust));
 }
 
 function computeHouseScore(houseNum){
