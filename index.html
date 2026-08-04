@@ -406,6 +406,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .pro-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(210,175,80,0.1);border:.5px solid rgba(210,175,80,0.3);border-radius:20px;padding:3px 10px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;color:var(--gold)}
 .birth-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .birth-input{width:100%;background:var(--input-bg);border:.5px solid rgba(210,175,80,0.2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Crimson Pro',serif;font-size:14px;transition:all .3s}
+.birth-input:disabled{opacity:.5;cursor:not-allowed}
 .birth-input:focus{outline:none;border-color:rgba(210,175,80,0.5)}
 .birth-input::placeholder{color:var(--muted)}
 .chart-cards{display:none;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:4px}
@@ -927,30 +928,6 @@ letter-spacing: .05em;
         <button onclick="resetSignLock()" style="background:none;border:none;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.1em;color:rgba(200,175,255,0.35);cursor:pointer;text-decoration:underline">reset my sign</button>
       </div>
     </div>
-    <div id="birth-h" style="display:none">
-      <div class="birth-card">
-        <div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl" style="margin:0">FULL BIRTH CHART</span><span class="pro-badge">✦ PRO</span></div>
-        <div class="birth-row">
-          <div><span class="lbl">DATE OF BIRTH</span><input type="date" class="birth-input" id="bdate" onchange="saveBirthData();calcChart()"></div>
-          <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="saveBirthData();calcChart()"></div>
-        </div>
-        <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" onchange="citySelected(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
-        <div class="chart-cards" id="chart-cards">
-          <div class="cc"><div class="cc-icon">☀️</div><div class="cc-lbl">SUN</div><div class="cc-val" id="cv-sun">—</div><div class="cc-deg" id="cd-sun"></div></div>
-          <div class="cc"><div class="cc-icon">🌙</div><div class="cc-lbl">MOON</div><div class="cc-val" id="cv-moon">—</div><div class="cc-deg" id="cd-moon"></div></div>
-          <div class="cc"><div class="cc-icon">⬆️</div><div class="cc-lbl">RISING</div><div class="cc-val" id="cv-rise">—</div><div class="cc-deg" id="cd-rise"></div></div>
-        </div>
-        <div class="chart-planet-list" id="chart-planet-list">
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">☿</span>Mercury</span><span class="chart-row-value" id="cv-mercury">—</span><span class="chart-row-deg" id="cd-mercury"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♀</span>Venus</span><span class="chart-row-value" id="cv-venus">—</span><span class="chart-row-deg" id="cd-venus"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♂</span>Mars</span><span class="chart-row-value" id="cv-mars">—</span><span class="chart-row-deg" id="cd-mars"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♃</span>Jupiter</span><span class="chart-row-value" id="cv-jupiter">—</span><span class="chart-row-deg" id="cd-jupiter"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♄</span>Saturn</span><span class="chart-row-value" id="cv-saturn">—</span><span class="chart-row-deg" id="cd-saturn"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♅</span>Uranus</span><span class="chart-row-value" id="cv-uranus">—</span><span class="chart-row-deg" id="cd-uranus"></span></div>
-          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♆</span>Neptune</span><span class="chart-row-value" id="cv-neptune">—</span><span class="chart-row-deg" id="cd-neptune"></span></div>
-        </div>
-      </div>
-    </div>
     <div><span class="lbl">PERIOD</span>
       <div class="period-row">
         <button class="pb on" data-p="today" onclick="selPeriod(this)">Today</button>
@@ -1377,7 +1354,7 @@ letter-spacing: .05em;
     <div style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:.12em;color:var(--gold);margin-bottom:.7rem">✦ LET'S SET UP YOUR KAIROSCOPE ✦</div>
     <div style="font-size:15px;color:rgba(220,210,240,0.9);margin-bottom:.9rem;line-height:1.55">Add your birth date, time, and city to unlock your full natal chart, live alignment gauges, and the 12 Houses.</div>
     <div style="font-size:13px;color:rgba(220,210,240,0.65);margin-bottom:.9rem;line-height:1.5;font-style:italic">Don't know your exact time or city yet? No problem, you can come back and add those anytime in Account.</div>
-    <div style="font-size:12.5px;color:rgba(230,180,120,0.85);margin-bottom:1.1rem;line-height:1.5;background:rgba(210,175,80,0.06);border:.5px solid rgba(210,175,80,0.2);border-radius:8px;padding:.6rem .7rem">One thing to know: your birth <strong>date</strong> locks permanently once saved. Take a moment to make sure it's right, if it's ever entered wrong, you'll need to message us to reset it.</div>
+    <div style="font-size:12.5px;color:rgba(230,180,120,0.85);margin-bottom:1.1rem;line-height:1.5;background:rgba(210,175,80,0.06);border:.5px solid rgba(210,175,80,0.2);border-radius:8px;padding:.6rem .7rem">One thing to know: your birth <strong>date</strong> locks permanently once saved. Take a moment to make sure it's right, if it's ever entered wrong, email hello@kairoscope.app and we'll send you a code to redeem in Account to reset it.</div>
     <button onclick="closeProWelcome();openModal('account');setTimeout(function(){var el=document.getElementById('bdate');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},300)" style="width:100%;background:rgba(210,175,80,0.14);border:.5px solid rgba(210,175,80,0.4);border-radius:8px;padding:11px;color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;cursor:pointer;margin-bottom:.6rem">✦ SET IT UP NOW</button>
     <button onclick="closeProWelcome()" style="background:transparent;border:none;color:rgba(200,190,220,0.65);font-family:'Crimson Pro',serif;font-size:14px;font-style:italic;cursor:pointer">I'll do this later</button>
   </div>
@@ -3029,6 +3006,17 @@ function saveBirthData(){
     const key=c.value.toLowerCase().trim();  // full string as key
     if(CITIES[key]) localStorage.setItem('k_bcity_coords',JSON.stringify(CITIES[key]));
   }
+  lockBirthDateIfSet();
+}
+
+function lockBirthDateIfSet(){
+  const saved=localStorage.getItem('k_bdate');
+  const dEl=document.getElementById('bdate');
+  const noteEl=document.getElementById('bdate-lock-note');
+  if(saved&&dEl){
+    dEl.disabled=true;
+    if(noteEl)noteEl.style.display='inline';
+  }
 }
 
 function loadBirthData(){
@@ -3042,6 +3030,7 @@ function loadBirthData(){
   if(d&&dEl){dEl.value=d;}
   if(t&&tEl){tEl.value=t;}
   if(c&&cEl){cEl.value=c;}
+  lockBirthDateIfSet();
   if(c&&coords){
     try{
       const key=c.toLowerCase().trim();  // full string as key
@@ -5413,6 +5402,10 @@ async function redeemSupportCode(){
         Object.keys(localStorage).filter(k=>k.startsWith('k_reading_')||k.startsWith('k_trans_')||k.startsWith('k_combined_')).forEach(k=>localStorage.removeItem(k));
         msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';msg.textContent="Cleared. Refreshing now.";
         setTimeout(()=>location.reload(),1200);
+      } else if(data.action==='reset_birthdate'){
+        localStorage.removeItem('k_bdate');
+        msg.style.display='block';msg.style.color='rgba(140,220,160,0.95)';msg.textContent='Birth date unlocked. Refreshing now.';
+        setTimeout(()=>location.reload(),1200);
       } else if(data.action==='grant_pro'){
         const until=Date.now()+(data.hours||24)*3600*1000;
         localStorage.setItem('k_temp_pro_until',String(until));
@@ -7176,6 +7169,34 @@ if(!localStorage.getItem('k_tutorial_seen')) setTimeout(openTutorial,700);
       <div class="faq-q">YOUR COLOR</div>
       <div class="faq-a" style="margin-bottom:.7rem">Make Kairoscope feel like yours. Pick an accent color, it replaces gold throughout the app.</div>
       <div id="accent-theme-grid" class="accent-theme-grid"></div>
+    </div>
+    <div class="modal-divider"></div>
+
+    <div class="modal-section">
+<div id="birth-h" style="display:none">
+      <div class="birth-card">
+        <div style="display:flex;align-items:center;justify-content:space-between"><span class="lbl" style="margin:0">FULL BIRTH CHART</span><span class="pro-badge">✦ PRO</span></div>
+        <div class="birth-row">
+          <div><span class="lbl">DATE OF BIRTH</span><span id="bdate-lock-note" style="display:none;font-size:9px;color:rgba(220,210,240,0.4);margin-left:6px">🔒 Locked</span><input type="date" class="birth-input" id="bdate" onchange="saveBirthData();calcChart()"></div>
+          <div><span class="lbl">TIME OF BIRTH</span><input type="time" class="birth-input" id="btime" onchange="saveBirthData();calcChart()"></div>
+        </div>
+        <div><span class="lbl">CITY OF BIRTH</span><input type="text" class="birth-input" id="bcity" placeholder="e.g. Toronto, London, New York..." oninput="cityLookup(this.value)" onchange="citySelected(this.value)" list="city-list"><datalist id="city-list"></datalist></div>
+        <div class="chart-cards" id="chart-cards">
+          <div class="cc"><div class="cc-icon">☀️</div><div class="cc-lbl">SUN</div><div class="cc-val" id="cv-sun">—</div><div class="cc-deg" id="cd-sun"></div></div>
+          <div class="cc"><div class="cc-icon">🌙</div><div class="cc-lbl">MOON</div><div class="cc-val" id="cv-moon">—</div><div class="cc-deg" id="cd-moon"></div></div>
+          <div class="cc"><div class="cc-icon">⬆️</div><div class="cc-lbl">RISING</div><div class="cc-val" id="cv-rise">—</div><div class="cc-deg" id="cd-rise"></div></div>
+        </div>
+        <div class="chart-planet-list" id="chart-planet-list">
+          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">☿</span>Mercury</span><span class="chart-row-value" id="cv-mercury">—</span><span class="chart-row-deg" id="cd-mercury"></span></div>
+          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♀</span>Venus</span><span class="chart-row-value" id="cv-venus">—</span><span class="chart-row-deg" id="cd-venus"></span></div>
+          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♂</span>Mars</span><span class="chart-row-value" id="cv-mars">—</span><span class="chart-row-deg" id="cd-mars"></span></div>
+          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♃</span>Jupiter</span><span class="chart-row-value" id="cv-jupiter">—</span><span class="chart-row-deg" id="cd-jupiter"></span></div>
+          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♄</span>Saturn</span><span class="chart-row-value" id="cv-saturn">—</span><span class="chart-row-deg" id="cd-saturn"></span></div>
+          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♅</span>Uranus</span><span class="chart-row-value" id="cv-uranus">—</span><span class="chart-row-deg" id="cd-uranus"></span></div>
+          <div class="chart-row"><span class="chart-row-planet"><span class="chart-row-icon">♆</span>Neptune</span><span class="chart-row-value" id="cv-neptune">—</span><span class="chart-row-deg" id="cd-neptune"></span></div>
+        </div>
+      </div>
+    </div>
     </div>
     <div class="modal-divider"></div>
 
