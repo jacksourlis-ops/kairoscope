@@ -166,6 +166,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .conn-person-name{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:rgba(255,252,255,1)}
 .conn-person-rel{font-size:14px}
 .conn-person-signs{font-family:'Crimson Pro',serif;font-size:15px;color:rgba(225,215,255,0.88);margin-top:3px;font-style:italic}
+.conn-person-edit{background:none;border:none;color:rgba(200,175,255,0.35);cursor:pointer;font-size:13px;padding:0 0 0 8px}
 .conn-person-delete{background:none;border:none;color:rgba(200,175,255,0.2);cursor:pointer;font-size:14px;padding:0 0 0 8px}
 .conn-add{width:100%;padding:14px;background:rgba(200,175,255,0.05);border:.5px solid rgba(200,175,255,0.3);border-radius:12px;color:rgba(235,220,255,0.95);font-size:10px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.14em;cursor:pointer;transition:all .2s;margin-bottom:.75rem}
 .conn-add:hover{background:rgba(200,175,255,0.1);border-color:rgba(200,175,255,0.35)}
@@ -3049,6 +3050,7 @@ function loadBirthData(){
 // PEOPLE IN MY SKY — CONNECTIONS
 // ============================================================
 let selectedRel = '💜 Crush';
+let editingPersonId = null;
 
 
 function openJournal(){
@@ -3092,7 +3094,18 @@ function updateConnYourChart(){
 
 function toggleConnForm(){
   const f=document.getElementById('conn-form');
+  const wasOn=f.classList.contains('on');
   f.classList.toggle('on');
+  if(!wasOn){
+    editingPersonId=null;
+    document.getElementById('conn-name').value='';
+    document.getElementById('conn-bdate').value='';
+    document.getElementById('conn-btime').value='';
+    document.getElementById('conn-bcity').value='';
+    document.querySelectorAll('.conn-rel-pill').forEach(function(p){p.classList.remove('on');});
+    const saveBtn=document.getElementById('conn-save-btn');
+    if(saveBtn)saveBtn.textContent='✦ ADD TO MY SKY';
+  }
 }
 
 function selectRel(btn){
@@ -3154,15 +3167,45 @@ function savePerson(){
   if(!name||!dob){alert('Please enter a name and birth date.');return;}
   const chart=calcPersonChart(dob,tob,city);
   const people=getPeople();
-  people.push({id:Date.now(),name,rel:selectedRel,dob,tob,city,chart});
+  if(editingPersonId!==null){
+    const idx=people.findIndex(p=>p.id===editingPersonId);
+    if(idx!==-1){
+      people[idx]={...people[idx],name,rel:selectedRel,dob,tob,city,chart};
+    }
+    editingPersonId=null;
+  } else {
+    people.push({id:Date.now(),name,rel:selectedRel,dob,tob,city,chart});
+  }
   savePeople(people);
   // Clear form
   document.getElementById('conn-name').value='';
   document.getElementById('conn-bdate').value='';
   document.getElementById('conn-btime').value='';
   document.getElementById('conn-bcity').value='';
+  const saveBtn=document.getElementById('conn-save-btn');
+  if(saveBtn)saveBtn.textContent='✦ ADD TO MY SKY';
   document.getElementById('conn-form').classList.remove('on');
   renderPeople();
+}
+
+function editPerson(id){
+  const people=getPeople();
+  const person=people.find(p=>p.id===id);
+  if(!person)return;
+  editingPersonId=id;
+  document.getElementById('conn-name').value=person.name;
+  document.getElementById('conn-bdate').value=person.dob||'';
+  document.getElementById('conn-btime').value=person.tob||'';
+  document.getElementById('conn-bcity').value=person.city||'';
+  selectedRel=person.rel;
+  document.querySelectorAll('.conn-rel-pill').forEach(function(p){
+    p.classList.toggle('on',p.dataset.rel===person.rel);
+  });
+  const saveBtn=document.getElementById('conn-save-btn');
+  if(saveBtn)saveBtn.textContent='✦ UPDATE';
+  const form=document.getElementById('conn-form');
+  form.classList.add('on');
+  form.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function deletePerson(id){
@@ -3198,7 +3241,7 @@ function renderPeople(){
           </div>
           <div class="conn-person-signs">${signs||'Chart calculating...'}</div>
         </div>
-        <button class="conn-person-delete" onclick="event.stopPropagation();deletePerson(${p.id})">✕</button>
+        <button class="conn-person-edit" onclick="event.stopPropagation();editPerson(${p.id})">✎</button><button class="conn-person-delete" onclick="event.stopPropagation();deletePerson(${p.id})">✕</button>
       </div>
       <div class="conn-read-btns">
         <button class="conn-read-btn" onclick="event.stopPropagation();getCompatibility(p_${p.id})">◈ Compatibility</button>
@@ -7427,7 +7470,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('clic
     <input class="conn-input" id="conn-btime" placeholder="Birth time (optional)" type="time"/>
     <input class="conn-input" id="conn-bcity" placeholder="Birth city (optional)" type="text" oninput="connCityLookup(this.value)" list="conn-city-list"/>
     <datalist id="conn-city-list"></datalist>
-    <button class="conn-save-btn" onclick="savePerson()">✦ ADD TO MY SKY</button>
+    <button class="conn-save-btn" id="conn-save-btn" onclick="savePerson()">✦ ADD TO MY SKY</button>
   </div>
 
   <!-- COMPATIBILITY READING -->
