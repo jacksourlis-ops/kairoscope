@@ -7259,6 +7259,8 @@ function openModal(id){
     const bottom=document.getElementById('account-pro-bottom');
     if(top)top.style.display=APP.isPro?'block':'none';
     if(bottom)bottom.style.display=APP.isPro?'block':'none';
+    const birthH=document.getElementById('birth-h');
+    if(birthH)birthH.style.display=APP.isPro?'block':'none';
     renderAccentThemePicker();
   }
 }
