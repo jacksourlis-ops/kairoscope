@@ -305,6 +305,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:0 0 5rem}
 .combo-btn{background:linear-gradient(135deg,rgba(210,175,80,0.18),rgba(210,175,80,0.08));border:1px solid rgba(210,175,80,0.4);border-radius:10px;padding:13px 24px;color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;cursor:pointer;box-shadow:0 0 16px rgba(210,175,80,0.12)}
 .combo-link-btn{display:block;width:100%;max-width:260px;margin:0 auto .6rem;background:rgba(200,175,255,0.06);border:.5px solid rgba(200,175,255,0.2);border-radius:8px;padding:10px;color:rgba(220,210,240,0.85);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.1em;cursor:pointer}
 .combo-reading-text{font-family:'Crimson Pro',serif;font-size:15px;color:rgba(225,215,245,0.9);line-height:1.65;text-align:left;max-width:340px;margin:0 auto;white-space:pre-line}
+.combo-section-label{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.14em;color:var(--gold);margin:1.1rem 0 .5rem;text-align:left;max-width:340px;margin-left:auto;margin-right:auto}
+.combo-content-box{font-family:'Crimson Pro',serif;font-size:14.5px;color:rgba(225,215,245,0.88);line-height:1.6;text-align:left;max-width:340px;margin:0 auto 1rem;background:rgba(200,175,255,0.04);border:.5px solid rgba(200,175,255,0.12);border-radius:10px;padding:.9rem 1rem;white-space:pre-line;max-height:220px;overflow-y:auto}
+.combo-empty-box{font-family:'Crimson Pro',serif;font-size:14px;font-style:italic;color:rgba(220,210,240,0.5);text-align:left;max-width:340px;margin:0 auto .6rem;padding:.7rem 1rem;background:rgba(200,175,255,0.02);border:.5px dashed rgba(200,175,255,0.15);border-radius:10px}
+
 
 
 .align-live-label{text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;color:var(--gold);margin-bottom:.6rem}
@@ -3758,34 +3762,42 @@ function renderCombinedTab(){
   const iconSrc='data:image/png;base64,'+COMBO_ICON_B64;
 
   if(alreadyCombined){
-    container.innerHTML=
-      '<div class="combo-icon-wrap"><img src="'+iconSrc+'" class="combo-icon"/></div>'
-      +'<div class="combo-title">TODAY\'S COMBINED READING</div>'
-      +'<div class="combo-reading-text">'+todaysKairos.combined.text+'</div>';
+    container.innerHTML=`
+      <div class="combo-icon-wrap"><img src="${iconSrc}" class="combo-icon"/></div>
+      <div class="combo-title">TODAY'S COMBINED READING</div>
+      <div class="combo-reading-text">${todaysKairos.combined.text}</div>
+    `;
     return;
   }
 
-  const horoReady=!!todayHoro;
-  const dreamReady=!!todaysDream;
+  let html=`
+    <div class="combo-icon-wrap"><img id="combo-spin-icon" src="${iconSrc}" class="combo-icon"/></div>
+    <div class="combo-title">COMBINE YOUR STARS &amp; DREAMS</div>
+    <div class="combo-sub">Your deepest reading, fusing today's horoscope with your subconscious.</div>
+    <div class="combo-section-label">YOUR HOROSCOPE TODAY</div>
+  `;
 
-  if(horoReady&&dreamReady){
-    container.innerHTML=
-      '<div class="combo-icon-wrap"><img id="combo-spin-icon" src="'+iconSrc+'" class="combo-icon"/></div>'
-      +'<div class="combo-title">READY TO COMBINE</div>'
-      +'<div class="combo-sub">Your stars and your dream are both here today. Fuse them into one deeper reading.</div>'
-      +'<button class="combo-btn" onclick="triggerCombineFromTab()">✦ COMBINE ✦</button>';
+  if(todayHoro&&todayHoro.text){
+    html+=`<div class="combo-content-box">${todayHoro.text}</div>`;
   } else {
-    container.innerHTML=
-      '<div class="combo-icon-wrap"><img src="'+iconSrc+'" class="combo-icon" style="opacity:.4"/></div>'
-      +'<div class="combo-title">COMBINE YOUR STARS & DREAMS</div>'
-      +'<div class="combo-sub">Your deepest reading, fusing today\'s horoscope with your subconscious.</div>'
-      +'<div class="combo-status-row">'
-      +'<div class="combo-status-item'+(horoReady?' done':'')+'">'+(horoReady?'✓':'○')+' Horoscope '+(horoReady?'ready':'not pulled yet')+'</div>'
-      +'<div class="combo-status-item'+(dreamReady?' done':'')+'">'+(dreamReady?'✓':'○')+' Dream '+(dreamReady?'saved':'not logged yet')+'</div>'
-      +'</div>'
-      +(!horoReady?'<button class="combo-link-btn" onclick="switchTab(\'h\',document.getElementById(\'tab-btn-h\'))">Go pull your horoscope</button>':'')
-      +(!dreamReady?'<button class="combo-link-btn" onclick="switchTab(\'d\',document.getElementById(\'tab-btn-d\'))">Go log today\'s dream</button>':'');
+    html+=`<div class="combo-empty-box">You haven't pulled today's horoscope yet.</div>
+    <button class="combo-link-btn" onclick="switchTab('h',document.getElementById('tab-btn-h'))">Go pull your horoscope</button>`;
   }
+
+  html+=`<div class="combo-section-label">YOUR DREAM TODAY</div>`;
+
+  if(todaysDream&&todaysDream.text){
+    html+=`<div class="combo-content-box">${todaysDream.text}</div>`;
+  } else {
+    html+=`<div class="combo-empty-box">You haven't logged today's dream yet.</div>
+    <button class="combo-link-btn" onclick="switchTab('d',document.getElementById('tab-btn-d'))">Go log today's dream</button>`;
+  }
+
+  if(todayHoro&&todaysDream){
+    html+=`<button class="combo-btn" onclick="triggerCombineFromTab()">&#10022; COMBINE &#10022;</button>`;
+  }
+
+  container.innerHTML=html;
 }
 
 async function triggerCombineFromTab(){
